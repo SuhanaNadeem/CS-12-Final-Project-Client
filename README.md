@@ -1,3 +1,3 @@
 # CS-12-Final-Project-Cli
 
-Our new, React Native, client-end
+Usage: cd _CS-12-Final-Project-Cli_ in terminal. Then, do _npm start_.
