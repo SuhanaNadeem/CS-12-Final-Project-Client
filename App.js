@@ -3,36 +3,22 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 // import { gql, useQuery } from "@apollo/client";
 import { adminClient } from "./GraphqlApolloClients";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 
-export default function App() {
-  // const { data: { getAdmin: admin } = {} } = useQuery(GET_ADMIN, {
-  //   client: adminClient,
-  // });
-  // console.log("entered");
+const Dictaphone = () => {
+  const { transcript, resetTranscript } = useSpeechRecognition()
+
+  if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
+    return null
+  }
+
   return (
-    <View style={styles.container}>
-      {/* <Text>New change: {admin.name}</Text> */}
-      <Text>Something here...</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <div>
+      <button onClick={SpeechRecognition.startListening}>Start</button>
+      <button onClick={SpeechRecognition.stopListening}>Stop</button>
+      <button onClick={resetTranscript}>Reset</button>
+      <p>{transcript}</p>
+    </div>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
-
-// export const GET_ADMIN = gql`
-//   {
-//     getAdmin {
-//       id
-//       name
-//       email
-//     }
-//   }
-// `;
+export default Dictaphone
