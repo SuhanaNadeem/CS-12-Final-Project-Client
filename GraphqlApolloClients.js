@@ -1,53 +1,60 @@
 import { split } from "@apollo/client";
-import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
-// import { WebSocketLink } from "@apollo/client/link/ws";
+import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { createUploadLink } from "apollo-upload-client";
+import { ApolloClient, InMemoryCache } from "@apollo/client/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const backendURI =
-  process.env.NODE_ENV === "production"
-    ? "https://cs-12-final-project.herokuapp.com/"
-    : "http://localhost:5000/";
+const backendURI = "http://192.168.0.96:5000/";
+const wsURI = "ws://192.168.0.96:5000/subscriptions";
 
-const wsURI =
-  process.env.NODE_ENV === "production"
-    ? `wss://cs-12-final-project.herokuapp.com/subscriptions`
-    : "ws://localhost:5000/subscriptions";
+// const backendURI =
+//   process.env.NODE_ENV === "production"
+//     ? "https://cs-12-final-project.herokuapp.com/"
+//     : "https://192.168.137.1/";
+
+// const wsURI =
+//   process.env.NODE_ENV === "production"
+//     ? `wss://cs-12-final-project.herokuapp.com/subscriptions`
+//     : "ws://192.168.137.1/subscriptions";
 
 const httpLink = createUploadLink({
   uri: backendURI,
   // credentials: "include",
 });
-
-const wsLink = new HttpLink({
+// const initState = async () => {
+//   var userAuthToken = await AsyncStorage.getItem("adminJwtToken");
+//   var adminAuthToken = await AsyncStorage.getItem("jwtToken");
+// };
+// initState();
+const wsLink = new WebSocketLink({
   uri: wsURI,
   options: {
     reconnect: true,
     lazy: true,
     // timeout: 30000,
-    onError: (error) => {
+    onError: async (error) => {
       // error.message has to match what the server returns.
       if (
         error.message.contains("authorization") &&
-        (asyncStorage.getItem("adminJwtToken") ||
-          asyncStorage.getItem("mentorJwtToken") ||
-          asyncStorage.getItem("jwtToken"))
+        // (adminAuthToken || userAuthToken)
+        !(await AsyncStorage.getItem("jwtToken")) &&
+        !(await AsyncStorage.getItem("adminJwtToken"))
       ) {
         // Reset the WS connection for it to carry the new JWT.
         wsLink.subscriptionClient.close(false, false);
       }
     },
-    connectionParams: () => ({
-      AdminAuth: `Bearer ${asyncStorage.getItem("adminJwtToken")}`,
-      DonorAuth: `Bearer ${asyncStorage.getItem("mentorJwtToken")}`,
-      UserAuth: `Bearer ${asyncStorage.getItem("jwtToken")}`,
+    connectionParams: async () => ({
+      AdminAuth: `Bearer ${await AsyncStorage.getItem("adminJwtToken")}`,
+      UserAuth: `Bearer ${await AsyncStorage.getItem("jwtToken")}`,
     }),
   },
 });
 
-const adminAuthLink = setContext(() => {
-  const adminToken = asyncStorage.getItem("adminJwtToken");
+const adminAuthLink = setContext(async () => {
+  const adminToken = await AsyncStorage.getItem("adminJwtToken");
   return {
     headers: {
       Authorization: adminToken ? `Bearer ${adminToken}` : "",
@@ -62,17 +69,16 @@ const adminLink = split(
   wsLink,
   adminAuthLink.concat(httpLink)
 );
-export const adminClient = new ApolloClient({
-  // link: authLink.concat(httpLink),
-  link: adminLink,
-  // link: adminAuthLink.concat(httpLink),
-  uri: backendURI,
 
+export const adminClient = new ApolloClient({
+  link: adminLink,
+  uri: backendURI,
   cache: new InMemoryCache(),
+  defaultOptions: { watchQuery: { fetchPolicy: "cache-and-network" } },
 });
 
-const userAuthLink = setContext(() => {
-  const userToken = asyncStorage.getItem("jwtToken");
+const userAuthLink = setContext(async () => {
+  const userToken = await AsyncStorage.getItem("jwtToken");
 
   return {
     headers: {
@@ -93,48 +99,8 @@ const userLink = split(
   userAuthLink.concat(httpLink)
 );
 export const userClient = new ApolloClient({
-  // link: authLink.concat(httpLink),
   link: userLink,
-  // link: userAuthLink.concat(httpLink),
   uri: backendURI,
-
   cache: new InMemoryCache(),
-  resolvers: {},
-});
-
-// userClient.cache.writeQuery({
-//   query: gql`
-//     query GET_NEW_USER_ADDRESS {
-//       newUserAddress
-//     }
-//   `,
-//   data: {
-//     newUserAddress: asyncStorage.getItem("newUserAddress"),
-//   },
-// });
-
-const mentorAuthLink = setContext(() => {
-  const mentorToken = asyncStorage.getItem("mentorJwtToken");
-  return {
-    headers: {
-      Authorization: mentorToken ? `Bearer ${mentorToken}` : "",
-    },
-  };
-});
-
-const mentorLink = split(
-  ({ query }) => {
-    const { kind, operation } = getMainDefinition(query);
-    return kind === "OperationDefinition" && operation === "subscription";
-  },
-  wsLink,
-  mentorAuthLink.concat(httpLink)
-);
-export const mentorClient = new ApolloClient({
-  // link: authLink.concat(httpLink),
-  link: mentorLink,
-  // link: mentorAuthLink.concat(httpLink),
-  uri: backendURI,
-
-  cache: new InMemoryCache(),
+  defaultOptions: { watchQuery: { fetchPolicy: "cache-and-network" } },
 });

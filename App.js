@@ -1,20 +1,52 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-// import { gql, useQuery } from "@apollo/client";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import Home from "./src/screens/Admin/Home";
+import { AdminAuthProvider } from "./src/context/adminAuth";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { persistCache } from "apollo3-cache-persist";
+import { InMemoryCache } from "@apollo/client/cache";
+import { ApolloProvider } from "@apollo/client";
 import { adminClient } from "./GraphqlApolloClients";
 
+const Stack = createStackNavigator();
+const cache = new InMemoryCache();
+
 export default function App() {
-  // const { data: { getAdmin: admin } = {} } = useQuery(GET_ADMIN, {
-  //   client: adminClient,
-  // });
-  // console.log("entered");
+  const [loadingCache, setLoadingCache] = useState(true);
+  useEffect(() => {
+    persistCache({
+      cache,
+      storage: AsyncStorage,
+    }).then(() => setLoadingCache(false));
+  }, []);
+
+  if (loadingCache) {
+    return (
+      <View style={styles.centered}>
+        <Text>Loading cache...</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      {/* <Text>New change: {admin.name}</Text> */}
-      <Text>Something here...</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ApolloProvider client={adminClient}>
+      <AdminAuthProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{ title: "Test New Page" }}
+            />
+          </Stack.Navigator>
+          <StatusBar style="light" />
+        </NavigationContainer>
+      </AdminAuthProvider>
+    </ApolloProvider>
   );
 }
 
@@ -26,13 +58,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-// export const GET_ADMIN = gql`
-//   {
-//     getAdmin {
-//       id
-//       name
-//       email
-//     }
-//   }
-// `;
