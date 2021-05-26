@@ -5,25 +5,6 @@ const initialState = {
   user: null,
 };
 
-// async function handleToken() {
-//   const token = await AsyncStorage.getItem("jwtToken");
-//   console.log("hi there");
-//   console.log(token);
-//   if (token) {
-//     try {
-//       const decodedToken = jwtDecode(token);
-//       console.log("No error: " + decodedToken);
-//       if (decodedToken.exp * 1000 < Date.now()) {
-//         await removeToken("jwtToken");
-//       } else {
-//         initialState.user = decodedToken;
-//       }
-//     } catch (e) {
-//       console.log("Error: " + e);
-//     }
-//   }
-// }
-
 const UserAuthContext = createContext({
   user: null,
   loginUser: (userData) => {},

@@ -5,25 +5,6 @@ const initialState = {
   admin: null,
 };
 
-// async function handleToken() {
-//   const token = await AsyncStorage.getItem("adminJwtToken");
-//   console.log("hi there");
-//   console.log(token);
-//   if (token) {
-//     try {
-//       const decodedToken = jwtDecode(token);
-//       console.log("No error: " + decodedToken);
-//       if (decodedToken.exp * 1000 < Date.now()) {
-//         await removeToken("adminJwtToken");
-//       } else {
-//         initialState.admin = decodedToken;
-//       }
-//     } catch (e) {
-//       console.log("Error: " + e);
-//     }
-//   }
-// }
-
 const AdminAuthContext = createContext({
   admin: null,
   loginAdmin: (adminData) => {},
