@@ -5,6 +5,7 @@ import { adminClient } from "../../../GraphqlApolloClients";
 import { AdminAuthContext } from "../../context/adminAuth";
 import { Audio } from "expo-av";
 // import Amplify, { Storage } from "aws-amplify";
+import * as FileSystem from "expo-file-system";
 
 // Amplify.configure({
 //   Auth: {
