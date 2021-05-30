@@ -5,21 +5,11 @@ import { adminClient } from "../../../GraphqlApolloClients";
 import { AdminAuthContext } from "../../context/adminAuth";
 import { Audio } from "expo-av";
 // import Amplify, { Storage } from "@aws-amplify/cli";
-import Amplify, { Storage } from "aws-amplify";
+// import Amplify, { Storage } from "aws-amplify";
 // import * as FileSystem from 'expo-file-system';
 
-Amplify.configure({
-  Auth: {
-    identityPoolId: "us-east-1:bbf6acea-9fd6-4823-9569-30a835d5db2a", //REQUIRED - Amazon Cognito Identity Pool ID
-    region: "us-east-1", // REQUIRED - Amazon Cognito Region
-  },
-  Storage: {
-    AWSS3: {
-      bucket: "cs-12-images", //REQUIRED -  Amazon S3 bucket name
-      region: "us-east-1", //OPTIONAL -  Amazon service region
-    },
-  },
-});
+// https://github.com/benjreinhart/react-native-aws3
+import { RNS3 } from 'react-native-aws3';
 
 const Home = () => {
   const context = useContext(AdminAuthContext);
@@ -89,33 +79,44 @@ const Home = () => {
     console.log("Stopping recording..");
     setRecording(undefined);
     await recording.stopAndUnloadAsync();
-    const uri = recording.getURI();
-    console.log("Recording stopped and stored at", uri);
+    const fileUri = recording.getURI();
+    console.log("Recording stopped and stored at", fileUri);
 
     // const info = await FileSystem.getInfoAsync(uri);
     // console.log(`FILE INFO: ${JSON.stringify(info)}`);
 
-    // const response = await fetch(uri);
-    // console.log("response");
-    // console.log(response);
-    // const blob = await response.blob();
-    // console.log("blob:");
-    // console.log(blob);
+    // Upload file to AWS S3 Bucket
+    const file = {
+      // `uri` can also be a file system path (i.e. file://)
+      uri: fileUri,
+      name: "recording.caf",
+      type: "audio/x-caf"
+    }
 
-    console.log("somnthing1");
-    const blob = await urlToBlob(uri);
-    console.log("somnthing2");
-    console.log(blob);
+    const options = {
+      keyPrefix: "uploads/",
+      bucket: "cs-12-images",
+      region: "us-east-1",
+      accessKey: "AKIA5DUDAINMUDBJG5CG",
+      secretKey: "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",
+      successActionStatus: 201
+    }
 
-    Storage.put("my_audio_file.caf", blob)
-      .then((result) => {
-        console.log(result);
-        alert("Recording succesfully uploaded!");
-      })
-      .catch((err) => {
-        console.log(err);
-        alert("Recording upload failed. :(");
-      });
+    RNS3.put(file, options).then(response => {
+      if (response.status !== 201)
+        throw new Error("Failed to upload image to S3");
+      console.log(response.body);
+      /**
+       * {
+       *   postResponse: {
+       *     bucket: "your-bucket",
+       *     etag : "9f620878e06d28774406017480a59fd4",
+       *     key: "uploads/image.png",
+       *     location: "https://your-bucket.s3.amazonaws.com/uploads%2Fimage.png"
+       *   }
+       * }
+       */
+    });
 
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
