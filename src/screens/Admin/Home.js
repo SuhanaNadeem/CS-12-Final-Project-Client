@@ -4,20 +4,22 @@ import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
 import { adminClient } from "../../../GraphqlApolloClients";
 import { AdminAuthContext } from "../../context/adminAuth";
 import { Audio } from "expo-av";
-// import Amplify, { Storage } from "aws-amplify";
+// import Amplify, { Storage } from "@aws-amplify/cli";
+import Amplify, { Storage } from "aws-amplify";
+// import * as FileSystem from 'expo-file-system';
 
-// Amplify.configure({
-//   Auth: {
-//     identityPoolId: "us-east-1:bbf6acea-9fd6-4823-9569-30a835d5db2a", //REQUIRED - Amazon Cognito Identity Pool ID
-//     region: "us-east-1", // REQUIRED - Amazon Cognito Region
-//   },
-//   Storage: {
-//     AWSS3: {
-//       bucket: "cs-12-images", //REQUIRED -  Amazon S3 bucket name
-//       region: "us-east-1", //OPTIONAL -  Amazon service region
-//     },
-//   },
-// });
+Amplify.configure({
+  Auth: {
+    identityPoolId: "us-east-1:bbf6acea-9fd6-4823-9569-30a835d5db2a", //REQUIRED - Amazon Cognito Identity Pool ID
+    region: "us-east-1", // REQUIRED - Amazon Cognito Region
+  },
+  Storage: {
+    AWSS3: {
+      bucket: "cs-12-images", //REQUIRED -  Amazon S3 bucket name
+      region: "us-east-1", //OPTIONAL -  Amazon service region
+    },
+  },
+});
 
 const Home = () => {
   const context = useContext(AdminAuthContext);
@@ -68,6 +70,21 @@ const Home = () => {
   }
   const [soundToPlay, setSoundToPlay] = useState();
 
+  function urlToBlob(url) {
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        xhr.onerror = reject;
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === 4) {
+                resolve(xhr.response);
+            }
+        };
+        xhr.open('GET', url);
+        xhr.responseType = 'blob'; // convert type
+        xhr.send();
+    })
+  }
+
   async function stopRecording() {
     console.log("Stopping recording..");
     setRecording(undefined);
@@ -79,19 +96,26 @@ const Home = () => {
     // console.log(`FILE INFO: ${JSON.stringify(info)}`);
 
     // const response = await fetch(uri);
+    // console.log("response");
+    // console.log(response);
     // const blob = await response.blob();
     // console.log("blob:");
     // console.log(blob);
 
-    // Storage.put("my_audio_file.caf", blob)
-    //   .then((result) => {
-    //     console.log(result);
-    //     alert("Recording succesfully uploaded!");
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     alert("Recording upload failed. :(");
-    //   });
+    console.log("somnthing1");
+    const blob = await urlToBlob(uri);
+    console.log("somnthing2");
+    console.log(blob);
+
+    Storage.put("my_audio_file.caf", blob)
+      .then((result) => {
+        console.log(result);
+        alert("Recording succesfully uploaded!");
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("Recording upload failed. :(");
+      });
 
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
