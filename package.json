@@ -15,6 +15,7 @@
     "apollo-client": "^2.6.10",
     "apollo-upload-client": "^15.0.0",
     "apollo3-cache-persist": "^0.9.1",
+    "buffer": "^6.0.3",
     "expo": "~41.0.1",
     "expo-status-bar": "~1.0.4",
     "graphql": "^15.5.0",
@@ -24,12 +25,19 @@
     "react-apollo": "^3.1.5",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react-native-audio-player-recorder": "^2.0.0",
+    "react-native-audio-record": "^0.2.2",
+    "react-native-audio-recorder-player": "^3.0.7",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-network-info": "^5.2.1",
+    "react-native-permissions": "^3.0.4",
     "react-native-pure-jwt": "^2.2.2",
     "react-native-screens": "~3.0.0",
     "react-native-web": "~0.13.12",
-    "subscriptions-transport-ws": "^0.9.18"
+    "rn-fetch-blob": "^0.12.0",
+    "subscriptions-transport-ws": "^0.9.18",
+    "expo-av": "~9.1.2",
+    "expo-file-system": "~11.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
