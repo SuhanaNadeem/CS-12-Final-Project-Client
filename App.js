@@ -9,7 +9,6 @@ import { InMemoryCache } from "@apollo/client/cache";
 import { ApolloProvider } from "@apollo/client";
 import { adminClient } from "./GraphqlApolloClients";
 
-import Entry from "./src/screens/Entry";
 import Home from "./src/screens/Home";
 import Welcome from "./src/screens/Welcome";
 import SignUp from "./src/screens/SignUp";
@@ -47,11 +46,7 @@ export default function App() {
               component={Home}
               options={{ title: "Home" }}
             />
-            <Stack.Screen
-              name="Entry"
-              component={Entry}
-              options={{ title: "Log in or sign up" }}
-            />
+
             <Stack.Screen
               name="SignUp"
               component={SignUp}
