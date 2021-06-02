@@ -1,39 +1,31 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
-import { adminClient } from "../../../GraphqlApolloClients";
-import { AdminAuthContext } from "../../context/adminAuth";
 import { Audio } from "expo-av";
-// import Amplify, { Storage } from "@aws-amplify/cli";
-// import Amplify, { Storage } from "aws-amplify";
-// import * as FileSystem from 'expo-file-system';
+import { userClient } from "../../GraphqlApolloClients";
 
-// https://github.com/benjreinhart/react-native-aws3
-import { RNS3 } from 'react-native-aws3';
+import { RNS3 } from "react-native-aws3";
 
-const Home = () => {
-  const context = useContext(AdminAuthContext);
+const Home = ({ route, navigation }) => {
+  const { userId } = route.params;
 
-  const [loginAdmin, loading] = useMutation(LOGIN_ADMIN, {
-    update(_, { data: { loginAdmin: adminData } }) {
-      console.log("Submit successful");
-      context.loginAdmin(adminData);
-    },
-    onError(err) {
-      console.log(err);
-    },
-  });
+  const [values, setValues] = useState({ userId, s3RecordingUrl: "" });
 
-  const submit = () => {
-    loginAdmin({
-      variables: { email: "test1@gmail.com", password: "1" },
-    });
-  };
-
-  const { data: { getAdminById: admin } = {} } = useQuery(GET_ADMIN_BY_ID, {
-    variables: { adminId: "T7C4HZ7BOK" },
-    client: adminClient,
-  });
+  const [addS3RecordingUrl, loadingAddS3RecordingUrl] = useMutation(
+    ADD_S3_RECORDING_URL,
+    {
+      update(_, { data: { addS3RecordingUrl: urlData } }) {
+        console.log("Submit s3");
+        console.log(urlData);
+      },
+      onError(err) {
+        console.log("jhi");
+        console.log(err);
+      },
+      variables: values,
+      client: userClient,
+    }
+  );
 
   const [recording, setRecording] = useState();
 
@@ -60,21 +52,6 @@ const Home = () => {
   }
   const [soundToPlay, setSoundToPlay] = useState();
 
-  function urlToBlob(url) {
-    return new Promise((resolve, reject) => {
-      var xhr = new XMLHttpRequest();
-      xhr.onerror = reject;
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4) {
-          resolve(xhr.response);
-        }
-      };
-      xhr.open("GET", url);
-      xhr.responseType = "blob"; // convert type
-      xhr.send();
-    });
-  }
-
   async function stopRecording() {
     console.log("Stopping recording..");
     setRecording(undefined);
@@ -89,9 +66,9 @@ const Home = () => {
     const file = {
       // `uri` can also be a file system path (i.e. file://)
       uri: fileUri,
-      name: "recording.caf",
-      type: "audio/x-caf"
-    }
+      name: `${userId && userId}_${new Date()}`,
+      type: "audio/x-caf",
+    };
 
     const options = {
       keyPrefix: "uploads/",
@@ -99,24 +76,33 @@ const Home = () => {
       region: "us-east-1",
       accessKey: "AKIA5DUDAINMUDBJG5CG",
       secretKey: "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",
-      successActionStatus: 201
-    }
+      successActionStatus: 201,
+    };
 
-    RNS3.put(file, options).then(response => {
+    RNS3.put(file, options).then((response) => {
       if (response.status !== 201)
         throw new Error("Failed to upload image to S3");
-      console.log(response.body);
-      /**
-       * {
-       *   postResponse: {
-       *     bucket: "your-bucket",
-       *     etag : "9f620878e06d28774406017480a59fd4",
-       *     key: "uploads/image.png",
-       *     location: "https://your-bucket.s3.amazonaws.com/uploads%2Fimage.png"
-       *   }
-       * }
-       */
+      console.log(response.body.postResponse.location);
+      setValues({
+        ...values,
+        s3RecordingUrl: response.body.postResponse.location,
+      });
     });
+
+    console.log("before");
+    console.log(values.userId);
+    console.log(values.s3RecordingUrl);
+    if (
+      values.userId &&
+      values.s3RecordingUrl &&
+      values.userId != "" &&
+      values.s3RecordingUrl != ""
+    ) {
+      console.log("Enters");
+      addS3RecordingUrl();
+    }
+    console.log("after");
+    setValues({ userId: "", s3RecordingUrl: "" });
 
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
@@ -163,9 +149,10 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Hi there</Text>
-      <Button style={styles.button} onPress={submit} title="Submit"></Button>
-      <Text>Should be my name: {admin && admin.name}</Text>
+      <Text>
+        User home page (where recordings are triggered, previous are shown,
+        graphic/button to toggle "listening"/not)
+      </Text>
       <Button
         title={recording ? "Stop Recording" : "Start Recording"}
         onPress={recording ? stopRecording : startRecording}
@@ -176,6 +163,7 @@ const Home = () => {
           onPress={playing ? stopPlaying : startPlaying}
         />
       )}
+
       <StatusBar style="light" />
     </View>
   );
@@ -198,28 +186,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const LOGIN_ADMIN = gql`
-  mutation loginAdmin($email: String!, $password: String!) {
-    loginAdmin(email: $email, password: $password) {
-      id
-      email
-      name
-      createdAt
-      token
-    }
-  }
-`;
-
-export const GET_ADMIN_BY_ID = gql`
-  query getAdminById($adminId: String!) {
-    getAdminById(adminId: $adminId) {
-      id
-      name
-      password
-      email
-      token
-      createdAt
-    }
+export const ADD_S3_RECORDING_URL = gql`
+  mutation addS3RecordingUrl($userId: String!, $s3RecordingUrl: String!) {
+    addS3RecordingUrl(userId: $userId, s3RecordingUrl: $s3RecordingUrl)
   }
 `;
 

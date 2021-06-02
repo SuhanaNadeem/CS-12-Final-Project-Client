@@ -1,18 +1,21 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Home from "./src/screens/Admin/Home";
-import { AdminAuthProvider } from "./src/context/adminAuth";
-
+import { UserAuthProvider } from "./src/context/userAuth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { persistCache } from "apollo3-cache-persist";
 import { InMemoryCache } from "@apollo/client/cache";
 import { ApolloProvider } from "@apollo/client";
 import { adminClient } from "./GraphqlApolloClients";
 
+import Entry from "./src/screens/Entry";
+import Home from "./src/screens/Home";
+import Welcome from "./src/screens/Welcome";
+import SignUp from "./src/screens/SignUp";
+
 const Stack = createStackNavigator();
+
 const cache = new InMemoryCache();
 
 export default function App() {
@@ -24,28 +27,39 @@ export default function App() {
     }).then(() => setLoadingCache(false));
   }, []);
 
-  if (loadingCache) {
-    return (
-      <View style={styles.centered}>
-        <Text>Loading cache...</Text>
-      </View>
-    );
-  }
-
-  return (
+  return loadingCache ? (
+    <View style={styles.container}>
+      <Text>Loading cache...</Text>
+    </View>
+  ) : (
     <ApolloProvider client={adminClient}>
-      <AdminAuthProvider>
+      <UserAuthProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Home">
+          <Stack.Navigator initialRouteName="Welcome">
+            <Stack.Screen
+              name="Welcome"
+              component={Welcome}
+              options={{ title: "Welcome" }}
+            />
+
             <Stack.Screen
               name="Home"
               component={Home}
-              options={{ title: "Test New Page" }}
+              options={{ title: "Home" }}
+            />
+            <Stack.Screen
+              name="Entry"
+              component={Entry}
+              options={{ title: "Log in or sign up" }}
+            />
+            <Stack.Screen
+              name="SignUp"
+              component={SignUp}
+              options={{ title: "Sign up" }}
             />
           </Stack.Navigator>
-          <StatusBar style="light" />
         </NavigationContainer>
-      </AdminAuthProvider>
+      </UserAuthProvider>
     </ApolloProvider>
   );
 }
