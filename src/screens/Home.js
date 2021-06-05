@@ -3,10 +3,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
 import Record from "../components/Record";
 import Play from "../components/Play";
+// import EnableDetector from "../components/EnableDetector";
+// import Detector from "../components/Detector";
+import GoogleDetector from "../components/GoogleDetector";
 
 const Home = ({ route, navigation }) => {
   const { userId } = route.params;
-
   const [soundToPlay, setSoundToPlay] = useState();
 
   return (
@@ -17,7 +19,7 @@ const Home = ({ route, navigation }) => {
       </Text>
       <Record setSoundToPlay={setSoundToPlay} userId={userId} />
       <Play soundToPlay={soundToPlay} />
-
+      <GoogleDetector />
       <StatusBar style="light" />
     </View>
   );
