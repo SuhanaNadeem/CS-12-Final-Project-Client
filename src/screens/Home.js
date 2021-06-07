@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
 import Record from "../components/Record";
 import Play from "../components/Play";
-// import GCloudDetector from "../components/GCloudDetector";
+import GCloudDetector from "../components/GCloudDetector";
 
 const Home = ({ route, navigation }) => {
   const { userId } = route.params;
@@ -17,7 +17,7 @@ const Home = ({ route, navigation }) => {
       </Text>
       <Record setSoundToPlay={setSoundToPlay} userId={userId} />
       <Play soundToPlay={soundToPlay} />
-      {/* <GCloudDetector /> */}
+      <GCloudDetector userId={userId} />
       <StatusBar style="light" />
     </View>
   );

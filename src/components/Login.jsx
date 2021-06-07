@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
 
+// TODO implement auto-login
+
 const Login = ({ navigation }) => {
   const context = useContext(UserAuthContext);
 
