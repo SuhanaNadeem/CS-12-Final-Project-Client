@@ -32,22 +32,8 @@
     "global": "^4.4.0",
     "graphql": "^15.5.0",
     "graphql-tag": "^2.12.4",
-<<<<<<< HEAD
-    "ibm-cloud-sdk-core": "^2.11.0",
-    "ibm-watson": "^6.1.1",
     "jwt-decode": "^3.1.2",
-    "line-in": "^0.1.2",
-    "native": "^0.3.3",
-    "node-gyp": "^8.1.0",
-    "node-record-lpcm16": "^1.0.1",
-    "os": "^0.1.1",
-    "react": "^16.13.1",
-=======
-    "ibm-watson": "^6.1.1",
-    "jwt-decode": "^3.1.2",
-    "line-in": "^0.1.2",
     "react": "16.13.1",
->>>>>>> df6e52471af7ccc71719a5068d68baa24a9a16e9
     "react-apollo": "^3.1.5",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
@@ -68,10 +54,6 @@
     "react-native-web": "~0.13.12",
     "record": "^0.2.0",
     "rn-fetch-blob": "^0.12.0",
-<<<<<<< HEAD
-    "stream": "0.0.2",
-=======
->>>>>>> df6e52471af7ccc71719a5068d68baa24a9a16e9
     "subscriptions-transport-ws": "^0.9.18"
   },
   "devDependencies": {
