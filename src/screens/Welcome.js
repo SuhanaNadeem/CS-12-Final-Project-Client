@@ -2,8 +2,11 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
 import Login from "../components/Login";
+import { UserAuthContext } from "../context/userAuth";
 
 const Welcome = ({ navigation }) => {
+  const { context } = useContext(UserAuthContext);
+
   return (
     <View style={styles.container}>
       <Text>Logo Here</Text>

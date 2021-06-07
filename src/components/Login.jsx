@@ -40,6 +40,7 @@ const Login = ({ navigation }) => {
       <TextInput
         onChangeText={(text) => setValues({ ...values, password: text })}
         value={values.password}
+        secureTextEntry={true}
         placeholder="Your password"
       />
 

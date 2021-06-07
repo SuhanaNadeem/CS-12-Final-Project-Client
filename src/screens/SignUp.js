@@ -1,13 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
-import {
-  Button,
-  StyleSheet,
-  StatusBar,
-  Text,
-  View,
-  TextInput,
-} from "react-native";
+import { Button, Text, View, TextInput } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
 
 const SignUp = ({ navigation }) => {
@@ -49,11 +42,13 @@ const SignUp = ({ navigation }) => {
       <TextInput
         onChangeText={(text) => setValues({ ...values, password: text })}
         value={values.password}
+        secureTextEntry={true}
         placeholder="Your password"
       />
       <TextInput
         onChangeText={(text) => setValues({ ...values, confirmPassword: text })}
         value={values.confirmPassword}
+        secureTextEntry={true}
         placeholder="Confirm password"
       />
 

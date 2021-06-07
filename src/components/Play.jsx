@@ -2,9 +2,9 @@ import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { Button, View } from "react-native";
 import { Audio } from "expo-av";
+
 const Play = ({ soundToPlay }) => {
   const [playing, setPlaying] = useState(false);
-
   async function startPlaying() {
     if (soundToPlay) {
       console.log("Starting to play sound..");

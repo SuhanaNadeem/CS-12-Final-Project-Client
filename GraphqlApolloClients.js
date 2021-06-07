@@ -9,6 +9,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const backendURI = "http://192.168.0.27:5000/";
 const wsURI = "ws://192.168.0.27:5000/subscriptions";
 
+// const backendURI = "http://127.0.0.1:5000/";
+// const wsURI = "ws://127.0.0.1:5000/subscriptions";
+
 // const backendURI =
 //   process.env.NODE_ENV === "production"
 //     ? "https://cs-12-final-project.herokuapp.com/"
