@@ -31,6 +31,12 @@ const Home = ({ route, navigation }) => {
           <GCloudDetector userId={userId} navigation={navigation} />
         </View>
       )}
+      <Button
+        title="Account"
+        onPress={() => {
+          navigation.navigate("Account", { userId });
+        }}
+      />
       <StatusBar style="light" />
     </View>
   );
