@@ -18,9 +18,9 @@ const Login = ({ navigation }) => {
   const [values, setValues] = useState({ email: "", password: "" });
   const [loginUser, loadingUser] = useMutation(LOGIN_USER, {
     update(_, { data: { loginUser: userData } }) {
-      console.log("Submit successful");
+      console.log("Login successful");
       context.loginUser(userData);
-      console.log(userData);
+
       navigation.navigate("Home", { userId: userData.id });
     },
     onError(err) {

@@ -7,6 +7,26 @@ import { RNS3 } from "react-native-aws3";
 const Record = ({ userId, setSoundToPlay }) => {
   const [values, setValues] = useState({ userId, s3RecordingUrl: "" });
 
+  const [toggleEventRecordingState, loadingEventRecordingState] = useMutation(
+    TOGGLE_EVENT_RECORDING_STATE,
+    {
+      update() {
+        console.log("toggled eventRecordingState");
+      },
+      onError(err) {
+        console.log(err);
+      },
+      refetchQueries: [
+        {
+          query: GET_EVENT_RECORDING_STATE,
+          variables: { userId },
+        },
+      ],
+      variables: { userId },
+      client: userClient,
+    }
+  );
+
   const [addS3RecordingUrl, loadingAddS3RecordingUrl] = useMutation(
     ADD_S3_RECORDING_URL,
     {
@@ -26,6 +46,8 @@ const Record = ({ userId, setSoundToPlay }) => {
 
   async function startRecording() {
     try {
+      toggleEventRecordingState();
+
       console.log("Requesting permissions..");
       await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({
@@ -118,6 +140,18 @@ const Record = ({ userId, setSoundToPlay }) => {
 export const ADD_S3_RECORDING_URL = gql`
   mutation addS3RecordingUrl($userId: String!, $s3RecordingUrl: String!) {
     addS3RecordingUrl(userId: $userId, s3RecordingUrl: $s3RecordingUrl)
+  }
+`;
+
+export const TOGGLE_EVENT_RECORDING_STATE = gql`
+  mutation toggleEventRecordingState($userId: String!) {
+    toggleEventRecordingState(userId: $userId)
+  }
+`;
+
+export const GET_EVENT_RECORDING_STATE = gql`
+  query getEventRecordingState($userId: String!) {
+    getEventRecordingState(userId: $userId)
   }
 `;
 export default Record;

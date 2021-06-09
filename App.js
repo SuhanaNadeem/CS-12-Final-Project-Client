@@ -10,8 +10,9 @@ import { ApolloProvider } from "@apollo/client";
 import { adminClient } from "./GraphqlApolloClients";
 
 import Home from "./src/screens/Home";
-import Welcome from "./src/screens/Welcome";
+import Landing from "./src/screens/Landing";
 import SignUp from "./src/screens/SignUp";
+import Account from "./src/screens/Account";
 
 const Stack = createStackNavigator();
 
@@ -34,23 +35,26 @@ export default function App() {
     <ApolloProvider client={adminClient}>
       <UserAuthProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Welcome">
+          <Stack.Navigator initialRouteName="Landing">
             <Stack.Screen
-              name="Welcome"
-              component={Welcome}
-              options={{ title: "Welcome" }}
+              name="Landing"
+              component={Landing}
+              options={{ title: "Landing" }}
             />
-
-            <Stack.Screen
-              name="Home"
-              component={Home}
-              options={{ title: "Home" }}
-            />
-
             <Stack.Screen
               name="SignUp"
               component={SignUp}
               options={{ title: "Sign up" }}
+            />
+            <Stack.Screen
+              name="Home"
+              component={Home}
+              options={{ title: "Detect Dangers" }}
+            />
+            <Stack.Screen
+              name="Account"
+              component={Account}
+              options={{ title: "Account" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

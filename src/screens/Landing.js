@@ -4,12 +4,12 @@ import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
 import Login from "../components/Login";
 import { UserAuthContext } from "../context/userAuth";
 
-const Welcome = ({ navigation }) => {
+const Landing = ({ navigation }) => {
   const { context } = useContext(UserAuthContext);
 
   return (
     <View style={styles.container}>
-      <Text>Logo Here</Text>
+      {/* Logo Here */}
 
       <Login navigation={navigation} />
 
@@ -38,4 +38,4 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
 });
-export default Welcome;
+export default Landing;

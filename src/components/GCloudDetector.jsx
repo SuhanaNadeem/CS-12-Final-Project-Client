@@ -11,6 +11,7 @@ import {
   View,
   TextInput,
 } from "react-native";
+import { userClient } from "../../GraphqlApolloClients";
 
 // TODO: put this in a .env
 const AWS_ACCESS_KEY = "AKIA5DUDAINMUDBJG5CG";
@@ -18,183 +19,132 @@ const AWS_SECRET_KEY = "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";
 const AWS_REGION = "us-east-1";
 const S3_CS_BUCKET = "cs-12-images";
 
-const GCloudDetector = ({ userId }) => {
+const GCloudDetector = ({ navigation, userId }) => {
   const context = useContext(UserAuthContext);
 
   const [values, setValues] = useState({
     userId: userId && userId,
     s3AudioChunkUrl: "",
-    // "C:/Users/16475/Documents/CS 12 Final Project/CS-12-Final-Project-Server/util/audio.raw.wav",
-    // "https://cs-12-images.s3.amazonaws.com/uploads%2FABJY94416T_Wed+Jun+02+2021+15%3A27%3A00+GMT-0400+%28EDT%29",
   });
 
   const [enabled, setEnabled] = useState(false);
-
-  const [test, setTest] = useState(3);
-
   const [recording, setRecording] = useState();
-
-  // const [started, setStarted] = useState(false);
+  const [start, setStart] = useState(true);
 
   const [transcribeAudioChunk, loadingTranscribeAudioChunk] = useMutation(
     TRANSCRIBE_AUDIO_CHUNK,
     {
-      update(
-        _,
-        { data: { transcribeAudioChunk: loadingTranscribeAudioChunk } }
-      ) {
+      update() {
         console.log("Submitted audio file");
+        setValues({ ...values, s3AudioChunkUrl: "" });
       },
       onError(err) {
+        console.log("Unsuccessful");
         console.log(err);
       },
       variables: values,
-      client: context,
+      client: userClient,
     }
   );
 
   async function startRecording() {
     try {
-      console.log("entered start recording at: " + Date());
-      console.log(5);
-      console.log("Requesting permissions..");
       await Audio.requestPermissionsAsync();
+
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
         staysActiveInBackground: true,
       });
-      console.log("Starting recording..");
+
       const recording = new Audio.Recording();
+
       await recording.prepareToRecordAsync(
         Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
       );
+
       await recording.startAsync();
-      console.log(recording);
-      await setRecording(recording);
-      setTest(5);
+      console.log("******************** START RECORDING: " + Date());
 
-      console.log("recording in start: ");
-      console.log(recording);
-      console.log(test);
-
-      console.log("Recording started");
-      console.log(6);
+      setRecording(recording);
     } catch (err) {
       console.error("Failed to start recording", err);
     }
   }
 
   async function stopRecording() {
-    console.log(9);
+    try {
+      setRecording(undefined);
 
-    console.log("Stopping recording..");
-    console.log("recording in stop: ");
-    console.log(recording);
-    console.log(test);
-    console.log("trying to stop recording at: " + Date());
+      await recording.stopAndUnloadAsync();
+      console.log("******************** STOP RECORDING: " + Date());
 
-    await recording.stopAndUnloadAsync();
+      const fileUri = recording.getURI();
 
-    const fileUri = recording.getURI();
+      // Upload file to AWS S3 Bucket
+      const file = {
+        uri: fileUri,
+        name: `${userId && userId}/${new Date()}.caf`,
+        type: "audio/x-caf",
+      };
 
-    setRecording(undefined);
-    console.log("Recording stopped and stored at", fileUri);
+      const options = {
+        // keyPrefix: "uploads/",
+        bucket: S3_CS_BUCKET,
+        region: AWS_REGION,
+        accessKey: AWS_ACCESS_KEY,
+        secretKey: AWS_SECRET_KEY,
+        successActionStatus: 201,
+      };
 
-    setTest(7);
-    // Upload file to AWS S3 Bucket
-    const file = {
-      uri: fileUri,
-      name: `${userId && userId}_${new Date()}`,
-      type: "audio/x-caf",
-    };
+      await RNS3.put(file, options).then((response) => {
+        if (response.status !== 201) {
+          throw new Error("Failed to upload image to S3");
+        }
 
-    const options = {
-      keyPrefix: "uploads/",
-      bucket: S3_CS_BUCKET,
-      region: AWS_REGION,
-      accessKey: AWS_ACCESS_KEY,
-      secretKey: AWS_SECRET_KEY,
-      successActionStatus: 201,
-    };
-
-    RNS3.put(file, options).then((response) => {
-      if (response.status !== 201)
-        throw new Error("Failed to upload image to S3");
-      console.log("sending this to aws " + response.body.postResponse.location);
-      setValues({
-        ...values,
-        s3AudioChunkUrl: response.body.postResponse.location,
+        setValues({
+          ...values,
+          s3AudioChunkUrl: response.body.postResponse.location,
+        });
+        transcribeAudioChunk();
       });
-    });
-
-    if (
-      values.userId &&
-      values.s3RecordingUrl &&
-      values.userId != "" &&
-      values.s3RecordingUrl != ""
-    ) {
-      transcribeAudioChunk();
-      setValues({ s3AudioChunkUrl: "", userId: "" });
+    } catch (err) {
+      console.error("Failed to stop recording", err);
     }
-    console.log(11);
   }
 
-  // useEffect(() => {
-  //   console.log("entered use effect");
-
-  //   async function recordAudioChunk() {
-  //     console.log(3);
-
-  //     setTimeout(async () => {
-  //       console.log(4);
-  //       await startRecording();
-  //       console.log(7);
-  //       // setStarted(false);
-  //     }, 6000);
-  //     console.log(8);
-  //     await stopRecording();
-  //     console.log(11);
-  //   }
-
-  //   console.log("enabled now: " + enabled);
-
-  //   if (enabled) {
-  //     console.log("calling use effect function");
-  //     console.log(1);
-  //     setInterval(async () => {
-  //       // setStarted(true);
-  //       console.log(2);
-  //       await recordAudioChunk();
-  //     }, 9000);
-  //   }
-  // }, [enabled]);
+  // TODO create new pages in app
+  // TODO set keys page
+  // TODO aws reading of file
+  // TODO allow streaming after clicking disable - enable
 
   useEffect(() => {
-    if (enabled) {
-      console.log("came into if at: " + Date());
-
-      setInterval(() => {
-        if (!recording) {
-          startRecording();
-          console.log("came out of start recording at: " + Date());
-
-          setTimeout(() => {
-            stopRecording();
-            console.log("came out of stop recording at: " + Date());
-          }, 10000);
+    const interval = setInterval(
+      async () => {
+        if (enabled) {
+          if (start) {
+            await startRecording();
+          } else {
+            await stopRecording();
+          }
+          setStart(!start);
         }
-      }, 12000);
+      },
+      start ? 1000 : 10000
+    );
+
+    if (!enabled) {
+      setStart(true);
+      setRecording(undefined);
     }
-  }, [enabled]);
+
+    return () => clearInterval(interval);
+  }, [enabled, start]);
 
   return (
     <View>
-      <Text>GCloudDetector</Text>
       <Button
-        title={enabled ? "Disable Detector" : "Enable Detector"}
-        title="Enable"
-        // onPress={handleEnabled}
+        title={enabled ? "Disable" : "Enable"}
         onPress={() => {
           setEnabled(!enabled);
         }}
@@ -202,8 +152,9 @@ const GCloudDetector = ({ userId }) => {
       {enabled ? (
         <Text>Your audio is currently being streamed to detect dangers.</Text>
       ) : (
-        <Text>You can turn on streaming to detect dangers.</Text>
+        <Text>You can turn on audio streaming to detect dangers.</Text>
       )}
+      <StatusBar style="light" />
     </View>
   );
 };
