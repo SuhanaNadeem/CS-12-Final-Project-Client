@@ -106,7 +106,6 @@ const GCloudDetector = ({ navigation, userId }) => {
         }
 
         console.log("uploaded to aws");
-        console.log("uri is: " + response.body.postResponse);
         setValues({
           ...values,
           interimRecordingFileKey: response.body.postResponse.key,
@@ -191,13 +190,13 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
   ios: {
     // extension: '.caf',
     extension: ".wav",
-    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
+    // audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
     sampleRate: 44100,
-    numberOfChannels: 2,
-    bitRate: 128000,
-    linearPCMBitDepth: 16,
-    linearPCMIsBigEndian: false,
-    linearPCMIsFloat: false,
+    // numberOfChannels: 2,
+    // bitRate: 128000,
+    // linearPCMBitDepth: 16,
+    // linearPCMIsBigEndian: false,
+    // linearPCMIsFloat: false,
   },
 };
 
