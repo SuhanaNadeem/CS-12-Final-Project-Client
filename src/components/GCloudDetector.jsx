@@ -12,6 +12,9 @@ import {
   TextInput,
 } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
+import "react-native-get-random-values";
+
+import { v4 as uuidv4 } from "uuid";
 
 // TODO: put this in a .env
 const AWS_ACCESS_KEY = "AKIA5DUDAINMUDBJG5CG";
@@ -24,19 +27,19 @@ const GCloudDetector = ({ navigation, userId }) => {
 
   const [values, setValues] = useState({
     userId: userId && userId,
-    s3AudioChunkUrl: "",
+    interimRecordingFileKey: "",
   });
 
   const [enabled, setEnabled] = useState(false);
   const [recording, setRecording] = useState();
   const [start, setStart] = useState(true);
 
-  const [transcribeAudioChunk, loadingTranscribeAudioChunk] = useMutation(
+  const [transcribeInterimRecording, loadingTranscribeAudioChunk] = useMutation(
     TRANSCRIBE_AUDIO_CHUNK,
     {
       update() {
         console.log("Submitted audio file");
-        setValues({ ...values, s3AudioChunkUrl: "" });
+        setValues({ ...values, interimRecordingFileKey: "" });
       },
       onError(err) {
         console.log("Unsuccessful");
@@ -60,7 +63,7 @@ const GCloudDetector = ({ navigation, userId }) => {
       const recording = new Audio.Recording();
 
       await recording.prepareToRecordAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+        RECORDING_OPTIONS_PRESET_HIGH_QUALITY
       );
 
       await recording.startAsync();
@@ -84,12 +87,12 @@ const GCloudDetector = ({ navigation, userId }) => {
       // Upload file to AWS S3 Bucket
       const file = {
         uri: fileUri,
-        name: `${userId && userId}/${new Date()}.caf`,
-        type: "audio/x-caf",
+        name: `${uuidv4()}.wav`,
+        type: "audio/wav",
       };
 
       const options = {
-        // keyPrefix: "uploads/",
+        keyPrefix: "uploads/",
         bucket: S3_CS_BUCKET,
         region: AWS_REGION,
         accessKey: AWS_ACCESS_KEY,
@@ -102,11 +105,14 @@ const GCloudDetector = ({ navigation, userId }) => {
           throw new Error("Failed to upload image to S3");
         }
 
+        console.log("uploaded to aws");
+        console.log("uri is: " + response.body.postResponse);
         setValues({
           ...values,
-          s3AudioChunkUrl: response.body.postResponse.location,
+          interimRecordingFileKey: response.body.postResponse.key,
         });
-        transcribeAudioChunk();
+        transcribeInterimRecording();
+        // TODO just pass in the file path itself
       });
     } catch (err) {
       console.error("Failed to stop recording", err);
@@ -134,8 +140,9 @@ const GCloudDetector = ({ navigation, userId }) => {
     );
 
     if (!enabled) {
+      stopRecording();
       setStart(true);
-      setRecording(undefined);
+      // setRecording(undefined);
     }
 
     return () => clearInterval(interval);
@@ -160,9 +167,38 @@ const GCloudDetector = ({ navigation, userId }) => {
 };
 
 export const TRANSCRIBE_AUDIO_CHUNK = gql`
-  mutation transcribeAudioChunk($s3AudioChunkUrl: String!, $userId: String!) {
-    transcribeAudioChunk(s3AudioChunkUrl: $s3AudioChunkUrl, userId: $userId)
+  mutation transcribeInterimRecording(
+    $interimRecordingFileKey: String!
+    $userId: String!
+  ) {
+    transcribeInterimRecording(
+      interimRecordingFileKey: $interimRecordingFileKey
+      userId: $userId
+    )
   }
 `;
+
+export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
+  isMeteringEnabled: true,
+  android: {
+    extension: ".m4a",
+    outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+    sampleRate: 44100,
+    numberOfChannels: 2,
+    bitRate: 128000,
+  },
+  ios: {
+    // extension: '.caf',
+    extension: ".wav",
+    audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
+    sampleRate: 44100,
+    numberOfChannels: 2,
+    bitRate: 128000,
+    linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+};
 
 export default GCloudDetector;
