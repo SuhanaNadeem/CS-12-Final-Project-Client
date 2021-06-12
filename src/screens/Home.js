@@ -9,6 +9,7 @@ import { userClient } from "../../GraphqlApolloClients";
 const Home = ({ route, navigation }) => {
   const { userId } = route.params;
   const [soundToPlay, setSoundToPlay] = useState();
+  const [enabled, setEnabled] = useState({ allowed: false, inProgress: false });
 
   const {
     data: { getEventRecordingState: eventRecordingState } = {},
@@ -17,20 +18,23 @@ const Home = ({ route, navigation }) => {
     client: userClient,
   });
 
-  // User home page (where recordings are triggered, previous are shown,
-  //   graphic/button to toggle "listening"/not)
   return (
     <View>
-      <Text>RECORDINGS</Text>
-      <Text>Start, stop, and view your recordings here.</Text>
-      <Record setSoundToPlay={setSoundToPlay} userId={userId} />
       {!eventRecordingState && (
-        <View>
-          <Text>DETECTING DANGERS</Text>
-          <Text>Start, stop, and view your recordings here.</Text>
-          <GCloudDetector userId={userId} navigation={navigation} />
-        </View>
+        <GCloudDetector
+          userId={userId}
+          navigation={navigation}
+          enabled={enabled}
+          setEnabled={setEnabled}
+        />
       )}
+      <Record
+        setSoundToPlay={setSoundToPlay}
+        userId={userId}
+        enabled={enabled}
+        setEnabled={setEnabled}
+      />
+
       <Button
         title="Account"
         onPress={() => {

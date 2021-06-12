@@ -17,12 +17,12 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 
 // TODO: put this in a .env
-const AWS_ACCESS_KEY = "AKIA5DUDAINMUDBJG5CG";
-const AWS_SECRET_KEY = "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";
-const AWS_REGION = "us-east-1";
-const S3_CS_BUCKET = "cs-12-images";
+export const AWS_ACCESS_KEY = "AKIA5DUDAINMUDBJG5CG";
+export const AWS_SECRET_KEY = "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";
+export const AWS_REGION = "us-east-1";
+export const S3_CS_BUCKET = "cs-12-images";
 
-const GCloudDetector = ({ navigation, userId }) => {
+const GCloudDetector = ({ navigation, userId, enabled, setEnabled }) => {
   const context = useContext(UserAuthContext);
 
   const [values, setValues] = useState({
@@ -30,15 +30,24 @@ const GCloudDetector = ({ navigation, userId }) => {
     interimRecordingFileKey: "",
   });
 
-  const [enabled, setEnabled] = useState(false);
   const [recording, setRecording] = useState();
   const [start, setStart] = useState(true);
+
+  useEffect(() => {
+    console.log("in prog useffect gcloud");
+    console.log("value of inProgress");
+    console.log(enabled.inProgress);
+    if (enabled.inProgress) {
+      console.log("now stopping recording");
+      stopRecording();
+    }
+  }, [enabled.inProgress]);
 
   const [transcribeInterimRecording, loadingTranscribeAudioChunk] = useMutation(
     TRANSCRIBE_AUDIO_CHUNK,
     {
       update() {
-        console.log("Submitted audio file");
+        console.log("Submitted interim recording");
         setValues({ ...values, interimRecordingFileKey: "" });
       },
       onError(err) {
@@ -52,6 +61,8 @@ const GCloudDetector = ({ navigation, userId }) => {
 
   async function startRecording() {
     try {
+      console.log("entered start in gcloud.jsx");
+
       await Audio.requestPermissionsAsync();
 
       await Audio.setAudioModeAsync({
@@ -71,12 +82,16 @@ const GCloudDetector = ({ navigation, userId }) => {
 
       setRecording(recording);
     } catch (err) {
-      console.error("Failed to start recording", err);
+      console.log("err in gclouddetector.jsx start");
+
+      // console.error("Failed to start recording", err);
     }
   }
 
   async function stopRecording() {
     try {
+      console.log("entered stop in gcloud");
+
       setRecording(undefined);
 
       await recording.stopAndUnloadAsync();
@@ -104,29 +119,23 @@ const GCloudDetector = ({ navigation, userId }) => {
         if (response.status !== 201) {
           throw new Error("Failed to upload image to S3");
         }
-
-        console.log("uploaded to aws");
         setValues({
           ...values,
           interimRecordingFileKey: response.body.postResponse.key,
         });
         transcribeInterimRecording();
-        // TODO just pass in the file path itself
       });
     } catch (err) {
-      console.error("Failed to stop recording", err);
+      console.log("err in gclouddetector.jsx stop");
+
+      // console.error("Failed to stop recording", err);
     }
   }
-
-  // TODO create new pages in app
-  // TODO set keys page
-  // TODO aws reading of file
-  // TODO allow streaming after clicking disable - enable
 
   useEffect(() => {
     const interval = setInterval(
       async () => {
-        if (enabled) {
+        if (enabled.allowed && !enabled.inProgress) {
           if (start) {
             await startRecording();
           } else {
@@ -138,8 +147,10 @@ const GCloudDetector = ({ navigation, userId }) => {
       start ? 1000 : 10000
     );
 
-    if (!enabled) {
-      stopRecording();
+    if (!enabled.allowed && !enabled.inProgress) {
+      if (recording) {
+        stopRecording();
+      }
       setStart(true);
       // setRecording(undefined);
     }
@@ -149,13 +160,23 @@ const GCloudDetector = ({ navigation, userId }) => {
 
   return (
     <View>
+      <Text>DETECTING DANGERS</Text>
       <Button
-        title={enabled ? "Disable" : "Enable"}
+        disabled={enabled.inProgress}
+        title={
+          enabled.allowed
+            ? enabled.inProgress
+              ? "In Progress"
+              : "Disallow"
+            : enabled.inProgress
+            ? "In Progress"
+            : "Allow"
+        }
         onPress={() => {
-          setEnabled(!enabled);
+          setEnabled({ ...enabled, allowed: !enabled.allowed });
         }}
       />
-      {enabled ? (
+      {enabled.allowed ? (
         <Text>Your audio is currently being streamed to detect dangers.</Text>
       ) : (
         <Text>You can turn on audio streaming to detect dangers.</Text>
@@ -181,11 +202,11 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
   isMeteringEnabled: true,
   android: {
     extension: ".m4a",
-    outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-    audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+    // outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+    // audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
     sampleRate: 44100,
-    numberOfChannels: 2,
-    bitRate: 128000,
+    // numberOfChannels: 2,
+    // bitRate: 128000,
   },
   ios: {
     // extension: '.caf',

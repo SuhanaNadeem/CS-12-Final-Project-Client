@@ -39,17 +39,17 @@ export default function App() {
             <Stack.Screen
               name="Landing"
               component={Landing}
-              options={{ title: "Landing" }}
+              options={{ title: "Log In" }}
             />
             <Stack.Screen
               name="SignUp"
               component={SignUp}
-              options={{ title: "Sign up" }}
+              options={{ title: "Sign Up" }}
             />
             <Stack.Screen
               name="Home"
               component={Home}
-              options={{ title: "Detect Dangers" }}
+              options={{ title: "Recordings" }}
             />
             <Stack.Screen
               name="Account"
