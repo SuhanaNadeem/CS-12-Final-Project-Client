@@ -17,7 +17,7 @@ const SignUp = ({ navigation }) => {
       console.log("Sign up successful");
       context.loginUser(userData);
       console.log(userData);
-      navigation.navigate("Home", { userId: userData.id });
+      navigation.navigate("Record", { userId: userData.id });
     },
     onError(err) {
       console.log(err);

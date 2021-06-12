@@ -22,7 +22,7 @@ export const AWS_SECRET_KEY = "tw13dkrL95susFY1m+A+pX6ARMkqaBKdnEfjztJf";
 export const AWS_REGION = "us-east-1";
 export const S3_CS_BUCKET = "cs-12-images";
 
-const GCloudDetector = ({ navigation, userId, enabled, setEnabled }) => {
+const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
   const context = useContext(UserAuthContext);
 
   const [values, setValues] = useState({
@@ -161,6 +161,11 @@ const GCloudDetector = ({ navigation, userId, enabled, setEnabled }) => {
   return (
     <View>
       <Text>DETECTING DANGERS</Text>
+      {enabled.allowed ? (
+        <Text>Your audio is currently being recorded to detect dangers.</Text>
+      ) : (
+        <Text>Turn on streaming to detect dangers.</Text>
+      )}
       <Button
         disabled={enabled.inProgress}
         title={
@@ -176,11 +181,7 @@ const GCloudDetector = ({ navigation, userId, enabled, setEnabled }) => {
           setEnabled({ ...enabled, allowed: !enabled.allowed });
         }}
       />
-      {enabled.allowed ? (
-        <Text>Your audio is currently being streamed to detect dangers.</Text>
-      ) : (
-        <Text>You can turn on audio streaming to detect dangers.</Text>
-      )}
+
       <StatusBar style="light" />
     </View>
   );
@@ -221,4 +222,4 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
   },
 };
 
-export default GCloudDetector;
+export default InterimRecording;

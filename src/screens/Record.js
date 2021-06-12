@@ -1,12 +1,14 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
-import Record, { GET_EVENT_RECORDING_STATE } from "../components/Record";
+import EventRecording, {
+  GET_EVENT_RECORDING_STATE,
+} from "../components/EventRecording";
 import Play from "../components/Play";
-import GCloudDetector from "../components/GCloudDetector";
+import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
 
-const Home = ({ route, navigation }) => {
+const Record = ({ route, navigation }) => {
   const { userId } = route.params;
   const [soundToPlay, setSoundToPlay] = useState();
   const [enabled, setEnabled] = useState({ allowed: false, inProgress: false });
@@ -21,14 +23,14 @@ const Home = ({ route, navigation }) => {
   return (
     <View>
       {!eventRecordingState && (
-        <GCloudDetector
+        <InterimRecording
           userId={userId}
           navigation={navigation}
           enabled={enabled}
           setEnabled={setEnabled}
         />
       )}
-      <Record
+      <EventRecording
         setSoundToPlay={setSoundToPlay}
         userId={userId}
         enabled={enabled}
@@ -63,4 +65,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Record;

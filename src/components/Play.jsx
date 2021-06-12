@@ -15,7 +15,7 @@ const Play = ({ soundToPlay }) => {
       console.log("No sound to play");
     }
 
-    //   TODO: make it so it changes to "start" again after playing once
+    // TODO: make it so it changes to "start" again after playing once
     // const status = await soundToPlay.getStatusAsync();
     // console.log(status.isPlaying);
     // if (!status.isPlaying) {

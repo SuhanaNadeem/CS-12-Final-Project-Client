@@ -12,7 +12,7 @@ import {
   AWS_REGION,
   AWS_SECRET_KEY,
   S3_CS_BUCKET,
-} from "./GCloudDetector";
+} from "./InterimRecording";
 
 const Record = ({ userId, setSoundToPlay, enabled, setEnabled }) => {
   const [values, setValues] = useState({ userId, eventRecordingUrl: "" });
