@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 
-const ManageKeys = ({ user, styles }) => {
+const Keys = ({ user, styles }) => {
   const [startKeyValues, setStartKeyValues] = useState({
     userId: user && user.id,
     startKey: "",
@@ -105,15 +105,6 @@ const ManageKeys = ({ user, styles }) => {
   );
 };
 
-export const DETECT_DANGER = gql`
-  mutation detectDanger($interimRecordingFileKey: String!, $userId: String!) {
-    detectDanger(
-      interimRecordingFileKey: $interimRecordingFileKey
-      userId: $userId
-    )
-  }
-`;
-
 export const SET_START_KEY = gql`
   mutation setStartKey($userId: String!, $startKey: String!) {
     setStartKey(userId: $userId, startKey: $startKey)
@@ -131,4 +122,4 @@ export const SET_PANIC_KEY = gql`
     setPanicKey(userId: $userId, panicKey: $panicKey)
   }
 `;
-export default ManageKeys;
+export default Keys;

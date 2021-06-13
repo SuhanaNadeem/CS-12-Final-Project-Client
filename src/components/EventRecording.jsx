@@ -6,7 +6,6 @@ import { Audio } from "expo-av";
 import { RNS3 } from "react-native-aws3";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-const fs = require("fs");
 
 import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
@@ -14,8 +13,6 @@ import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
 const EventRecording = ({
   userId,
   setSoundToPlay,
-  enabled,
-  setEnabled,
   styles,
   detectedStatus,
   setDetectedStatus,
@@ -56,9 +53,9 @@ const EventRecording = ({
       console.log("event's startRecording is detectedStatus");
       console.log(detectedStatus);
 
-      console.log("entered start in record.jsx");
+      // console.log("entered start in record.jsx");
 
-      setEnabled({ ...enabled, inProgress: true });
+      // setEnabled({ ...enabled, inProgress: true });
 
       await Audio.requestPermissionsAsync();
 
@@ -80,26 +77,22 @@ const EventRecording = ({
 
       setRecording(recording);
     } catch (err) {
-      console.log("err in record.jsx start");
-
+      // console.log("err in record.jsx start");
       // console.error("Failed to start recording", err);
     }
   }
 
   async function stopRecording() {
     try {
-      console.log("entered stop in record.jsx");
-      setEnabled({ ...enabled, inProgress: false });
+      // console.log("entered stop in record.jsx");
+      // setEnabled({ ...enabled, inProgress: false });
 
-      setRecording(undefined);
       await recording.stopAndUnloadAsync();
       console.log("STOPPED EVENT RECORDING at " + Date());
+      setRecording(undefined);
 
       const fileUri = recording.getURI();
-      const file = fs.readFileSync(fileSync);
-      const audioBytes = file.toString("base64");
-      console.log("bytes:");
-      console.log(audioBytes);
+
       // Upload file to AWS S3 Bucket
       const file = {
         uri: fileUri,
@@ -143,8 +136,7 @@ const EventRecording = ({
       const { sound } = await recording.createNewLoadedSoundAsync({});
       setSoundToPlay(sound);
     } catch (err) {
-      console.log("err in record.jsx stop");
-      // console.error("Failed to stop recording", err);
+      // console.log("err in record.jsx stop");
     }
   }
 
@@ -184,14 +176,12 @@ const EventRecording = ({
       </Text>
 
       <Button
-        title={
-          enabled.inProgress || detectedStatus == "start" ? "Stop" : "Start"
-        }
+        title={detectedStatus == "start" ? "Stop" : "Start"}
         onPress={() => {
-          if (enabled.inProgress) {
-            stopRecording();
-          } else {
-            startRecording();
+          if (detectedStatus === "start") {
+            setDetectedStatus("stop");
+          } else if (detectedStatus === "stop") {
+            setDetectedStatus("start");
           }
         }}
       />

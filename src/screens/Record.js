@@ -5,8 +5,8 @@ import EventRecording from "../components/EventRecording";
 import Play from "../components/Play";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
-// TODO Implement solution
-// TODO get and play recordings
+// TODO Optimize
+// TODO get and play recordings (group events and play together)
 // TODO page where you can see flagged tokens and add
 // TODO call/record on panic
 // TODO maps to see friends, if enabled, if panic, etc
@@ -28,7 +28,6 @@ import { userClient } from "../../GraphqlApolloClients";
 const Record = ({ route, navigation }) => {
   const { userId } = route.params;
   const [soundToPlay, setSoundToPlay] = useState();
-  const [enabled, setEnabled] = useState({ allowed: false, inProgress: false });
   const [detectedStatus, setDetectedStatus] = useState("stop");
   // const {
   //   data: { getEventRecordingTriggered: eventRecordingTriggered } = {},
@@ -42,8 +41,6 @@ const Record = ({ route, navigation }) => {
       <InterimRecording
         userId={userId}
         navigation={navigation}
-        enabled={enabled}
-        setEnabled={setEnabled}
         styles={styles}
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
@@ -51,18 +48,9 @@ const Record = ({ route, navigation }) => {
       <EventRecording
         setSoundToPlay={setSoundToPlay}
         userId={userId}
-        enabled={enabled}
-        setEnabled={setEnabled}
         styles={styles}
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
-      />
-
-      <Button
-        title="Account"
-        onPress={() => {
-          navigation.navigate("Account", { userId });
-        }}
       />
     </View>
   );

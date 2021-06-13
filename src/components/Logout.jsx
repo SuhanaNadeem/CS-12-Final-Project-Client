@@ -10,11 +10,41 @@ import {
 } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
 
-// TODO implement auto-login
-
 const Logout = ({ navigation, styles }) => {
   const { logoutUser } = useContext(UserAuthContext);
-  return <Button onPress={logoutUser} title="Log Out" />;
+  return (
+    <Button onPress={logoutUser} title="Log Out" style={{ marginLeft: 25 }} />
+  );
 };
 
 export default Logout;
+
+const styles = StyleSheet.create({
+  container: {
+    // flex: 1,
+    backgroundColor: "#fff",
+    // alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    paddingHorizontal: 25,
+  },
+  button: {
+    // flex: 1,
+    backgroundColor: "#f50",
+    alignItems: "center",
+    // justifyContent: "center",
+    marginLeft: 25,
+  },
+  baseText: {
+    paddingBottom: 20,
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 30,
+    paddingBottom: 10,
+  },
+  input: {
+    paddingVertical: 4,
+  },
+});
