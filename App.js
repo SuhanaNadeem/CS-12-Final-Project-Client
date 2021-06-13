@@ -14,7 +14,13 @@ import Landing from "./src/screens/Landing";
 import SignUp from "./src/screens/SignUp";
 import Account from "./src/screens/Account";
 
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Tabs from "./src/components/Tabs";
+import Logout from "./src/components/Logout";
+
 const Stack = createStackNavigator();
+const Tab = createMaterialBottomTabNavigator();
 
 const cache = new InMemoryCache();
 
@@ -35,7 +41,7 @@ export default function App() {
     <ApolloProvider client={adminClient}>
       <UserAuthProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Landing">
+          {/* <Stack.Navigator initialRouteName="Landing">
             <Stack.Screen
               name="Landing"
               component={Landing}
@@ -55,6 +61,23 @@ export default function App() {
               name="Account"
               component={Account}
               options={{ title: "Account" }}
+            />
+          </Stack.Navigator> */}
+          <Stack.Navigator initialRouteName="Landing">
+            <Stack.Screen
+              name="Landing"
+              component={Landing}
+              options={{ title: "Log In" }}
+            />
+            <Stack.Screen
+              name="SignUp"
+              component={SignUp}
+              options={{ title: "Sign Up" }}
+            />
+            <Stack.Screen
+              name="Home"
+              component={Tabs}
+              options={{ title: "Prove It", headerLeft: () => <Logout /> }}
             />
           </Stack.Navigator>
         </NavigationContainer>

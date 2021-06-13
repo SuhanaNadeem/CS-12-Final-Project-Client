@@ -12,7 +12,7 @@ import { UserAuthContext } from "../context/userAuth";
 
 // TODO implement auto-login
 
-const Login = ({ navigation }) => {
+const Login = ({ navigation, styles }) => {
   const context = useContext(UserAuthContext);
 
   const [values, setValues] = useState({ email: "", password: "" });
@@ -20,8 +20,7 @@ const Login = ({ navigation }) => {
     update(_, { data: { loginUser: userData } }) {
       console.log("Login successful");
       context.loginUser(userData);
-
-      navigation.navigate("Record", { userId: userData.id });
+      navigation.navigate("Home", { userId: userData.id });
     },
     onError(err) {
       console.log(err);
@@ -31,15 +30,15 @@ const Login = ({ navigation }) => {
 
   return (
     <View>
-      <Text>Enter your email and password</Text>
-
       <TextInput
+        style={styles.input}
         onChangeText={(text) => setValues({ ...values, email: text })}
         value={values.email}
         placeholder="Your email"
       />
 
       <TextInput
+        style={styles.input}
         onChangeText={(text) => setValues({ ...values, password: text })}
         value={values.password}
         secureTextEntry={true}

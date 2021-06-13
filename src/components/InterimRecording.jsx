@@ -13,18 +13,21 @@ import {
 } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import "react-native-get-random-values";
+const fs = require("fs");
 
 import { v4 as uuidv4 } from "uuid";
 
-// TODO: put this in a .env
-export const AWS_ACCESS_KEY = "AKIA5DUDAINMUDBJG5CG";
-export const AWS_SECRET_KEY = "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";
-export const AWS_REGION = "us-east-1";
-export const S3_CS_BUCKET = "cs-12-images";
+import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 
-const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
-  const context = useContext(UserAuthContext);
-
+const InterimRecording = ({
+  navigation,
+  userId,
+  enabled,
+  setEnabled,
+  styles,
+  detectedStatus,
+  setDetectedStatus,
+}) => {
   const [values, setValues] = useState({
     userId: userId && userId,
     interimRecordingFileKey: "",
@@ -43,21 +46,23 @@ const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
     }
   }, [enabled.inProgress]);
 
-  const [transcribeInterimRecording, loadingTranscribeAudioChunk] = useMutation(
-    TRANSCRIBE_AUDIO_CHUNK,
-    {
-      update() {
-        console.log("Submitted interim recording");
-        setValues({ ...values, interimRecordingFileKey: "" });
-      },
-      onError(err) {
-        console.log("Unsuccessful");
-        console.log(err);
-      },
-      variables: values,
-      client: userClient,
-    }
-  );
+  const [detectDanger, loadingDetectDanger] = useMutation(DETECT_DANGER, {
+    update(_, { data: { detectDanger: detectedStatusData } }) {
+      console.log("Submitted interim recording");
+      setValues({ ...values, interimRecordingFileKey: "" });
+      setDetectedStatus(detectedStatusData);
+      console.log("detectDanger returned:");
+      console.log(detectedStatusData);
+      console.log("detectedStatus value:");
+      console.log(detectedStatus);
+    },
+    onError(err) {
+      console.log("Unsuccessful");
+      console.log(err);
+    },
+    variables: values,
+    client: userClient,
+  });
 
   async function startRecording() {
     try {
@@ -99,6 +104,11 @@ const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
 
       const fileUri = recording.getURI();
 
+      const file = fs.readFileSync(fileSync);
+      const audioBytes = file.toString("base64");
+      console.log("bytes:");
+      console.log(audioBytes);
+
       // Upload file to AWS S3 Bucket
       const file = {
         uri: fileUri,
@@ -117,13 +127,17 @@ const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
 
       await RNS3.put(file, options).then((response) => {
         if (response.status !== 201) {
-          throw new Error("Failed to upload image to S3");
+          throw new Error("Failed to upload recording to S3");
         }
-        setValues({
-          ...values,
-          interimRecordingFileKey: response.body.postResponse.key,
-        });
-        transcribeInterimRecording();
+        if (detectedStatus === "stop") {
+          setValues({
+            ...values,
+            interimRecordingFileKey: response.body.postResponse.key,
+          });
+          console.log("detectDanger input:");
+          console.log(values);
+          detectDanger();
+        }
       });
     } catch (err) {
       console.log("err in gclouddetector.jsx stop");
@@ -135,7 +149,11 @@ const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
   useEffect(() => {
     const interval = setInterval(
       async () => {
-        if (enabled.allowed && !enabled.inProgress) {
+        if (
+          enabled.allowed &&
+          !enabled.inProgress &&
+          detectedStatus === "stop"
+        ) {
           if (start) {
             await startRecording();
           } else {
@@ -144,10 +162,10 @@ const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
           setStart(!start);
         }
       },
-      start ? 1000 : 10000
+      start ? 50 : 10000
     );
 
-    if (!enabled.allowed && !enabled.inProgress) {
+    if (!enabled.allowed && !enabled.inProgress && detectedStatus === "stop") {
       if (recording) {
         stopRecording();
       }
@@ -156,24 +174,34 @@ const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
     }
 
     return () => clearInterval(interval);
-  }, [enabled, start]);
+  }, [enabled, start, detectedStatus]);
 
   return (
     <View>
-      <Text>DETECTING DANGERS</Text>
+      <Text style={styles.titleText}>Interim Recordings</Text>
+      <Text style={styles.baseText}>
+        Interim recordings are only checked and discarded. If verbal harassment
+        or misconduct is detected, an event recording is triggered and stored
+        for future reference.
+      </Text>
       {enabled.allowed ? (
-        <Text>Your audio is currently being recorded to detect dangers.</Text>
+        <Text style={styles.baseText}>
+          Your audio is being recorded to detect danger.
+        </Text>
       ) : (
-        <Text>Turn on streaming to detect dangers.</Text>
+        <Text style={styles.baseText}>
+          Allow interim recordings to detect danger.
+        </Text>
       )}
+
       <Button
         disabled={enabled.inProgress}
         title={
           enabled.allowed
-            ? enabled.inProgress
+            ? enabled.inProgress || detectedStatus == "start"
               ? "In Progress"
               : "Disallow"
-            : enabled.inProgress
+            : enabled.inProgress || detectedStatus == "start"
             ? "In Progress"
             : "Allow"
         }
@@ -187,12 +215,9 @@ const InterimRecording = ({ navigation, userId, enabled, setEnabled }) => {
   );
 };
 
-export const TRANSCRIBE_AUDIO_CHUNK = gql`
-  mutation transcribeInterimRecording(
-    $interimRecordingFileKey: String!
-    $userId: String!
-  ) {
-    transcribeInterimRecording(
+export const DETECT_DANGER = gql`
+  mutation detectDanger($interimRecordingFileKey: String!, $userId: String!) {
+    detectDanger(
       interimRecordingFileKey: $interimRecordingFileKey
       userId: $userId
     )

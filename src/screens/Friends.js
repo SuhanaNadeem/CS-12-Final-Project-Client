@@ -2,12 +2,11 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Text, View, TextInput, StyleSheet } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-import ManageKeys from "../components/ManageKeys";
 // import NavBar from "../components/NavBar";
 import { UserAuthContext } from "../context/userAuth";
 
 // Manage keys and other account info
-const Account = ({ route, navigation }) => {
+const Friends = ({ route, navigation }) => {
   const { userId } = route.params;
 
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
@@ -17,7 +16,8 @@ const Account = ({ route, navigation }) => {
 
   return user ? (
     <View style={styles.container}>
-      <ManageKeys styles={styles} user={user} />
+      <Text style={styles.titleText}>Friends</Text>
+      <Text style={styles.baseText}>Add and monitor your friends here.</Text>
     </View>
   ) : (
     <View>
@@ -64,4 +64,4 @@ export const GET_USER_BY_ID = gql`
     }
   }
 `;
-export default Account;
+export default Friends;

@@ -11,7 +11,7 @@ const Landing = ({ navigation }) => {
     <View style={styles.container}>
       {/* Logo Here */}
 
-      <Login navigation={navigation} />
+      <Login navigation={navigation} styles={styles} />
 
       <Button
         style={styles.button}
@@ -26,9 +26,10 @@ const styles = StyleSheet.create({
   container: {
     // flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
+    // alignItems: "center",
     justifyContent: "center",
     flexDirection: "column",
+    paddingHorizontal: 25,
   },
   button: {
     // flex: 1,
@@ -36,6 +37,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 50,
+  },
+  baseText: {
+    paddingBottom: 20,
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 30,
+    paddingBottom: 10,
+  },
+  input: {
+    paddingVertical: 4,
   },
 });
 export default Landing;

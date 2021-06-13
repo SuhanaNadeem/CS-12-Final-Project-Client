@@ -1,42 +1,61 @@
 import { gql, useMutation } from "@apollo/client";
-import React, { useState } from "react";
-import { Button, View, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Button, View, Text, StyleSheet } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { Audio } from "expo-av";
 import { RNS3 } from "react-native-aws3";
 import "react-native-get-random-values";
-
 import { v4 as uuidv4 } from "uuid";
-import {
-  AWS_ACCESS_KEY,
-  AWS_REGION,
-  AWS_SECRET_KEY,
-  S3_CS_BUCKET,
-} from "./InterimRecording";
+const fs = require("fs");
 
-const Record = ({ userId, setSoundToPlay, enabled, setEnabled }) => {
-  const [values, setValues] = useState({ userId, eventRecordingUrl: "" });
+import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
+import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
 
-  const [addEventRecordingUrl, loadingAddEventRecordingUrl] = useMutation(
-    ADD_S3_RECORDING_URL,
-    {
-      update(_, { data: { addEventRecordingUrl: urlData } }) {
-        console.log("Submitted s3");
-        console.log(urlData);
-      },
-      onError(err) {
-        console.log(err);
-      },
-      variables: values,
-      client: userClient,
-    }
-  );
+const EventRecording = ({
+  userId,
+  setSoundToPlay,
+  enabled,
+  setEnabled,
+  styles,
+  detectedStatus,
+  setDetectedStatus,
+}) => {
+  // const [values, setValues] = useState({ userId, eventRecordingUrl: "" });
+  const [values, setValues] = useState({
+    userId,
+    eventRecordingFileKey: "",
+    previousEventRecordingUrl: "",
+    eventRecordingUrl: "",
+  });
+  const [start, setStart] = useState(true);
+
+  const [handleDanger, loadingHandleDanger] = useMutation(HANDLE_DANGER, {
+    update(_, { data: { handleDanger: detectedStatusData } }) {
+      console.log("handled danger");
+      setValues({
+        ...values,
+        previousEventRecordingUrl: values.eventRecordingUrl,
+        eventRecordingUrl: "",
+        eventRecordingFileKey: "",
+      });
+      console.log("event's update's detectedStatus:");
+      setDetectedStatus(detectedStatusData);
+      console.log(detectedStatus);
+    },
+    onError(err) {
+      console.log(err);
+    },
+    variables: values,
+    client: userClient,
+  });
 
   const [recording, setRecording] = useState();
 
   async function startRecording() {
     try {
-      await stopRecording();
+      console.log("event's startRecording is detectedStatus");
+      console.log(detectedStatus);
+
       console.log("entered start in record.jsx");
 
       setEnabled({ ...enabled, inProgress: true });
@@ -52,12 +71,12 @@ const Record = ({ userId, setSoundToPlay, enabled, setEnabled }) => {
       const recording = new Audio.Recording();
 
       await recording.prepareToRecordAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+        RECORDING_OPTIONS_PRESET_HIGH_QUALITY
       );
 
       await recording.startAsync();
 
-      console.log("STARTED EVENT RECORDING");
+      console.log("STARTED EVENT RECORDING at " + Date());
 
       setRecording(recording);
     } catch (err) {
@@ -74,10 +93,13 @@ const Record = ({ userId, setSoundToPlay, enabled, setEnabled }) => {
 
       setRecording(undefined);
       await recording.stopAndUnloadAsync();
-      console.log("STOPPED EVENT RECORDING");
+      console.log("STOPPED EVENT RECORDING at " + Date());
 
       const fileUri = recording.getURI();
-
+      const file = fs.readFileSync(fileSync);
+      const audioBytes = file.toString("base64");
+      console.log("bytes:");
+      console.log(audioBytes);
       // Upload file to AWS S3 Bucket
       const file = {
         uri: fileUri,
@@ -96,23 +118,22 @@ const Record = ({ userId, setSoundToPlay, enabled, setEnabled }) => {
 
       await RNS3.put(file, options).then((response) => {
         if (response.status !== 201)
-          throw new Error("Failed to upload image to S3");
-        setValues({
-          ...values,
-          eventRecordingUrl: response.body.postResponse.location,
-        });
+          throw new Error("Failed to upload recording to S3");
+        console.log("event's stopRecording is detectedStatus");
+        console.log(detectedStatus);
+        if (detectedStatus === "start") {
+          setValues({
+            ...values,
+            eventRecordingFileKey: response.body.postResponse.key,
+            eventRecordingUrl: response.body.postResponse.location,
+          });
+
+          console.log("handleDanger input:");
+          console.log(values);
+          handleDanger();
+        }
+        // }
       });
-
-      if (
-        values.userId &&
-        values.eventRecordingUrl &&
-        values.userId != "" &&
-        values.eventRecordingUrl != ""
-      ) {
-        addEventRecordingUrl();
-      }
-
-      setValues({ ...values, eventRecordingUrl: "" });
 
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
@@ -127,14 +148,45 @@ const Record = ({ userId, setSoundToPlay, enabled, setEnabled }) => {
     }
   }
 
+  useEffect(() => {
+    const interval = setInterval(
+      async () => {
+        if (detectedStatus === "start") {
+          if (start) {
+            await startRecording();
+          } else {
+            await stopRecording();
+          }
+          setStart(!start);
+        }
+      },
+      start ? 50 : 30000
+    );
+
+    if (detectedStatus === "stop") {
+      console.log("useeffect found detectedStatus is stop, without panic");
+      // if (recording) {
+      stopRecording();
+      // }
+      setStart(true);
+      setValues({ ...values, previousEventRecordingUrl: "" });
+    }
+
+    return () => clearInterval(interval);
+  }, [detectedStatus, start]);
+
   return (
     <View>
-      <Text>RECORDINGS</Text>
+      <Text style={styles.titleText}>Event Recordings</Text>
 
-      <Text>Start, stop, and view your recordings here.</Text>
+      <Text style={styles.baseText}>
+        Start, stop, and view your recordings here.
+      </Text>
 
       <Button
-        title={enabled.inProgress ? "Stop" : "Start"}
+        title={
+          enabled.inProgress || detectedStatus == "start" ? "Stop" : "Start"
+        }
         onPress={() => {
           if (enabled.inProgress) {
             stopRecording();
@@ -152,9 +204,26 @@ export const ADD_S3_RECORDING_URL = gql`
   }
 `;
 
-export const GET_EVENT_RECORDING_STATE = gql`
-  query getEventRecordingState($userId: String!) {
-    getEventRecordingState(userId: $userId)
+export const HANDLE_DANGER = gql`
+  mutation handleDanger(
+    $userId: String!
+    $eventRecordingFileKey: String!
+    $eventRecordingUrl: String!
+    $previousEventRecordingUrl: String!
+  ) {
+    handleDanger(
+      userId: $userId
+      eventRecordingFileKey: $eventRecordingFileKey
+      eventRecordingUrl: $eventRecordingUrl
+      previousEventRecordingUrl: $previousEventRecordingUrl
+    )
   }
 `;
-export default Record;
+
+export const GET_EVENT_RECORDING_STATE = gql`
+  query getEventRecordingTriggered($userId: String!) {
+    getEventRecordingTriggered(userId: $userId)
+  }
+`;
+
+export default EventRecording;
