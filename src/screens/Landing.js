@@ -4,14 +4,14 @@ import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
 import Login from "../components/Login";
 import { UserAuthContext } from "../context/userAuth";
 
-const Welcome = ({ navigation }) => {
+const Landing = ({ navigation }) => {
   const { context } = useContext(UserAuthContext);
 
   return (
     <View style={styles.container}>
-      <Text>Logo Here</Text>
+      {/* Logo Here */}
 
-      <Login navigation={navigation} />
+      <Login navigation={navigation} styles={styles} />
 
       <Button
         style={styles.button}
@@ -26,9 +26,10 @@ const styles = StyleSheet.create({
   container: {
     // flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
+    // alignItems: "center",
     justifyContent: "center",
     flexDirection: "column",
+    paddingHorizontal: 25,
   },
   button: {
     // flex: 1,
@@ -37,5 +38,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 50,
   },
+  baseText: {
+    paddingBottom: 20,
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 30,
+    paddingBottom: 10,
+  },
+  input: {
+    paddingVertical: 4,
+  },
 });
-export default Welcome;
+export default Landing;

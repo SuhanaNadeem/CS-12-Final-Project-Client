@@ -28,7 +28,7 @@ function userAuthReducer(state, action) {
   }
 }
 
-(async function () {
+(async function() {
   const token = await AsyncStorage.getItem("jwtToken");
 
   if (token) {
@@ -96,7 +96,7 @@ function UserAuthProvider(props) {
 
   async function logoutUser() {
     try {
-      await removeToken("jwtToken");
+      await AsyncStorage.removeItem("jwtToken");
     } catch (e) {
       console.log("Error: " + e);
     }

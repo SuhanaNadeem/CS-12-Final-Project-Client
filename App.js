@@ -9,11 +9,18 @@ import { InMemoryCache } from "@apollo/client/cache";
 import { ApolloProvider } from "@apollo/client";
 import { adminClient } from "./GraphqlApolloClients";
 
-import Home from "./src/screens/Home";
-import Welcome from "./src/screens/Welcome";
+import Record from "./src/screens/Record";
+import Landing from "./src/screens/Landing";
 import SignUp from "./src/screens/SignUp";
+import Account from "./src/screens/Account";
+
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Tabs from "./src/components/Tabs";
+import Logout from "./src/components/Logout";
 
 const Stack = createStackNavigator();
+const Tab = createMaterialBottomTabNavigator();
 
 const cache = new InMemoryCache();
 
@@ -34,23 +41,46 @@ export default function App() {
     <ApolloProvider client={adminClient}>
       <UserAuthProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Welcome">
+          {/* <Stack.Navigator initialRouteName="Landing">
             <Stack.Screen
-              name="Welcome"
-              component={Welcome}
-              options={{ title: "Welcome" }}
+              name="Landing"
+              component={Landing}
+              options={{ title: "Log In" }}
             />
-
-            <Stack.Screen
-              name="Home"
-              component={Home}
-              options={{ title: "Home" }}
-            />
-
             <Stack.Screen
               name="SignUp"
               component={SignUp}
-              options={{ title: "Sign up" }}
+              options={{ title: "Sign Up" }}
+            />
+            <Stack.Screen
+              name="Record"
+              component={Record}
+              options={{ title: "Record", headerLeft: null }}
+            />
+            <Stack.Screen
+              name="Account"
+              component={Account}
+              options={{ title: "Account" }}
+            />
+          </Stack.Navigator> */}
+          <Stack.Navigator initialRouteName="Landing">
+            <Stack.Screen
+              name="Landing"
+              component={Landing}
+              options={{ title: "Log In" }}
+            />
+            <Stack.Screen
+              name="SignUp"
+              component={SignUp}
+              options={{ title: "Sign Up" }}
+            />
+            <Stack.Screen
+              name="Home"
+              component={Tabs}
+              options={{
+                title: "Prove It",
+                headerLeft: () => <Logout />,
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>
