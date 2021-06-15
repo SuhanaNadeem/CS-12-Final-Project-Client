@@ -77,7 +77,10 @@ export default function App() {
             <Stack.Screen
               name="Home"
               component={Tabs}
-              options={{ title: "Prove It", headerLeft: () => <Logout /> }}
+              options={{
+                title: "Prove It",
+                headerLeft: () => <Logout />,
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>

@@ -1,12 +1,17 @@
 import { gql, useMutation } from "@apollo/client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, View, Text, StyleSheet } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { Audio } from "expo-av";
 import { RNS3 } from "react-native-aws3";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-
+import * as FileSystem from "expo-file-system";
+import * as Notifications from "expo-notifications";
+import {
+  registerForPushNotificationsAsync,
+  sendPushNotification,
+} from "../util/notifications";
 import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
 
@@ -17,12 +22,51 @@ const EventRecording = ({
   detectedStatus,
   setDetectedStatus,
 }) => {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        setNotification(notification);
+      }
+    );
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log(response);
+      }
+    );
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
   // const [values, setValues] = useState({ userId, eventRecordingUrl: "" });
   const [values, setValues] = useState({
     userId,
     eventRecordingFileKey: "",
-    previousEventRecordingUrl: "",
-    eventRecordingUrl: "",
+    recordingBytes: "",
   });
   const [start, setStart] = useState(true);
 
@@ -31,7 +75,6 @@ const EventRecording = ({
       console.log("handled danger");
       setValues({
         ...values,
-        previousEventRecordingUrl: values.eventRecordingUrl,
         eventRecordingUrl: "",
         eventRecordingFileKey: "",
       });
@@ -88,8 +131,9 @@ const EventRecording = ({
       // setEnabled({ ...enabled, inProgress: false });
 
       await recording.stopAndUnloadAsync();
-      console.log("STOPPED EVENT RECORDING at " + Date());
       setRecording(undefined);
+
+      console.log("STOPPED EVENT RECORDING at " + Date());
 
       const fileUri = recording.getURI();
 
@@ -109,21 +153,23 @@ const EventRecording = ({
         successActionStatus: 201,
       };
 
-      await RNS3.put(file, options).then((response) => {
+      await RNS3.put(file, options).then(async (response) => {
         if (response.status !== 201)
           throw new Error("Failed to upload recording to S3");
         console.log("event's stopRecording is detectedStatus");
         console.log(detectedStatus);
         if (detectedStatus === "start") {
-          setValues({
-            ...values,
-            eventRecordingFileKey: response.body.postResponse.key,
-            eventRecordingUrl: response.body.postResponse.location,
+          await FileSystem.readAsStringAsync(fileUri, {
+            encoding: FileSystem.EncodingType.Base64,
+          }).then((bytes) => {
+            setValues({
+              ...values,
+              // eventRecordingFileKey: response.body.postResponse.key,
+              recordingBytes: bytes,
+              eventRecordingUrl: response.body.postResponse.location,
+            });
+            handleDanger();
           });
-
-          console.log("handleDanger input:");
-          console.log(values);
-          handleDanger();
         }
         // }
       });
@@ -145,8 +191,10 @@ const EventRecording = ({
       async () => {
         if (detectedStatus === "start") {
           if (start) {
+            console.log("startRec");
             await startRecording();
           } else {
+            console.log("stopRec");
             await stopRecording();
           }
           setStart(!start);
@@ -161,7 +209,6 @@ const EventRecording = ({
       stopRecording();
       // }
       setStart(true);
-      setValues({ ...values, previousEventRecordingUrl: "" });
     }
 
     return () => clearInterval(interval);
@@ -177,43 +224,44 @@ const EventRecording = ({
 
       <Button
         title={detectedStatus == "start" ? "Stop" : "Start"}
-        onPress={() => {
+        onPress={async () => {
+          if (expoPushToken) {
+            await sendPushNotification({
+              expoPushToken,
+              data: { someData: "goeshere" },
+              title: "Danger Handling",
+              body:
+                detectedStatus === "start"
+                  ? "Event recording has started"
+                  : detectedStatus === "panic"
+                  ? "A text was sent to alert your contact of this immediate danger"
+                  : detectedStatus === "stop" &&
+                    "Event recording has been stopped",
+            });
+          }
           if (detectedStatus === "start") {
             setDetectedStatus("stop");
           } else if (detectedStatus === "stop") {
             setDetectedStatus("start");
           }
+          i;
         }}
       />
     </View>
   );
 };
-export const ADD_S3_RECORDING_URL = gql`
-  mutation addEventRecordingUrl($userId: String!, $eventRecordingUrl: String!) {
-    addEventRecordingUrl(userId: $userId, eventRecordingUrl: $eventRecordingUrl)
-  }
-`;
 
 export const HANDLE_DANGER = gql`
   mutation handleDanger(
     $userId: String!
-    $eventRecordingFileKey: String!
+    $recordingBytes: String!
     $eventRecordingUrl: String!
-    $previousEventRecordingUrl: String!
   ) {
     handleDanger(
       userId: $userId
-      eventRecordingFileKey: $eventRecordingFileKey
+      recordingBytes: $recordingBytes
       eventRecordingUrl: $eventRecordingUrl
-      previousEventRecordingUrl: $previousEventRecordingUrl
     )
   }
 `;
-
-export const GET_EVENT_RECORDING_STATE = gql`
-  query getEventRecordingTriggered($userId: String!) {
-    getEventRecordingTriggered(userId: $userId)
-  }
-`;
-
 export default EventRecording;

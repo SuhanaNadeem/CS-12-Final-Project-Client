@@ -28,7 +28,7 @@ function adminAuthReducer(state, action) {
   }
 }
 
-(async function () {
+(async function() {
   const token = await AsyncStorage.getItem("adminJwtToken");
 
   if (token) {
@@ -96,7 +96,7 @@ function AdminAuthProvider(props) {
 
   async function logoutAdmin() {
     try {
-      await removeToken("adminJwtToken");
+      await AsyncStorage.removeItem("adminJwtToken");
     } catch (e) {
       console.log("Error: " + e);
     }

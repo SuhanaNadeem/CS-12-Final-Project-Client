@@ -10,10 +10,17 @@ import {
 } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
 
-const Logout = ({ navigation, styles }) => {
+const Logout = ({ navigation }) => {
   const { logoutUser } = useContext(UserAuthContext);
   return (
-    <Button onPress={logoutUser} title="Log Out" style={{ marginLeft: 25 }} />
+    <Button
+      onPress={() => {
+        logoutUser();
+        navigation.navigate("Landing");
+      }}
+      title="Log Out"
+      style={styles.button}
+    />
   );
 };
 

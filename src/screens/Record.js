@@ -6,7 +6,7 @@ import Play from "../components/Play";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
 // TODO Optimize
-// TODO get and play recordings (group events and play together)
+// TODO get and play recordings (group events fix and play together)
 // TODO page where you can see flagged tokens and add
 // TODO call/record on panic
 // TODO maps to see friends, if enabled, if panic, etc

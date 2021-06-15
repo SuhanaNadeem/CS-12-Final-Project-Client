@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { UserAuthContext } from "../context/userAuth";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { Audio } from "expo-av";
 import { RNS3 } from "react-native-aws3";
 import {
@@ -12,8 +12,12 @@ import {
   TextInput,
 } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-import "react-native-get-random-values";
 import * as FileSystem from "expo-file-system";
+import * as Notifications from "expo-notifications";
+import {
+  registerForPushNotificationsAsync,
+  sendPushNotification,
+} from "../util/notifications";
 
 const InterimRecording = ({
   navigation,
@@ -22,6 +26,46 @@ const InterimRecording = ({
   detectedStatus,
   setDetectedStatus,
 }) => {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        setNotification(notification);
+      }
+    );
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log(response);
+      }
+    );
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
   const [values, setValues] = useState({
     userId: userId && userId,
     recordingBytes: "",
@@ -81,9 +125,9 @@ const InterimRecording = ({
     try {
       // console.log("entered stop in gcloud");
 
+      await recording.stopAndUnloadAsync();
       setRecording(undefined);
 
-      await recording.stopAndUnloadAsync();
       console.log("******************** STOP RECORDING: " + Date());
 
       const fileUri = recording.getURI();
@@ -91,6 +135,8 @@ const InterimRecording = ({
       await FileSystem.readAsStringAsync(fileUri, {
         encoding: FileSystem.EncodingType.Base64,
       }).then((bytes) => {
+        console.log("detected");
+        console.log(detectedStatus);
         if (detectedStatus === "stop") {
           setValues({
             ...values,
@@ -148,8 +194,10 @@ const InterimRecording = ({
           detectedStatus === "stop"
         ) {
           if (start) {
+            // console.log(1);
             await startRecording();
           } else {
+            // console.log(2);
             await stopRecording();
           }
           setStart(!start);
@@ -168,6 +216,10 @@ const InterimRecording = ({
     }
 
     return () => clearInterval(interval);
+    // TODO fix this: to configure permissions as of now, you need to uncomment the following line and
+    // comment everything else in this useEffect, grant permissions through the phone, and then change it back to this original
+    // commenting state
+    // startRecording();
   }, [enabled, start, detectedStatus]);
 
   return (
@@ -178,7 +230,7 @@ const InterimRecording = ({
         or misconduct is detected, an event recording is triggered and stored
         for future reference.
       </Text>
-      {enabled ? (
+      {/* {enabled ? (
         <Text style={styles.baseText}>
           Your audio is being recorded to detect danger.
         </Text>
@@ -186,7 +238,7 @@ const InterimRecording = ({
         <Text style={styles.baseText}>
           Allow interim recordings to detect danger.
         </Text>
-      )}
+      )} */}
 
       <Button
         disabled={detectedStatus === "start"}
@@ -199,11 +251,20 @@ const InterimRecording = ({
             ? "In Progress"
             : "Allow"
         }
-        onPress={() => {
+        onPress={async () => {
+          if (expoPushToken) {
+            await sendPushNotification({
+              expoPushToken,
+              data: { someData: "goeshere" },
+              title: "Danger Detection",
+              body: !enabled
+                ? "You've allowed audio recording to detect danger"
+                : "Audio recording to detect danger is disabled",
+            });
+          }
           setEnabled(!enabled);
         }}
       />
-
       <StatusBar style="light" />
     </View>
   );
