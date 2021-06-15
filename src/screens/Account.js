@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Text, View, TextInput, StyleSheet } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
+import FlaggedTokens from "../components/FlaggedTokens";
 import Keys from "../components/Keys";
 // import NavBar from "../components/NavBar";
 import { UserAuthContext } from "../context/userAuth";
