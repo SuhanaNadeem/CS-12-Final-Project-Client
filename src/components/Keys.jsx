@@ -5,9 +5,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 
-const Keys = ({ user, styles }) => {
+const Keys = ({ userId, styles }) => {
+  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
+    variables: { userId },
+    client: userClient,
+  });
+
   const [startKeyValues, setStartKeyValues] = useState({
-    userId: user && user.id,
+    userId: userId,
     startKey: "",
   });
   const [setStartKey, loadingSetStartKey] = useMutation(SET_START_KEY, {
@@ -18,6 +23,12 @@ const Keys = ({ user, styles }) => {
     onError(err) {
       console.log(err);
     },
+    refetchQueries: [
+      {
+        query: GET_USER_BY_ID,
+        variables: { userId: user && user.id },
+      },
+    ],
     variables: startKeyValues,
     client: userClient,
   });
@@ -29,12 +40,17 @@ const Keys = ({ user, styles }) => {
   const [setStopKey, loadingSetStopKey] = useMutation(SET_STOP_KEY, {
     update(_, { data: { setStopKey: stopKey } }) {
       console.log(stopKey);
-
       console.log("Stop key set successful");
     },
     onError(err) {
       console.log(err);
     },
+    refetchQueries: [
+      {
+        query: GET_USER_BY_ID,
+        variables: { userId: user && user.id },
+      },
+    ],
     variables: stopKeyValues,
     client: userClient,
   });
@@ -52,13 +68,20 @@ const Keys = ({ user, styles }) => {
     onError(err) {
       console.log(err);
     },
+    refetchQueries: [
+      {
+        query: GET_USER_BY_ID,
+        variables: { userId: user && user.id },
+      },
+    ],
     variables: panicKeyValues,
     client: userClient,
   });
 
-  return (
+  return user ?(
     <View>
       <Text style={styles.titleText}>Manage Keys</Text>
+
       <TextInput
         onChangeText={(text) =>
           setStartKeyValues({ ...startKeyValues, startKey: text })
@@ -102,7 +125,7 @@ const Keys = ({ user, styles }) => {
         title="Set panic key"
       />
     </View>
-  );
+  ):(<View><Text>Loading keys...</Text></View>);
 };
 
 export const SET_START_KEY = gql`
@@ -120,6 +143,18 @@ export const SET_STOP_KEY = gql`
 export const SET_PANIC_KEY = gql`
   mutation setPanicKey($userId: String!, $panicKey: String!) {
     setPanicKey(userId: $userId, panicKey: $panicKey)
+  }
+`;
+
+export const GET_USER_BY_ID = gql`
+  query getUserById($userId: String!) {
+    getUserById(userId: $userId) {
+      id
+      email
+      startKey
+      stopKey
+      panicKey
+    }
   }
 `;
 export default Keys;

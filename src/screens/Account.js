@@ -11,19 +11,10 @@ import { UserAuthContext } from "../context/userAuth";
 const Account = ({ route, navigation }) => {
   const { userId } = route.params;
 
-  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
-    variables: { userId },
-    client: userClient,
-  });
-
-  return user ? (
+  return (
     <View style={styles.container}>
-      <Keys styles={styles} user={user} />
-      <FlaggedTokens styles={styles} user={user} />
-    </View>
-  ) : (
-    <View>
-      <Text>Loading...</Text>
+      <Keys styles={styles} userId={userId} />
+      <FlaggedTokens styles={styles} userId={userId} />
     </View>
   );
 };
@@ -55,15 +46,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export const GET_USER_BY_ID = gql`
-  query getUserById($userId: String!) {
-    getUserById(userId: $userId) {
-      id
-      email
-      startKey
-      stopKey
-      panicKey
-    }
-  }
-`;
 export default Account;

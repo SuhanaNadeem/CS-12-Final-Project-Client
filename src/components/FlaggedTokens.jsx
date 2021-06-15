@@ -6,7 +6,12 @@ import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { useRoute } from "@react-navigation/core";
 
-const FlaggedTokens = ({ user, styles }) => {
+const FlaggedTokens = ({ userId, styles }) => {
+  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
+    variables: { userId },
+    client: userClient,
+  });
+
   {
     /* TODO Use useQuery to getFlaggedTokens, storing them as flaggedTokens  */
   }
@@ -16,7 +21,7 @@ const FlaggedTokens = ({ user, styles }) => {
   //   client: userClient,
   // });
 
-  return (
+  return user ? (
     <View>
       <Text style={styles.titleText}>Manage Flagged Tokens</Text>
       <Text style={styles.baseText}>
@@ -36,6 +41,10 @@ const FlaggedTokens = ({ user, styles }) => {
       {/* TODO Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
       {/* TODO Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
     </View>
+  ) : (
+    <View>
+      <Text>Loading...</Text>
+    </View>
   );
 };
 
@@ -52,4 +61,15 @@ const FlaggedTokens = ({ user, styles }) => {
 //   }
 // `;
 
+export const GET_USER_BY_ID = gql`
+  query getUserById($userId: String!) {
+    getUserById(userId: $userId) {
+      id
+      email
+      startKey
+      stopKey
+      panicKey
+    }
+  }
+`;
 export default FlaggedTokens;
