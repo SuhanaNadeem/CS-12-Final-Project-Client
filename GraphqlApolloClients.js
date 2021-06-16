@@ -6,11 +6,10 @@ import { createUploadLink } from "apollo-upload-client";
 import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const backendURI = "http://192.168.2.84:5000/";
-const wsURI = "ws://192.168.2.84:5000/subscriptions";
-
-// const backendURI = "http://127.0.0.1:5000/";
-// const wsURI = "ws://127.0.0.1:5000/subscriptions";
+const backendURI = "http://192.168.0.27:5000/";
+const wsURI = "ws://192.168.0.27:5000/subscriptions";
+// TODO: MP - http://192.168.2.84:5000/
+// TODO: SN - http://192.168.0.27:5000/
 
 // const backendURI =
 //   process.env.NODE_ENV === "production"
