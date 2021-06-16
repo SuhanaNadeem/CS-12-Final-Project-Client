@@ -12,7 +12,7 @@ const Keys = ({ userId, styles }) => {
   });
 
   const [startKeyValues, setStartKeyValues] = useState({
-    userId: userId,
+    userId,
     startKey: "",
   });
   const [setStartKey, loadingSetStartKey] = useMutation(SET_START_KEY, {
@@ -26,7 +26,7 @@ const Keys = ({ userId, styles }) => {
     refetchQueries: [
       {
         query: GET_USER_BY_ID,
-        variables: { userId: user && user.id },
+        variables: { userId },
       },
     ],
     variables: startKeyValues,
@@ -34,7 +34,7 @@ const Keys = ({ userId, styles }) => {
   });
 
   const [stopKeyValues, setStopKeyValues] = useState({
-    userId: user.id,
+    userId,
     stopKey: "",
   });
   const [setStopKey, loadingSetStopKey] = useMutation(SET_STOP_KEY, {
@@ -48,7 +48,7 @@ const Keys = ({ userId, styles }) => {
     refetchQueries: [
       {
         query: GET_USER_BY_ID,
-        variables: { userId: user && user.id },
+        variables: { userId },
       },
     ],
     variables: stopKeyValues,
@@ -56,7 +56,7 @@ const Keys = ({ userId, styles }) => {
   });
 
   const [panicKeyValues, setPanicKeyValues] = useState({
-    userId: user.id,
+    userId,
     panicKey: "",
   });
   const [setPanicKey, loadingSetPanicKey] = useMutation(SET_PANIC_KEY, {
@@ -71,14 +71,14 @@ const Keys = ({ userId, styles }) => {
     refetchQueries: [
       {
         query: GET_USER_BY_ID,
-        variables: { userId: user && user.id },
+        variables: { userId },
       },
     ],
     variables: panicKeyValues,
     client: userClient,
   });
 
-  return user ?(
+  return user ? (
     <View>
       <Text style={styles.titleText}>Manage Keys</Text>
 
@@ -125,7 +125,11 @@ const Keys = ({ userId, styles }) => {
         title="Set panic key"
       />
     </View>
-  ):(<View><Text>Loading keys...</Text></View>);
+  ) : (
+    <View>
+      <Text>Loading keys...</Text>
+    </View>
+  );
 };
 
 export const SET_START_KEY = gql`
