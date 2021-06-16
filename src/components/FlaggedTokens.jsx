@@ -12,8 +12,6 @@ const FlaggedTokens = ({ userId, styles }) => {
     variables: { userId },
     client: userClient,
   });
-    /* TODO Use useQuery to getPoliceTokens and getThiefTokens, storing them as flaggedTokens to be displayed on account page (point 2 on fast and furious doc) */
-
   const { data: { getPoliceTokens: policeTokens } = {} } =
       useQuery(GET_POLICE_TOKENS, {
       variables: {},
@@ -48,10 +46,10 @@ const FlaggedTokens = ({ userId, styles }) => {
           </Text>
         ))}
 
-      {/* TODO Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
+      {/* Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Police tokens:</Text>
       {policeTokens && policeTokens.map((policeToken, index) => <Token style={styles} token={policeToken} type={"Police"}/>)}
-      {/* TODO Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
+      {/* Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Thief tokens:</Text>
       {thiefTokens && thiefTokens.map((thiefToken, index) => <Token style={styles} token={thiefToken} type={"Thief"}/>)}
     </View>
@@ -62,7 +60,7 @@ const FlaggedTokens = ({ userId, styles }) => {
   );
 };
 
-// TODO follow this for getPoliceTokens and getThiefTokens, and specify token and name after line 44
+// follow this for getPoliceTokens and getThiefTokens, and specify token and name after line 44
 export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
