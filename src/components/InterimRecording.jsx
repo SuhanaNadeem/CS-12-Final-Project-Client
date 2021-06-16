@@ -80,10 +80,10 @@ const InterimRecording = ({
       console.log("Submitted interim recording");
       setValues({ ...values, recordingBytes: "" });
       setDetectedStatus(detectedStatusData);
-      console.log("detectDanger returned:");
-      console.log(detectedStatusData);
-      console.log("detectedStatus value:");
-      console.log(detectedStatus);
+      // console.log("detectDanger returned:");
+      // console.log(detectedStatusData);
+      // console.log("detectedStatus value:");
+      // console.log(detectedStatus);
     },
     onError(err) {
       console.log("Unsuccessful");
@@ -186,6 +186,7 @@ const InterimRecording = ({
   }
 
   useEffect(() => {
+    console.log("ennterin");
     const interval = setInterval(
       async () => {
         if (
@@ -216,7 +217,7 @@ const InterimRecording = ({
     }
 
     return () => clearInterval(interval);
-    // TODO fix this: to configure permissions as of now, you need to uncomment the following line and
+    // TODO fix this: to configure permissions as of now, you might need to uncomment the following line and
     // comment everything else in this useEffect, grant permissions through the phone, and then change it back to this original
     // commenting state
     // startRecording();
@@ -258,8 +259,8 @@ const InterimRecording = ({
               data: { someData: "goeshere" },
               title: "Danger Detection",
               body: !enabled
-                ? "You've allowed audio recording to detect danger"
-                : "Audio recording to detect danger is disabled",
+                ? "Your audio is currently being recorded to detect danger"
+                : "Recording audio to detect danger has been disabled",
             });
           }
           setEnabled(!enabled);

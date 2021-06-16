@@ -8,6 +8,7 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import * as FileSystem from "expo-file-system";
 import * as Notifications from "expo-notifications";
+import * as SMS from "expo-sms";
 import {
   registerForPushNotificationsAsync,
   sendPushNotification,
@@ -29,6 +30,14 @@ const EventRecording = ({
       shouldSetBadge: false,
     }),
   });
+
+  /* 1. Wait for the rest of 30 sec to be finished
+ 2. Send it to AWS
+ 3. Convert it to bytes
+ 4. Pass 2 and 3 into the backend
+ 5. Run transcription (takes time)
+ 6. Transcription matching
+ 7. Return "stop" if applicable */
 
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
@@ -69,7 +78,7 @@ const EventRecording = ({
     recordingBytes: "",
   });
   const [start, setStart] = useState(true);
-
+  const [latestUrl, setLatestUrl] = useState();
   const [handleDanger, loadingHandleDanger] = useMutation(HANDLE_DANGER, {
     update(_, { data: { handleDanger: detectedStatusData } }) {
       console.log("handled danger");
@@ -147,6 +156,8 @@ const EventRecording = ({
         type: "audio/wav",
       };
 
+      setLatestUrl(fileUri);
+
       const options = {
         keyPrefix: "uploads/",
         bucket: S3_CS_BUCKET,
@@ -159,12 +170,13 @@ const EventRecording = ({
       await RNS3.put(file, options).then(async (response) => {
         if (response.status !== 201)
           throw new Error("Failed to upload recording to S3");
-        console.log("event's stopRecording is detectedStatus");
-        console.log(detectedStatus);
+        console.log("event recording:");
+        console.log(response.body.postResponse.location);
         if (detectedStatus === "start") {
           await FileSystem.readAsStringAsync(fileUri, {
             encoding: FileSystem.EncodingType.Base64,
           }).then((bytes) => {
+            console.log("latestUrl: " + latestUrl);
             setValues({
               ...values,
               // eventRecordingFileKey: response.body.postResponse.key,
@@ -187,6 +199,37 @@ const EventRecording = ({
     } catch (err) {
       // console.log("err in record.jsx stop");
     }
+  }
+  const isAvailable = SMS.isAvailableAsync();
+
+  if (isAvailable) {
+    console.log("availablee");
+  } else {
+    console.log("not availablee");
+  }
+  async function sendMessage() {
+    const isAvailable = await SMS.isAvailableAsync();
+    console.log(
+      "`````````````````````````````````entered sendMessage```````````````````````````````"
+    );
+    if (isAvailable) {
+      console.log("available");
+    } else {
+      console.log("not available");
+    }
+
+    const { result } = await SMS.sendSMSAsync(
+      ["6475157981"],
+      "TEST - This is an automated message: I might be in danger from a police officer or thief.",
+      latestUrl && {
+        attachments: {
+          uri: latestUrl,
+          mimeType: "audio/wav",
+          filename: "myfile.wav",
+        },
+      }
+    );
+    console.log(result);
   }
 
   useEffect(() => {
@@ -212,6 +255,13 @@ const EventRecording = ({
       stopRecording();
       // }
       setStart(true);
+    } else if (detectedStatus === "panic") {
+      // TODO automate clicking the send button
+      console.log("useeffect found detectedStatus is panic");
+      stopRecording();
+      setStart(true);
+      sendMessage();
+      setDetectedStatus("stop");
     }
 
     return () => clearInterval(interval);
@@ -234,12 +284,9 @@ const EventRecording = ({
               data: { someData: "goeshere" },
               title: "Danger Handling",
               body:
-                detectedStatus === "start"
-                  ? "Event recording has started"
-                  : detectedStatus === "panic"
-                  ? "A text was sent to alert your contact of this immediate danger"
-                  : detectedStatus === "stop" &&
-                    "Event recording has been stopped",
+                detectedStatus === "start" // need to print the opposite because setting happens after
+                  ? "Event recording has been stopped and will be handled"
+                  : detectedStatus === "stop" && "Event recording has started",
             });
           }
           if (detectedStatus === "start") {
