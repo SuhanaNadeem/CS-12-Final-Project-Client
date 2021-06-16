@@ -91,6 +91,9 @@ const EventRecording = ({
 
   const [recording, setRecording] = useState();
 
+  // TODO: RUNS IT TWICE THE FIRST TIME
+  // TODO: LONG DELAY BETWEEN STOP/PANIC and actually doing it
+
   async function startRecording() {
     try {
       console.log("event's startRecording is detectedStatus");

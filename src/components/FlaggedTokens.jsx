@@ -13,7 +13,7 @@ const FlaggedTokens = ({ userId, styles }) => {
   });
 
   {
-    /* TODO Use useQuery to getFlaggedTokens, storing them as flaggedTokens  */
+    /* TODO Use useQuery to getPoliceTokens and getThiefTokens  */
   }
 
   // const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
