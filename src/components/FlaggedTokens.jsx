@@ -12,8 +12,6 @@ const FlaggedTokens = ({ userId, styles }) => {
     variables: { userId },
     client: userClient,
   });
-  /* TODO Use useQuery to getPoliceTokens and getThiefTokens, storing them as flaggedTokens to be displayed on account page (point 2 on fast and furious doc) */
-
   const { data: { getPoliceTokens: policeTokens } = {} } = useQuery(
     GET_POLICE_TOKENS,
     {
@@ -27,11 +25,18 @@ const FlaggedTokens = ({ userId, styles }) => {
       client: userClient,
     }
   );
+  // TODO: const [open, setOpen] = useState(false)
+  // TODO: create new arrays limitedThiefTokens and same for police with the first 10 of each
 
-  // const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
-  //   variables: { user&&user.id },
-  //   client: userClient,
-  // });
+  // if(thiefTokens){
+  // set limitedThiefTokens here...
+  // }
+
+  // TODO useEffect to change tokens
+  // useEffect(() => {
+  // set limitedThiefTokens to the entire list
+  // }, [open])
+
   console.log(user);
   return policeTokens && thiefTokens && user ? (
     <View>
@@ -52,7 +57,7 @@ const FlaggedTokens = ({ userId, styles }) => {
 
       {/*  Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Police tokens:</Text>
-      {policeTokens &&
+      {policeTokens && // Replace this with limitedPoliceTokens
         policeTokens.map((policeToken, index) => (
           <Token
             key={index}
@@ -67,6 +72,8 @@ const FlaggedTokens = ({ userId, styles }) => {
         thiefTokens.map((thiefToken, index) => (
           <Token key={index} style={styles} token={thiefToken} type={"Thief"} />
         ))}
+
+      {/* TODO with onPress={setOpen(!open)} (see ex) - <Button> </Button> */}
     </View>
   ) : (
     <View>
