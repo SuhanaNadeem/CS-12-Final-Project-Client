@@ -5,23 +5,33 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { useRoute } from "@react-navigation/core";
+import Token from "./Token"
 
 const FlaggedTokens = ({ userId, styles }) => {
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
     variables: { userId },
     client: userClient,
   });
+    /* TODO Use useQuery to getPoliceTokens and getThiefTokens, storing them as flaggedTokens to be displayed on account page (point 2 on fast and furious doc) */
 
-  {
-    /* TODO Use useQuery to getPoliceTokens and getThiefTokens  */
-  }
+  const { data: { getPoliceTokens: policeTokens } = {} } =
+      useQuery(GET_POLICE_TOKENS, {
+      variables: {},
+      client: userClient,
+  });
+
+  const { data: { getThiefTokens: thiefTokens } = {} } =
+      useQuery(GET_THIEF_TOKENS, {
+      variables: {},
+      client: userClient,
+  });
 
   // const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
   //   variables: { user&&user.id },
   //   client: userClient,
   // });
 
-  return user ? (
+  return policeTokens && thiefTokens && user ? (
     <View>
       <Text style={styles.titleText}>Manage Flagged Tokens</Text>
       <Text style={styles.baseText}>
@@ -39,7 +49,11 @@ const FlaggedTokens = ({ userId, styles }) => {
         ))}
 
       {/* TODO Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
+      <Text style={styles.subTitleText}>Police tokens:</Text>
+      {policeTokens && policeTokens.map((policeToken, index) => <Token style={styles} token={policeToken} type={"Police"}/>)}
       {/* TODO Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
+      <Text style={styles.subTitleText}>Thief tokens:</Text>
+      {thiefTokens && thiefTokens.map((thiefToken, index) => <Token style={styles} token={thiefToken} type={"Thief"}/>)}
     </View>
   ) : (
     <View>
@@ -49,18 +63,6 @@ const FlaggedTokens = ({ userId, styles }) => {
 };
 
 // TODO follow this for getPoliceTokens and getThiefTokens, and specify token and name after line 44
-// export const GET_USER_BY_ID = gql`
-//   query getUserById($userId: String!) {
-//     getUserById(userId: $userId) {
-//       id
-//       email
-//       startKey
-//       stopKey
-//       panicKey
-//     }
-//   }
-// `;
-
 export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
@@ -72,4 +74,17 @@ export const GET_USER_BY_ID = gql`
     }
   }
 `;
+
+export const GET_POLICE_TOKENS = gql`
+  query getPoliceTokens {
+    getPoliceTokens
+  }
+`;
+
+export const GET_THIEF_TOKENS = gql`
+  query getThiefTokens {
+    getThiefTokens
+  }
+`;
+
 export default FlaggedTokens;
