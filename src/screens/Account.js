@@ -44,6 +44,16 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 10,
   },
+  subTitleText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  policeText: {
+    color: "blue"
+  },
+  thiefText: {
+    color: "red"
+  }
 });
 
 export default Account;
