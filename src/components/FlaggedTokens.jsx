@@ -17,7 +17,6 @@ const FlaggedTokens = ({ userId, styles }) => {
   const { data: { getPoliceTokens: policeTokens } = {} } = useQuery(
     GET_POLICE_TOKENS,
     {
-      variables: {},
       client: userClient,
     }
   );
@@ -25,7 +24,6 @@ const FlaggedTokens = ({ userId, styles }) => {
   const { data: { getThiefTokens: thiefTokens } = {} } = useQuery(
     GET_THIEF_TOKENS,
     {
-      variables: {},
       client: userClient,
     }
   );
@@ -34,7 +32,7 @@ const FlaggedTokens = ({ userId, styles }) => {
   //   variables: { user&&user.id },
   //   client: userClient,
   // });
-
+  console.log(user);
   return policeTokens && thiefTokens && user ? (
     <View>
       <Text style={styles.titleText}>Manage Flagged Tokens</Text>
@@ -52,7 +50,7 @@ const FlaggedTokens = ({ userId, styles }) => {
           </Text>
         ))}
 
-      {/* TODO Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
+      {/*  Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Police tokens:</Text>
       {policeTokens &&
         policeTokens.map((policeToken, index) => (
@@ -63,7 +61,7 @@ const FlaggedTokens = ({ userId, styles }) => {
             type={"Police"}
           />
         ))}
-      {/* TODO Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
+      {/*  Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Thief tokens:</Text>
       {thiefTokens &&
         thiefTokens.map((thiefToken, index) => (
@@ -77,7 +75,6 @@ const FlaggedTokens = ({ userId, styles }) => {
   );
 };
 
-// TODO follow this for getPoliceTokens and getThiefTokens, and specify token and name after line 44
 export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
