@@ -5,26 +5,30 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { useRoute } from "@react-navigation/core";
-import Token from "./Token"
+import Token from "./Token";
 
 const FlaggedTokens = ({ userId, styles }) => {
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
     variables: { userId },
     client: userClient,
   });
-    /* TODO Use useQuery to getPoliceTokens and getThiefTokens, storing them as flaggedTokens to be displayed on account page (point 2 on fast and furious doc) */
+  /* TODO Use useQuery to getPoliceTokens and getThiefTokens, storing them as flaggedTokens to be displayed on account page (point 2 on fast and furious doc) */
 
-  const { data: { getPoliceTokens: policeTokens } = {} } =
-      useQuery(GET_POLICE_TOKENS, {
+  const { data: { getPoliceTokens: policeTokens } = {} } = useQuery(
+    GET_POLICE_TOKENS,
+    {
       variables: {},
       client: userClient,
-  });
+    }
+  );
 
-  const { data: { getThiefTokens: thiefTokens } = {} } =
-      useQuery(GET_THIEF_TOKENS, {
+  const { data: { getThiefTokens: thiefTokens } = {} } = useQuery(
+    GET_THIEF_TOKENS,
+    {
       variables: {},
       client: userClient,
-  });
+    }
+  );
 
   // const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
   //   variables: { user&&user.id },
@@ -50,10 +54,21 @@ const FlaggedTokens = ({ userId, styles }) => {
 
       {/* TODO Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Police tokens:</Text>
-      {policeTokens && policeTokens.map((policeToken, index) => <Token style={styles} token={policeToken} type={"Police"}/>)}
+      {policeTokens &&
+        policeTokens.map((policeToken, index) => (
+          <Token
+            key={index}
+            style={styles}
+            token={policeToken}
+            type={"Police"}
+          />
+        ))}
       {/* TODO Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Thief tokens:</Text>
-      {thiefTokens && thiefTokens.map((thiefToken, index) => <Token style={styles} token={thiefToken} type={"Thief"}/>)}
+      {thiefTokens &&
+        thiefTokens.map((thiefToken, index) => (
+          <Token key={index} style={styles} token={thiefToken} type={"Thief"} />
+        ))}
     </View>
   ) : (
     <View>
