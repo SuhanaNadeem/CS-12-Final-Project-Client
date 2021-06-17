@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Text, View, TextInput, StyleSheet } from "react-native";
+import { Button, Text, ScrollView, TextInput, StyleSheet } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import FlaggedTokens from "../components/FlaggedTokens";
 import Keys from "../components/Keys";
@@ -12,10 +12,10 @@ const Account = ({ route, navigation }) => {
   const { userId } = route.params;
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Keys styles={styles} userId={userId} />
       <FlaggedTokens styles={styles} userId={userId} />
-    </View>
+    </ScrollView>
   );
 };
 

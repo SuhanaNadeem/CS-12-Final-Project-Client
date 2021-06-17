@@ -6,6 +6,7 @@ import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { useRoute } from "@react-navigation/core";
 import Token from "./Token";
+import { ScrollView } from "react-native";
 
 const FlaggedTokens = ({ userId, styles }) => {
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
@@ -15,6 +16,7 @@ const FlaggedTokens = ({ userId, styles }) => {
   const { data: { getPoliceTokens: policeTokens } = {} } = useQuery(
     GET_POLICE_TOKENS,
     {
+      variables: {},
       client: userClient,
     }
   );
@@ -22,23 +24,63 @@ const FlaggedTokens = ({ userId, styles }) => {
   const { data: { getThiefTokens: thiefTokens } = {} } = useQuery(
     GET_THIEF_TOKENS,
     {
+      variables: {},
       client: userClient,
     }
   );
   // TODO: const [open, setOpen] = useState(false)
   // TODO: create new arrays limitedThiefTokens and same for police with the first 10 of each
 
+  const [limitedPoliceTokens, setLimitedPoliceTokens] = useState([]);
+  const [limitedThiefTokens, setLimitedThiefTokens] = useState([]);
+  useEffect(() => {
+    //set limitedThiefTokens to the entire list
+    if (policeTokens) {
+      setLimitedPoliceTokens(policeTokens.slice(0, 5));
+    }
+    if (thiefTokens) {
+      setLimitedThiefTokens(thiefTokens.slice(0, 5));
+    }
+  }, [thiefTokens, policeTokens]);
+
+  const [pOpen, setPOpen] = useState(false);
+  const [tOpen, setTOpen] = useState(false);
+
   // if(thiefTokens){
   // set limitedThiefTokens here...
   // }
 
-  // TODO useEffect to change tokens
-  // useEffect(() => {
-  // set limitedThiefTokens to the entire list
-  // }, [open])
+  // if (policeTokens) {
+  //   limitedPoliceTokens = policeTokens.slice(0, 5);
+  // }
 
-  console.log(user);
-  return policeTokens && thiefTokens && user ? (
+  // if (thiefTokens) {
+  //   limitedThiefTokens = thiefTokens.slice(0, 5);
+  // }
+
+  // TODO useEffect to change tokens
+  useEffect(() => {
+    //set limitedThiefTokens to the entire list
+    if (thiefTokens) {
+      if (tOpen) {
+        setLimitedThiefTokens(thiefTokens);
+      } else {
+        setLimitedThiefTokens(thiefTokens);
+      }
+    }
+  }, [tOpen]);
+
+  useEffect(() => {
+    //set limitedPoliceTokens to the entire list
+    if (pOpen && policeTokens) {
+      setLimitedPoliceTokens(policeTokens);
+    }
+  }, [pOpen]);
+
+  // Following log gets called many times, indicating an infinite loop
+  //console.log(user);
+
+  return limitedPoliceTokens && limitedThiefTokens && user ? (
     <View>
       <Text style={styles.titleText}>Manage Flagged Tokens</Text>
       <Text style={styles.baseText}>
@@ -55,10 +97,10 @@ const FlaggedTokens = ({ userId, styles }) => {
           </Text>
         ))}
 
-      {/*  Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
+      {/* Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Police tokens:</Text>
-      {policeTokens && // Replace this with limitedPoliceTokens
-        policeTokens.map((policeToken, index) => (
+      {limitedPoliceTokens && // Replace this with limitedPoliceTokens
+        limitedPoliceTokens.map((policeToken, index) => (
           <Token
             key={index}
             style={styles}
@@ -66,13 +108,28 @@ const FlaggedTokens = ({ userId, styles }) => {
             type={"Police"}
           />
         ))}
+      {policeTokens && limitedPoliceTokens.length < policeTokens.length &&
+      <Button
+        onPress={() => {
+          setPOpen(!pOpen);
+        }}
+        title="View more"
+      ></Button>
+      }
       {/*  Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Thief tokens:</Text>
-      {thiefTokens &&
-        thiefTokens.map((thiefToken, index) => (
+      {limitedThiefTokens &&
+        limitedThiefTokens.map((thiefToken, index) => (
           <Token key={index} style={styles} token={thiefToken} type={"Thief"} />
         ))}
-
+      {thiefTokens && limitedThiefTokens.length < thiefTokens.length &&
+      <Button
+        onPress={() => {
+          setTOpen(!tOpen);
+        }}
+        title="View more"
+      ></Button>
+      }
       {/* TODO with onPress={setOpen(!open)} (see ex) - <Button> </Button> */}
     </View>
   ) : (
@@ -82,6 +139,7 @@ const FlaggedTokens = ({ userId, styles }) => {
   );
 };
 
+// follow this for getPoliceTokens and getThiefTokens, and specify token and name after line 44
 export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {

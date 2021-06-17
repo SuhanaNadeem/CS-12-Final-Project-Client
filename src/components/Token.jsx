@@ -13,9 +13,6 @@ const Token = ({ styles, token, type }) => {
     <View>
       {/* <Text style={styles.titleText}>Temporary Text</Text> */}
       {/* <Text>Temporary Text</Text> */}
-      {/* TODO Use dot notation to access properties of token like so: { token.token } in 
-      order to display each flagged token here, in a Text component. Change the colour or 
-      something based on type */}
       <Text style={type == "Police" ? {color: "blue"} : {color: "red"}}>
       {`\u2022 ${token}`}
       </Text>
