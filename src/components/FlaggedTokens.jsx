@@ -22,12 +22,49 @@ const FlaggedTokens = ({ userId, styles }) => {
       useQuery(GET_THIEF_TOKENS, {
       variables: {},
       client: userClient,
-  });
+    }
+  );
+  // TODO: const [open, setOpen] = useState(false)
+  // TODO: create new arrays limitedThiefTokens and same for police with the first 10 of each
 
-  // const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
-  //   variables: { user&&user.id },
-  //   client: userClient,
-  // });
+
+  // const [pOpen, setPOpen] = useState(false);
+  // const [tOpen, setTOpen] = useState(false);
+
+  // var limitedPoliceTokens = [];
+  // var limitedThiefTokens = [];
+
+  // // if(thiefTokens){
+  // // set limitedThiefTokens here...
+  // // }
+
+  // if (policeTokens) {
+  //   limitedPoliceTokens = policeTokens.slice(0, 5);
+  // }
+
+  // if (thiefTokens) {
+  //   limitedThiefTokens = thiefTokens.slice(0, 5);
+  // }
+
+  // // TODO useEffect to change tokens
+  // useEffect(() => {
+  //   //set limitedThiefTokens to the entire list
+  //   if (thiefTokens && tOpen) {
+  //     limitedThiefTokens = thiefTokens.slice();
+  //   }
+  // }, [tOpen]);
+
+  // useEffect(() => {
+  //   //set limitedPoliceTokens to the entire list
+  //   if (policeTokens && pOpen) {
+  //     limitedPoliceTokens = policeTokens.slice();
+  //   }
+  // }, [pOpen]);
+
+
+
+  // Following log gets called many times, indicating an infinite loop
+  //console.log(user);
 
   return policeTokens && thiefTokens && user ? (
     <View>
@@ -48,10 +85,24 @@ const FlaggedTokens = ({ userId, styles }) => {
 
       {/* Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Police tokens:</Text>
-      {policeTokens && policeTokens.map((policeToken, index) => <Token style={styles} token={policeToken} type={"Police"}/>)}
-      {/* Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
+      {policeTokens && // Replace this with limitedPoliceTokens
+        policeTokens.map((policeToken, index) => (
+          <Token
+            key={index}
+            style={styles}
+            token={policeToken}
+            type={"Police"}
+          />
+        ))}
+        {/* <Button onPress={setPOpen(!pOpen)} title="View more"></Button> */}
+      {/*  Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
       <Text style={styles.subTitleText}>Thief tokens:</Text>
-      {thiefTokens && thiefTokens.map((thiefToken, index) => <Token style={styles} token={thiefToken} type={"Thief"}/>)}
+      {thiefTokens &&
+        thiefTokens.map((thiefToken, index) => (
+          <Token key={index} style={styles} token={thiefToken} type={"Thief"} />
+        ))}
+      {/* <Button onPress={setTOpen(!tOpen)} title="View more"></Button> */}
+      {/* TODO with onPress={setOpen(!open)} (see ex) - <Button> </Button> */}
     </View>
   ) : (
     <View>
