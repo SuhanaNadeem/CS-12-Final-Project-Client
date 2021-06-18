@@ -294,7 +294,7 @@ const EventRecording = ({
           } else if (detectedStatus === "stop") {
             setDetectedStatus("start");
           }
-          i;
+          //i;
         }}
       />
     </View>

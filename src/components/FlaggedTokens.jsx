@@ -28,18 +28,16 @@ const FlaggedTokens = ({ userId, styles }) => {
       client: userClient,
     }
   );
-  // TODO: const [open, setOpen] = useState(false)
-  // TODO: create new arrays limitedThiefTokens and same for police with the first 10 of each
 
   const [limitedPoliceTokens, setLimitedPoliceTokens] = useState([]);
   const [limitedThiefTokens, setLimitedThiefTokens] = useState([]);
   useEffect(() => {
     //set limitedThiefTokens to the entire list
     if (policeTokens) {
-      setLimitedPoliceTokens(policeTokens.slice(0, 5));
+      setLimitedPoliceTokens(policeTokens.slice(0, 10));
     }
     if (thiefTokens) {
-      setLimitedThiefTokens(thiefTokens.slice(0, 5));
+      setLimitedThiefTokens(thiefTokens.slice(0, 10));
     }
   }, [thiefTokens, policeTokens]);
 
@@ -58,7 +56,6 @@ const FlaggedTokens = ({ userId, styles }) => {
   //   limitedThiefTokens = thiefTokens.slice(0, 5);
   // }
 
-  // TODO useEffect to change tokens
   useEffect(() => {
     //set limitedThiefTokens to the entire list
     if (thiefTokens) {
@@ -130,7 +127,6 @@ const FlaggedTokens = ({ userId, styles }) => {
         title="View more"
       ></Button>
       }
-      {/* TODO with onPress={setOpen(!open)} (see ex) - <Button> </Button> */}
     </View>
   ) : (
     <View>
