@@ -1,7 +1,20 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Text, View, TextInput, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
+import {
+  Button,
+  Text,
+  View,
+  TextInput,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
+import Requesters from "../components/Requesters";
+import Search from "../components/Search";
+import AddedFriends from "../components/AddedFriends";
+import Map from "../components/Map";
+
 // import NavBar from "../components/NavBar";
 import { UserAuthContext } from "../context/userAuth";
 
@@ -15,10 +28,15 @@ const Friends = ({ route, navigation }) => {
   });
 
   return user ? (
-    <View style={styles.container}>
-      <Text style={styles.titleText}>Friends</Text>
-      <Text style={styles.baseText}>Add and monitor your friends here.</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <Map styles={styles} user={user} />
+
+      <Requesters styles={styles} user={user} />
+
+      <Search styles={styles} user={user} />
+
+      <AddedFriends styles={styles} user={user} />
+    </ScrollView>
   ) : (
     <View>
       <Text>Loading...</Text>
@@ -31,7 +49,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     backgroundColor: "#fff",
     // alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
     flexDirection: "column",
     paddingHorizontal: 25,
   },
@@ -41,6 +59,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 50,
+    color: "white",
+  },
+  iconAndText: {
+    alignItems: "center",
+    paddingVertical: 16,
+    marginVertical: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    borderRadius: 32,
+    shadowRadius: 32,
+    color: "white",
+    backgroundColor: "#2f4f4f",
+  },
+  map: {
+    width: Dimensions.get("window").height / 2.5,
+    height: Dimensions.get("window").height / 2,
   },
   baseText: {
     paddingBottom: 20,
@@ -61,7 +95,10 @@ export const GET_USER_BY_ID = gql`
       startKey
       stopKey
       panicKey
+      friendIds
+      requesterIds
     }
   }
 `;
+
 export default Friends;

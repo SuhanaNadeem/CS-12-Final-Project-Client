@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState, useEffect, useRef } from "react";
 import { Button, View, Text, StyleSheet } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
@@ -15,6 +15,8 @@ import {
 } from "../util/notifications";
 import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
+import * as Location from "expo-location";
+import { TWILIO_VERIFIED_PHONE_NUMBER } from "@env";
 
 const EventRecording = ({
   userId,
@@ -23,6 +25,51 @@ const EventRecording = ({
   detectedStatus,
   setDetectedStatus,
 }) => {
+  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
+    variables: { userId: userId && userId },
+    client: userClient,
+  });
+
+  const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
+    update(_, { data: { sendTwilioSMS: message } }) {
+      console.log(message);
+      console.log("sendTwilioSMS successful");
+    },
+    onError(err) {
+      console.log(user.panicMessage);
+      console.log(user.panicPhone);
+      console.log(err);
+    },
+    variables: {
+      message: user && user.panicMessage,
+      phoneNumber: user && user.panicPhone,
+    },
+    client: userClient,
+  });
+
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
+
+  let text = "Waiting..";
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -207,30 +254,6 @@ const EventRecording = ({
   } else {
     console.log("not availablee");
   }
-  async function sendMessage() {
-    const isAvailable = await SMS.isAvailableAsync();
-    console.log(
-      "`````````````````````````````````entered sendMessage```````````````````````````````"
-    );
-    if (isAvailable) {
-      console.log("available");
-    } else {
-      console.log("not available");
-    }
-
-    const { result } = await SMS.sendSMSAsync(
-      ["6475157981"],
-      "TEST - This is an automated message: I might be in danger from a police officer or thief.",
-      latestUrl && {
-        attachments: {
-          uri: latestUrl,
-          mimeType: "audio/wav",
-          filename: "myfile.wav",
-        },
-      }
-    );
-    console.log(result);
-  }
 
   useEffect(() => {
     const interval = setInterval(
@@ -260,14 +283,14 @@ const EventRecording = ({
       console.log("useeffect found detectedStatus is panic");
       stopRecording();
       setStart(true);
-      sendMessage();
+      sendTwilioSMS();
       setDetectedStatus("stop");
     }
 
     return () => clearInterval(interval);
   }, [detectedStatus, start]);
 
-  return (
+  return user ? (
     <View>
       <Text style={styles.titleText}>Event Recordings</Text>
 
@@ -294,10 +317,11 @@ const EventRecording = ({
           } else if (detectedStatus === "stop") {
             setDetectedStatus("start");
           }
-          i;
         }}
       />
     </View>
+  ) : (
+    <Text>Loading...</Text>
   );
 };
 
@@ -314,4 +338,28 @@ export const HANDLE_DANGER = gql`
     )
   }
 `;
+
+export const GET_USER_BY_ID = gql`
+  query getUserById($userId: String!) {
+    getUserById(userId: $userId) {
+      id
+      email
+      startKey
+      stopKey
+      panicKey
+      panicMessage
+      panicPhone
+      name
+      requesterIds
+      friendIds
+    }
+  }
+`;
+
+export const SEND_TWILIO_SMS = gql`
+  mutation sendTwilioSMS($message: String!, $phoneNumber: String!) {
+    sendTwilioSMS(message: $message, phoneNumber: $phoneNumber)
+  }
+`;
+
 export default EventRecording;

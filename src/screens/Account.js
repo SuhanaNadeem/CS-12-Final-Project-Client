@@ -1,21 +1,46 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Text, View, TextInput, StyleSheet } from "react-native";
+import {
+  Button,
+  Text,
+  ScrollView,
+  View,
+  TextInput,
+  StyleSheet,
+} from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import FlaggedTokens from "../components/FlaggedTokens";
 import Keys from "../components/Keys";
+import Logout from "../components/Logout";
+import MessageInfo from "../components/MessageInfo";
+
 // import NavBar from "../components/NavBar";
 import { UserAuthContext } from "../context/userAuth";
 
 // Manage keys and other account info
 const Account = ({ route, navigation }) => {
   const { userId } = route.params;
+  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
+    variables: { userId: userId && userId },
+    client: userClient,
+  });
 
-  return (
-    <View style={styles.container}>
-      <Keys styles={styles} userId={userId} />
-      <FlaggedTokens styles={styles} userId={userId} />
-    </View>
+  console.log("user in acc:");
+  console.log(user);
+
+  return user ? (
+    <ScrollView style={styles.container}>
+      <Text style={styles.titleText}>Hi, {user.name}</Text>
+      <Text style={styles.bodyText}>
+        Here, you can manage your voice keys, login details, and more.
+      </Text>
+      <Logout navigation={navigation} />
+      <MessageInfo styles={styles} user={user} />
+      <Keys styles={styles} user={user} />
+      <FlaggedTokens styles={styles} user={user} />
+    </ScrollView>
+  ) : (
+    <Text>Loading...</Text>
   );
 };
 
@@ -24,7 +49,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     backgroundColor: "#fff",
     // alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
     flexDirection: "column",
     paddingHorizontal: 25,
   },
@@ -49,11 +74,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   policeText: {
-    color: "blue"
+    color: "blue",
   },
   thiefText: {
-    color: "red"
-  }
+    color: "red",
+  },
 });
+
+export const GET_USER_BY_ID = gql`
+  query getUserById($userId: String!) {
+    getUserById(userId: $userId) {
+      id
+      email
+      name
+      panicMessage
+      startKey
+      stopKey
+      panicKey
+      friendIds
+      requesterIds
+      panicPhone
+    }
+  }
+`;
 
 export default Account;

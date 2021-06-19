@@ -17,7 +17,6 @@ import Account from "./src/screens/Account";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Tabs from "./src/components/Tabs";
-import Logout from "./src/components/Logout";
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -78,8 +77,8 @@ export default function App() {
               name="Home"
               component={Tabs}
               options={{
-                title: "Prove It",
-                headerLeft: () => <Logout />,
+                title: "Street Guard",
+                headerLeft: null,
               }}
             />
           </Stack.Navigator>

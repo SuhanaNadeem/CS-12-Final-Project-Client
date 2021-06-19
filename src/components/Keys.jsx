@@ -5,14 +5,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 
-const Keys = ({ userId, styles }) => {
-  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
-    variables: { userId },
-    client: userClient,
-  });
-
+const Keys = ({ user, styles }) => {
   const [startKeyValues, setStartKeyValues] = useState({
-    userId,
+    userId: user && user.id,
     startKey: "",
   });
   const [setStartKey, loadingSetStartKey] = useMutation(SET_START_KEY, {
@@ -26,7 +21,7 @@ const Keys = ({ userId, styles }) => {
     refetchQueries: [
       {
         query: GET_USER_BY_ID,
-        variables: { userId },
+        variables: { userId: user && user.id },
       },
     ],
     variables: startKeyValues,
@@ -34,7 +29,7 @@ const Keys = ({ userId, styles }) => {
   });
 
   const [stopKeyValues, setStopKeyValues] = useState({
-    userId,
+    userId: user && user.id,
     stopKey: "",
   });
   const [setStopKey, loadingSetStopKey] = useMutation(SET_STOP_KEY, {
@@ -48,7 +43,7 @@ const Keys = ({ userId, styles }) => {
     refetchQueries: [
       {
         query: GET_USER_BY_ID,
-        variables: { userId },
+        variables: { userId: user && user.id },
       },
     ],
     variables: stopKeyValues,
@@ -56,7 +51,7 @@ const Keys = ({ userId, styles }) => {
   });
 
   const [panicKeyValues, setPanicKeyValues] = useState({
-    userId,
+    userId: user && user.id,
     panicKey: "",
   });
   const [setPanicKey, loadingSetPanicKey] = useMutation(SET_PANIC_KEY, {
@@ -71,7 +66,7 @@ const Keys = ({ userId, styles }) => {
     refetchQueries: [
       {
         query: GET_USER_BY_ID,
-        variables: { userId },
+        variables: { userId: user && user.id },
       },
     ],
     variables: panicKeyValues,
@@ -158,6 +153,9 @@ export const GET_USER_BY_ID = gql`
       startKey
       stopKey
       panicKey
+      name
+      requesterIds
+      friendIds
     }
   }
 `;

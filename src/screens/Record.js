@@ -5,6 +5,9 @@ import EventRecording from "../components/EventRecording";
 import Play from "../components/Play";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
+
+import * as SMS from "expo-sms";
+
 // TODO Optimize
 // TODO get and play recordings (group events fix and play together)
 // TODO page where you can see flagged tokens and add
@@ -35,6 +38,24 @@ const Record = ({ route, navigation }) => {
   //   variables: { userId },
   //   client: userClient,
   // });
+  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
+    variables: { userId: userId && userId },
+    client: userClient,
+  });
+
+  // TODO as mentioned below, this needs to be moved...
+  async function sendMessage() {
+    // Opens up message dialog box where user can manually enter contact + message, but the attachment is already added
+    const { result } = await SMS.sendSMSAsync({
+      // TODO put the current EventRecording chunk's last url?
+      // attachments: {
+      //   uri: latestUrl,
+      //   mimeType: "audio/wav",
+      //   filename: "myfile.wav",
+      // },
+    });
+    console.log(result);
+  }
 
   return (
     <View style={styles.container}>
@@ -52,6 +73,9 @@ const Record = ({ route, navigation }) => {
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
       />
+      {/* TODO: incorporate this into each EventRecording chunk display (i.e. move the 
+        sendMessage stuff into your mapped eventrecording chunk component), setting the file uri appropriately */}
+      {user && <Button onPress={sendMessage} title="Share" />}
     </View>
   );
 };
@@ -82,5 +106,21 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
 });
-
+export const GET_USER_BY_ID = gql`
+  query getUserById($userId: String!) {
+    getUserById(userId: $userId) {
+      id
+      email
+      startKey
+      stopKey
+      panicKey
+      name
+      requesterIds
+      friendIds
+      panicMessage
+      shareMessage
+      panicPhone
+    }
+  }
+`;
 export default Record;
