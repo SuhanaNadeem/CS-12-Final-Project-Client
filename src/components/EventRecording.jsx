@@ -29,6 +29,7 @@ const EventRecording = ({
     variables: { userId: userId && userId },
     client: userClient,
   });
+  const [latestUrl, setLatestUrl] = useState();
 
   const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
     update(_, { data: { sendTwilioSMS: message } }) {
@@ -43,6 +44,7 @@ const EventRecording = ({
     variables: {
       message: user && user.panicMessage,
       phoneNumber: user && user.panicPhone,
+      eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl,
     },
     client: userClient,
   });
@@ -125,7 +127,6 @@ const EventRecording = ({
     recordingBytes: "",
   });
   const [start, setStart] = useState(true);
-  const [latestUrl, setLatestUrl] = useState();
   const [handleDanger, loadingHandleDanger] = useMutation(HANDLE_DANGER, {
     update(_, { data: { handleDanger: detectedStatusData } }) {
       console.log("handled danger");
@@ -148,7 +149,6 @@ const EventRecording = ({
   const [recording, setRecording] = useState();
 
   // TODO: RUNS IT TWICE THE FIRST TIME
-  // TODO: LONG DELAY BETWEEN STOP/PANIC and actually doing it
 
   async function startRecording() {
     try {
@@ -203,8 +203,6 @@ const EventRecording = ({
         type: "audio/wav",
       };
 
-      setLatestUrl(fileUri);
-
       const options = {
         keyPrefix: "uploads/",
         bucket: S3_CS_BUCKET,
@@ -223,6 +221,8 @@ const EventRecording = ({
           await FileSystem.readAsStringAsync(fileUri, {
             encoding: FileSystem.EncodingType.Base64,
           }).then((bytes) => {
+            setLatestUrl(response.body.postResponse.location);
+
             console.log("latestUrl: " + latestUrl);
             setValues({
               ...values,
@@ -269,7 +269,7 @@ const EventRecording = ({
           setStart(!start);
         }
       },
-      start ? 50 : 30000
+      start ? 50 : 15000
     );
 
     if (detectedStatus === "stop") {
@@ -279,7 +279,6 @@ const EventRecording = ({
       // }
       setStart(true);
     } else if (detectedStatus === "panic") {
-      // TODO automate clicking the send button
       console.log("useeffect found detectedStatus is panic");
       stopRecording();
       setStart(true);
@@ -357,8 +356,16 @@ export const GET_USER_BY_ID = gql`
 `;
 
 export const SEND_TWILIO_SMS = gql`
-  mutation sendTwilioSMS($message: String!, $phoneNumber: String!) {
-    sendTwilioSMS(message: $message, phoneNumber: $phoneNumber)
+  mutation sendTwilioSMS(
+    $message: String!
+    $phoneNumber: String!
+    $eventRecordingUrl: String
+  ) {
+    sendTwilioSMS(
+      message: $message
+      phoneNumber: $phoneNumber
+      eventRecordingUrl: $eventRecordingUrl
+    )
   }
 `;
 

@@ -17,7 +17,7 @@ const SignUp = ({ navigation }) => {
       console.log("Sign up successful");
       context.loginUser(userData);
       console.log(userData);
-      navigation.navigate("Record", { userId: userData.id });
+      navigation.navigate("Record", { userId: userData.id, newUser: true });
       // TODO pass in another prop to send to a modal on sign up
     },
     onError(err) {

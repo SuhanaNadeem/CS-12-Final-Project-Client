@@ -5,6 +5,7 @@ import EventRecording from "../components/EventRecording";
 import Play from "../components/Play";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
+import Welcome from "../components/Welcome";
 
 import * as SMS from "expo-sms";
 
@@ -28,16 +29,29 @@ import * as SMS from "expo-sms";
   useEffect in EventRecording checks it's detectedStatus, so starts and stops every 30 seconds
   startRecording/stopRecording for event needs to record the entire thing until they say stop/panic
 */
+
 const Record = ({ route, navigation }) => {
   const { userId } = route.params;
+  const { newUser } = route.params;
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
+
+  useEffect(() => {
+    if (newUser) {
+      setWelcomeOpen(true);
+    }
+  }, [newUser]);
+
   const [soundToPlay, setSoundToPlay] = useState();
   const [detectedStatus, setDetectedStatus] = useState("stop");
-  // const {
-  //   data: { getEventRecordingTriggered: eventRecordingTriggered } = {},
-  // } = useQuery(GET_EVENT_RECORDING_STATE, {
-  //   variables: { userId },
-  //   client: userClient,
-  // });
+
+  const { data: { getEventRecordingsByUser: eventRecordings } = {} } = useQuery(
+    GET_EVENT_RECORDINGS_BY_USER,
+    {
+      variables: { userId },
+      client: userClient,
+    }
+  );
+
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
     variables: { userId: userId && userId },
     client: userClient,
@@ -59,6 +73,13 @@ const Record = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Welcome
+        userId={userId}
+        welcomeOpen={welcomeOpen}
+        setWelcomeOpen={setWelcomeOpen}
+        styles={styles}
+      />
+
       <InterimRecording
         userId={userId}
         navigation={navigation}
@@ -73,8 +94,10 @@ const Record = ({ route, navigation }) => {
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
       />
-      {/* TODO: incorporate this into each EventRecording chunk display (i.e. move the 
-        sendMessage stuff into your mapped eventrecording chunk component), setting the file uri appropriately */}
+      {/* {eventRecordings &&
+        eventRecordings.map((eventRecording, index) => (
+          <Play key={index} eventRecording={eventRecording} userId={userId} />
+        ))} */}
       {user && <Button onPress={sendMessage} title="Share" />}
     </View>
   );
@@ -89,13 +112,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     paddingHorizontal: 25,
   },
-  button: {
-    // flex: 1,
-    backgroundColor: "#f50",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 50,
-  },
+
   baseText: {
     paddingBottom: 20,
   },
@@ -104,6 +121,45 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingTop: 30,
     paddingBottom: 10,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 60,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: "#2f4f4f",
+    marginTop: 15,
+  },
+  textStyle: {
+    color: "white",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });
 export const GET_USER_BY_ID = gql`
@@ -123,4 +179,15 @@ export const GET_USER_BY_ID = gql`
     }
   }
 `;
+
+export const GET_EVENT_RECORDINGS_BY_USER = gql`
+  query getEventRecordingsByUser($userId: String!) {
+    getEventRecordingsByUser(userId: $userId) {
+      eventRecordingUrls
+      userId
+      id
+    }
+  }
+`;
+
 export default Record;
