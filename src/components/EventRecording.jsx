@@ -21,7 +21,6 @@ import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 
 const EventRecording = ({
   user,
-  setSoundToPlay,
   styles,
   detectedStatus,
   setDetectedStatus,
@@ -64,6 +63,8 @@ const EventRecording = ({
       setLocation(location);
     })();
   }, []);
+  console.log("location.....");
+  console.log(location);
 
   let text = "Waiting..";
   if (errorMsg) {
@@ -247,8 +248,8 @@ const EventRecording = ({
         playsInSilentModeIOS: true,
         staysActiveInBackground: true,
       });
-      const { sound } = await recording.createNewLoadedSoundAsync({});
-      setSoundToPlay(sound);
+      // const { sound } = await recording.createNewLoadedSoundAsync({});
+      // setSoundToPlay(sound);
     } catch (err) {
       // console.log("err in record.jsx stop");
     }

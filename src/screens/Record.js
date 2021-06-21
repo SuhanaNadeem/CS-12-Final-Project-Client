@@ -37,13 +37,14 @@ const Record = ({ route, navigation }) => {
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [enabled, setEnabled] = useState(false);
 
+  const [indexPlaying, setIndexPlaying] = useState(-1);
+
   useEffect(() => {
     if (newUser) {
       setWelcomeOpen(true);
     }
   }, [newUser]);
 
-  const [soundToPlay, setSoundToPlay] = useState();
   const [detectedStatus, setDetectedStatus] = useState("stop");
 
   const { data: { getEventRecordingsByUser: eventRecordings } = {} } = useQuery(
@@ -92,17 +93,22 @@ const Record = ({ route, navigation }) => {
         setEnabled={setEnabled}
       />
       <EventRecording
-        setSoundToPlay={setSoundToPlay}
         user={user}
         styles={styles}
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
       />
       {/* TODO move the mapping in a separate component and call it here */}
-      {/* {eventRecordings &&
+      {eventRecordings &&
         eventRecordings.map((eventRecording, index) => (
-          <Play key={index} eventRecording={eventRecording} userId={userId} />
-        ))} */}
+          <Play
+            key={index}
+            eventRecording={eventRecording}
+            userId={userId}
+            indexPlaying={indexPlaying}
+            setIndexPlaying={setIndexPlaying}
+          />
+        ))}
       {/* TODO move this and the associated mutation next to each EventRecording's play/pause/stop/delete buttons */}
       {/* <Button onPress={sendMessage} title="Share" /> */}
 
@@ -112,6 +118,11 @@ const Record = ({ route, navigation }) => {
     <></>
   );
 };
+
+// TODO (1) make a mutation that stitches urls together and puts them on AWS
+// (2) make a query that goes through each EventRecording of a user and runs mutation (1), returning list of chunk urls
+// (3) map the chunk urls
+// (4) play one audio recording
 
 const styles = StyleSheet.create({
   container: {

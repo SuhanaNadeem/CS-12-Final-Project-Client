@@ -21,7 +21,7 @@ const LiveTranscription = ({ user, styles, enabled }) => {
         <Text style={styles.baseText}>{transcription.trim()}</Text>
       ) : (
         <Text style={(styles.baseText, { fontStyle: "italic" })}>
-          No speaking detected
+          No speaking detected.
         </Text>
       )}
     </View>

@@ -2,7 +2,8 @@ import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/FontAwesome";
+
 const AddedFriend = ({ friend, user, styles }) => {
   const [values, setValues] = useState({
     userId: user && user.id,
@@ -28,15 +29,33 @@ const AddedFriend = ({ friend, user, styles }) => {
   return user && friend ? (
     <View style={(styles.container, styles.iconAndText)}>
       {/* <MaterialCommunityIcons name="group" color="#fff8dc" size={26} /> */}
-      <span class="mdi mdi-account-check"></span>
+      {/* <Icon
+        path={mdiAccount}
+        size={1}
+        horizontal
+        vertical
+        rotate={90}
+        color="#fff8dc"
+      /> */}
+      {/* <MdPersonOutline size={30} /> */}
+      {/* <FontAwesome5 name={"user-friends"} size={30} color={"#fff8dc"} /> */}
       <Text>{friend.name}</Text>
-      <Button
+      <Icon
         onPress={() => {
           removeFriend();
         }}
-        title={"Remove Friend"}
-        style={styles.button}
+        name="trash"
+        size={30}
+        color="#fff8dc"
       />
+
+      {/* <Button
+        onPress={() => {
+          removeFriend();
+        }}
+        title="Title"
+        style={styles.button}
+      /> */}
     </View>
   ) : (
     <></>

@@ -1,50 +1,3 @@
-// import { gql, useMutation } from "@apollo/client";
-// import React, { useState } from "react";
-// import { Button, View } from "react-native";
-// import { Audio } from "expo-av";
-
-// const Play = ({ soundToPlay }) => {
-//   const [playing, setPlaying] = useState(false);
-//   async function startPlaying() {
-//     if (soundToPlay) {
-//       console.log("Starting to play sound..");
-//       await soundToPlay.playAsync();
-//       setPlaying(true);
-//       console.log("Status");
-//     } else {
-//       console.log("No sound to play");
-//     }
-
-//     // TODO: make it so it changes to "start" again after playing once
-//     // const status = await soundToPlay.getStatusAsync();
-//     // console.log(status.isPlaying);
-//     // if (!status.isPlaying) {
-//     //   setPlaying(false);
-//     // }
-//   }
-
-//   async function stopPlaying() {
-//     if (soundToPlay) {
-//       console.log("Stopping sound..");
-//       soundToPlay.stopAsync();
-//       setPlaying(false);
-//       console.log("Playing stopped");
-//       //   setSoundToPlay();
-//     }
-//   }
-
-//   return soundToPlay ? (
-//     <Button
-//       title={playing ? "Stop Playing" : "Start Playing"}
-//       onPress={playing ? stopPlaying : startPlaying}
-//     />
-//   ) : (
-//     <View></View>
-//   );
-// };
-
-// export default Play;
-
 import { gql, useQuery, useMutation } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import { Button, View } from "react-native";
@@ -54,114 +7,182 @@ import { userClient } from "../../GraphqlApolloClients";
 const Play = ({ eventRecording, userId }) => {
   const [soundToPlay, setSoundToPlay] = useState();
 
-  console.log("Event recording");
-  console.log(eventRecording);
-
-  var currentEventRecording;
   const [playing, setPlaying] = useState(false);
-  var eventRecordingIndex = 0;
+  const [finished, setFinished] = useState(false);
 
-  useEffect(() => {
-    if (eventRecording) {
-      currentEventRecording = eventRecording;
-      var sound = Audio.Sound.createAsync(
-        { uri: currentEventRecording.eventRecordingUrls[0] },
-        { shouldPlay: true }
-      );
-      setSoundToPlay(sound);
-    }
-  }, [eventRecording]);
+  const [eventRecordingIndex, setEventRecordingIndex] = useState(0);
+
+  // useEffect(() => {
+  //   async function fun() {
+  //     if (eventRecording) {
+  //       console.log("useEffect eventRecording true");
+  //       console.log(eventRecording && eventRecording.eventRecordingUrls[0]);
+  //       console.log(" ");
+  //       var sound = await Audio.Sound.createAsync(
+  //         { uri: eventRecording && eventRecording.eventRecordingUrls[0] },
+  //         { shouldPlay: true }
+  //       );
+  //       setSoundToPlay(sound);
+  //       // startPlaying(); // testing, not needed
+  //     }
+  //   }
+  //   fun();
+  // }, [eventRecording]);
+
+  // useEffect(() => {
+  //   console.log("enter soundToPlay useEffect");
+  //   console.log(soundToPlay);
+  //   if (soundToPlay) {
+  //     console.log("soundToPlay object:");
+  //     console.log(soundToPlay);
+  //     console.log("Before .setOnePlaybackStatusUpdate");
+  //     // soundToPlay.setOnPlaybackStatusUpdate(async (status) => {
+  //     //   if (status.didJustFinish === true) {
+  //     //     queueNextRecording();
+  //     //     await soundToPlay.unloadAsync();
+  //     //   }
+  //     // });
+  //     // soundToPlay.setOnPlaybackStatusUpdate(async (status) => {
+  //     //   console.log("status update function called");
+  //     //   console.log(status);
+  //     // });
+  //     console.log("After .setOnePlaybackStatusUpdate");
+  //     // startPlaying(); // testing, not needed
+  //   }
+  // }, [soundToPlay]);
 
   // Check if playing is true, and if the audio has stopped, set soundToPlay to the next recording in the event recording group
-  async function queueNextRecording() {
-    console.log("Entered queueNextRecording");
-    setPlaying(true);
-    console.log(eventRecordingsByUser);
-    if (eventRecordingsByUser && playing) {
-      console.log("Passed queueNextRecording condition");
-      if (eventRecordingIndex < eventRecordingsByUser - 1) {
-        eventRecordingIndex++;
-        // Stop soundToPlay, change the recording, then play the next recording in the group
-        soundToPlay.stopAsync();
+  // async function queueNextRecording() { // Called when playback status of soundToPlay has just finished
+  //   console.log("Entered queueNextRecording");
+  //   // console.log(eventRecording);
+  //   if (eventRecording && playing && soundToPlay) {
+  //     console.log("Passed queueNextRecording condition");
+  //     if (eventRecordingIndex < eventRecording.eventRecordingUrls.length - 1) {
+  //       setEventRecordingIndex(eventRecordingIndex + 1);
+  //       // Stop soundToPlay, change the recording, then play the next recording in the group
+  //       soundToPlay.stopAsync();
 
-        // set soundToPlay to next recording (eventRecordingIndex)
-        var sound = Audio.Sound.createAsync(
-          {
-            uri: currentEventRecording.eventRecordingUrls[eventRecordingIndex],
-          },
-          { shouldPlay: true }
-        );
+  //       // set soundToPlay to next recording (eventRecordingIndex)
+  //       var sound = await Audio.Sound.createAsync(
+  //         {
+  //           uri: eventRecording.eventRecordingUrls[eventRecordingIndex],
+  //         },
+  //         { shouldPlay: true }
+  //       );
 
-        setSoundToPlay(sound);
+  //       console.log("before set sound to play");
+  //       setSoundToPlay(sound);
+  //       console.log("after set sound to play");
 
-        startPlaying();
-      } else {
-        // Set playing to false and bring eventRecordingIndex to 0
-        stopPlaying();
-        eventRecordingIndex = 0;
-      }
-    }
-  }
+  //       startPlaying();
+  //     } else {
+  //       // Set playing to false and bring eventRecordingIndex to 0
+  //       stopPlaying();
+  //       setEventRecordingIndex(0);
+  //     }
+  //   }
+  // }
 
   // https://forums.expo.io/t/is-it-possible-to-check-when-sound-has-finished-playing/27679/5
   // Register an update function:
-  if (soundToPlay) {
-    soundToPlay.setOnPlaybackStatusUpdate(async (status) => {
-      if (status.didJustFinish === true) {
-        queueNextRecording();
-        await soundToPlay.unloadAsync();
+  // console.log("soundToPlay1:");
+  // console.log(soundToPlay);
+  // if (soundToPlay) {
+  //   console.log("soundToPlay2:");
+  //   console.log(soundToPlay);
+  //   soundToPlay.setOnPlaybackStatusUpdate(async (status) => {
+  //     if (status.didJustFinish === true) {
+  //       queueNextRecording();
+  //       await soundToPlay.unloadAsync();
+  //     }
+  //   });
+  // }
+
+  useEffect(() => {}, []);
+
+  useEffect(() => {
+    async function changeSound() {
+      console.log("changeSound");
+      if (finished) {
+        console.log("Entered this if statement");
+        var newIndex = (eventRecordingIndex += 1);
+        setEventRecordingIndex(newIndex);
+        var sound = await Audio.Sound.createAsync(
+          {
+            uri:
+              eventRecording &&
+              eventRecording.eventRecordingUrls[eventRecordingIndex],
+          },
+          { shouldPlay: true }
+        );
+        setSoundToPlay(sound);
+        setFinished(false);
       }
-    });
-  }
+    }
+    changeSound();
+  }, [finished]);
 
   async function startPlaying() {
-    if (soundToPlay) {
-      console.log("Starting to play sound..");
-      await soundToPlay.playAsync();
-      setPlaying(true);
-      console.log("Status");
-    } else {
-      console.log("No sound to play");
-    }
+    console.log("Index: " + eventRecordingIndex);
+    console.log(eventRecordingIndex);
+    var sound = await Audio.Sound.createAsync(
+      {
+        uri:
+          eventRecording &&
+          eventRecording.eventRecordingUrls[eventRecordingIndex],
+      },
+      { shouldPlay: true }
+    );
+    setSoundToPlay(sound);
+    setPlaying(true);
 
-    // TODO: make it so it changes to "start" again after playing once
-    // const status = await soundToPlay.getStatusAsync();
-    // console.log(status.isPlaying);
-    // if (!status.isPlaying) {
-    //   setPlaying(false);
+    if (soundToPlay && !finished) {
+      console.log(
+        "*********************************Starting to play soundToPlay"
+      );
+      // await soundToPlay.loadAsync();
+      await Audio.Sound.createAsync(
+        {
+          uri:
+            eventRecording &&
+            eventRecording.eventRecordingUrls[eventRecordingIndex],
+        },
+        { shouldPlay: true }
+      ).playAsync();
+      console.log("Finished ");
+      // soundToPlay.unloadAsync();
+    }
+    console.log("`````````````````````````````````````````````````finished");
+    setFinished(true);
+  }
+
+  //   // TODO: make it so it changes to "start" again after playing once
+  //   // const status = await soundToPlay.getStatusAsync();
+  //   // console.log(status.isPlaying);
+  //   // if (!status.isPlaying) {
+  //   //   setPlaying(false);
+  //   // }
+  // }
+
+  async function stopPlaying() {
+    setPlaying(false);
+
+    soundToPlay.stopAsync();
+    // if (soundToPlay) {
+
+    console.log("Stopping sound..");
+    //   soundToPlay.stopAndUnloadAsync();
+    //   console.log("Playing stopped");
     // }
   }
 
-  async function stopPlaying() {
-    if (soundToPlay) {
-      console.log("Stopping sound..");
-      soundToPlay.stopAsync();
-      setPlaying(false);
-      console.log("Playing stopped");
-      //   setSoundToPlay();
-    }
-  }
-
-  //   return soundToPlay ? (
-  //     <View>
-  //       <Button
-  //         title={playing ? "Stop Playing" : "Start Playing"}
-  //         onPress={playing ? stopPlaying : startPlaying}
-  //       />
-
-  //       <Button
-  //         title={"Delete recording"}
-  //         onPress={deleteRecordingEvent}
-  //       />
-  //     </View>
-  //   ) : (
-  //     <View></View>
-  //   );
-  // };
-
   return (
     <View>
-      <Button title={"Queue next recording"} onPress={queueNextRecording} />
+      {/* <Button title={"Queue next recording"} onPress={queueNextRecording} /> */}
+      <Button
+        title={playing ? "Stop playing" : "Start playing"}
+        onPress={playing ? stopPlaying : startPlaying}
+      />
     </View>
   );
 };
