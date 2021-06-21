@@ -1,12 +1,14 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
+import { Button, StyleSheet, StatusBar, Text, ScrollView } from "react-native";
 import EventRecording from "../components/EventRecording";
 import Play from "../components/Play";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
+// import Welcome from "../components/Welcome";
 
 import * as SMS from "expo-sms";
+// import LiveTranscription from "../components/LiveTranscription";
 
 // TODO Optimize
 // TODO get and play recordings (group events fix and play together)
@@ -28,16 +30,31 @@ import * as SMS from "expo-sms";
   useEffect in EventRecording checks it's detectedStatus, so starts and stops every 30 seconds
   startRecording/stopRecording for event needs to record the entire thing until they say stop/panic
 */
+
 const Record = ({ route, navigation }) => {
   const { userId } = route.params;
-  const [soundToPlay, setSoundToPlay] = useState();
+  const { newUser } = route.params;
+  // const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [enabled, setEnabled] = useState(false);
+
+  const [indexPlaying, setIndexPlaying] = useState(-1);
+
+  // useEffect(() => {
+  //   if (newUser) {
+  //     setWelcomeOpen(true);
+  //   }
+  // }, [newUser]);
+
   const [detectedStatus, setDetectedStatus] = useState("stop");
-  // const {
-  //   data: { getEventRecordingTriggered: eventRecordingTriggered } = {},
-  // } = useQuery(GET_EVENT_RECORDING_STATE, {
-  //   variables: { userId },
-  //   client: userClient,
-  // });
+
+  const { data: { getEventRecordingsByUser: eventRecordings } = {} } = useQuery(
+    GET_EVENT_RECORDINGS_BY_USER,
+    {
+      variables: { userId },
+      client: userClient,
+    }
+  );
+
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
     variables: { userId: userId && userId },
     client: userClient,
@@ -46,7 +63,7 @@ const Record = ({ route, navigation }) => {
   // TODO as mentioned below, this needs to be moved...
   async function sendMessage() {
     // Opens up message dialog box where user can manually enter contact + message, but the attachment is already added
-    const { result } = await SMS.sendSMSAsync({
+    const { result } = await SMS.sendSMSAsync([], "", {
       // TODO put the current EventRecording chunk's last url?
       // attachments: {
       //   uri: latestUrl,
@@ -57,45 +74,66 @@ const Record = ({ route, navigation }) => {
     console.log(result);
   }
 
-  return (
-    <View style={styles.container}>
-      <InterimRecording
+  return user ? (
+    <ScrollView style={styles.container}>
+      {/* <Welcome
         userId={userId}
+        welcomeOpen={welcomeOpen}
+        setWelcomeOpen={setWelcomeOpen}
+        styles={styles}
+      /> */}
+
+      <InterimRecording
+        user={user}
         navigation={navigation}
         styles={styles}
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
+        // enabled={enabled}
+        // setEnabled={setEnabled}
       />
       <EventRecording
-        setSoundToPlay={setSoundToPlay}
-        userId={userId}
+        user={user}
         styles={styles}
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
       />
-      {/* TODO: incorporate this into each EventRecording chunk display (i.e. move the 
-        sendMessage stuff into your mapped eventrecording chunk component), setting the file uri appropriately */}
-      {user && <Button onPress={sendMessage} title="Share" />}
-    </View>
+      {/* TODO move the mapping in a separate component and call it here */}
+      {eventRecordings &&
+        eventRecordings.map((eventRecording, index) => (
+          <Play
+            key={index}
+            eventRecording={eventRecording}
+            userId={userId}
+            indexPlaying={indexPlaying}
+            setIndexPlaying={setIndexPlaying}
+          />
+        ))}
+      {/* TODO move this and the associated mutation next to each EventRecording's play/pause/stop/delete buttons */}
+      {/* <Button onPress={sendMessage} title="Share" /> */}
+
+      {/* <LiveTranscription user={user} styles={styles} enabled={enabled} /> */}
+    </ScrollView>
+  ) : (
+    <></>
   );
 };
+
+// TODO (1) make a mutation that stitches urls together and puts them on AWS
+// (2) make a query that goes through each EventRecording of a user and runs mutation (1), returning list of chunk urls
+// (3) map the chunk urls
+// (4) play one audio recording
 
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
     backgroundColor: "#fff",
     // alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
     flexDirection: "column",
     paddingHorizontal: 25,
   },
-  button: {
-    // flex: 1,
-    backgroundColor: "#f50",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 50,
-  },
+
   baseText: {
     paddingBottom: 20,
   },
@@ -105,22 +143,70 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 10,
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 60,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: "#2f4f4f",
+    marginTop: 15,
+  },
+  textStyle: {
+    color: "white",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
 });
 export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
       email
+      name
+      panicMessage
       startKey
       stopKey
       panicKey
-      name
-      requesterIds
       friendIds
-      panicMessage
-      shareMessage
+      requesterIds
       panicPhone
     }
   }
 `;
+export const GET_EVENT_RECORDINGS_BY_USER = gql`
+  query getEventRecordingsByUser($userId: String!) {
+    getEventRecordingsByUser(userId: $userId) {
+      eventRecordingUrls
+      userId
+      id
+    }
+  }
+`;
+
 export default Record;

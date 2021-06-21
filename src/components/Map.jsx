@@ -4,6 +4,7 @@ import { Button, View, Text } from "react-native";
 import { Audio } from "expo-av";
 import MapView from "react-native-maps";
 
+
 const Map = ({ user, styles }) => {
   return user && styles ? (
     <View>
