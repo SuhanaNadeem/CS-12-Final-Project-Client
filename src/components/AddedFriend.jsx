@@ -2,7 +2,7 @@ import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 const AddedFriend = ({ friend, user, styles }) => {
   const [values, setValues] = useState({
     userId: user && user.id,
@@ -27,6 +27,8 @@ const AddedFriend = ({ friend, user, styles }) => {
 
   return user && friend ? (
     <View style={(styles.container, styles.iconAndText)}>
+      {/* <MaterialCommunityIcons name="group" color="#fff8dc" size={26} /> */}
+      <span class="mdi mdi-account-check"></span>
       <Text>{friend.name}</Text>
       <Button
         onPress={() => {

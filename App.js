@@ -14,12 +14,9 @@ import Landing from "./src/screens/Landing";
 import SignUp from "./src/screens/SignUp";
 import Account from "./src/screens/Account";
 
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Tabs from "./src/components/Tabs";
 
 const Stack = createStackNavigator();
-const Tab = createMaterialBottomTabNavigator();
 
 const cache = new InMemoryCache();
 

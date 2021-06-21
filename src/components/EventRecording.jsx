@@ -17,18 +17,15 @@ import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
 import * as Location from "expo-location";
 import { TWILIO_VERIFIED_PHONE_NUMBER } from "@env";
+import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 
 const EventRecording = ({
-  userId,
+  user,
   setSoundToPlay,
   styles,
   detectedStatus,
   setDetectedStatus,
 }) => {
-  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
-    variables: { userId: userId && userId },
-    client: userClient,
-  });
   const [latestUrl, setLatestUrl] = useState();
 
   const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
@@ -43,6 +40,9 @@ const EventRecording = ({
     },
     variables: {
       message: user && user.panicMessage,
+      // TODO once you get location working, make this the message:
+      message: user && user.panicMessage + ` Sent from ${user.location}.`,
+
       phoneNumber: user && user.panicPhone,
       eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl,
     },
@@ -122,7 +122,7 @@ const EventRecording = ({
 
   // const [values, setValues] = useState({ userId, eventRecordingUrl: "" });
   const [values, setValues] = useState({
-    userId,
+    userId: user && user.id,
     eventRecordingFileKey: "",
     recordingBytes: "",
   });
@@ -139,6 +139,12 @@ const EventRecording = ({
       setDetectedStatus(detectedStatusData);
       console.log(detectedStatus);
     },
+    refetchQueries: [
+      {
+        query: GET_TRANSCRIPTION_BY_USER,
+        variables: { userId: user && user.id },
+      },
+    ],
     onError(err) {
       console.log(err);
     },

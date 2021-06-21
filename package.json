@@ -11,6 +11,7 @@
     "@apollo/client": "^3.3.19",
     "@aws-amplify/cli": "^4.51.4",
     "@google-cloud/speech": "^4.5.2",
+    "@mdi/font": "^5.9.55",
     "@react-native-async-storage/async-storage": "^1.13.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "^6.0.0",
