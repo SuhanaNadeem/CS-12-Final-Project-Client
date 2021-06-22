@@ -5,6 +5,7 @@ import { Audio } from "expo-av";
 import MapView from "react-native-maps";
 import * as Location from "expo-location";
 import { userClient } from "../../GraphqlApolloClients";
+// import FriendMapMarker from "./FriendMapMarker";
 
 const Map = ({ user, styles }) => {
   const [location, setLocation] = useState(null);
@@ -105,8 +106,11 @@ const Map = ({ user, styles }) => {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
     }
+    console.log("location.coords:");
+    console.log(location.coords);
   }
-
+  console.log("Friends:");
+  console.log(friends);
   async function toggleLocation() {
     toggleLocationOn();
     // Privacy feature, set location to empty string in case it is sent to a friend's app
@@ -126,7 +130,7 @@ const Map = ({ user, styles }) => {
     text = JSON.stringify(location);
   }
 
-  const coords = { latitude: 37.78825, longitude: -122.4324 };
+  // const coords = { latitude: 37.78825, longitude: -122.4324 };
   return user && styles ? (
     <View>
       <Text style={styles.titleText}>Locations</Text>
@@ -146,7 +150,7 @@ const Map = ({ user, styles }) => {
             description={"You are here."}
           />
         )}
-        {friends && friends.map((friend) => (friend.locationOn && <MapView.Marker coordinate={JSON.parse(friend.location)} title={friend.name} description={"Your friend."}/>))}
+        {friends && friends.map((friend, index) => (friend.locationOn && <MapView.Marker coordinate={JSON.parse(friend.location).coords} title={friend.name} description={"Your friend."}/>))}
       </MapView>
       <Button onPress={toggleLocation} title={user.locationOn ? "Stop sharing location" : "Start sharing location"} />
       {/* Replace following button with setInterval implementation */}
