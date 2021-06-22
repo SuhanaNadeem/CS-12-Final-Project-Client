@@ -16,15 +16,13 @@ import {
 import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
 import * as Location from "expo-location";
-import { TWILIO_VERIFIED_PHONE_NUMBER } from "@env";
 import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
+import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
+import styles from "../styles/record";
 
-const EventRecording = ({
-  user,
-  styles,
-  detectedStatus,
-  setDetectedStatus,
-}) => {
+// TODO For me - get the event recording group refetch to work
+
+const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
   const [latestUrl, setLatestUrl] = useState();
 
   const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
@@ -45,6 +43,16 @@ const EventRecording = ({
       phoneNumber: user && user.panicPhone,
       eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl,
     },
+    refetchQueries: [
+      {
+        query: GET_TRANSCRIPTION_BY_USER,
+        variables: { userId: user && user.id },
+      },
+      {
+        query: GET_EVENT_RECORDINGS_BY_USER,
+        variables: { userId: user && user.id },
+      },
+    ],
     client: userClient,
   });
 

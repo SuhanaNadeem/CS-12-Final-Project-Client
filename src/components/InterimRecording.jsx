@@ -10,6 +10,7 @@ import {
   Text,
   View,
   TextInput,
+  Image,
 } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import * as FileSystem from "expo-file-system";
@@ -19,6 +20,7 @@ import {
   sendPushNotification,
 } from "../util/notifications";
 import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
+import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 
 const InterimRecording = ({
   user,
@@ -93,6 +95,10 @@ const InterimRecording = ({
     refetchQueries: [
       {
         query: GET_TRANSCRIPTION_BY_USER,
+        variables: { userId: user && user.id },
+      },
+      {
+        query: GET_EVENT_RECORDINGS_BY_USER,
         variables: { userId: user && user.id },
       },
     ],

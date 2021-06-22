@@ -1,53 +1,36 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, StyleSheet, StatusBar, Text, View } from "react-native";
+import {
+  Button,
+  StyleSheet,
+  Pressable,
+  Text,
+  View,
+  Image,
+  ImageBackground,
+} from "react-native";
 import Login from "../components/Login";
 import { UserAuthContext } from "../context/userAuth";
+import styles from "../styles/landing";
 
 const Landing = ({ navigation }) => {
   const { context } = useContext(UserAuthContext);
 
   return (
-    <View style={styles.container}>
-      {/* Logo Here */}
-
+    // <View style={{ position: "absolute" }}>
+    <ImageBackground
+      source={require("../images/login.png")}
+      style={styles.container}
+    >
       <Login navigation={navigation} />
-
-      <Button
-        style={styles.button}
-        title={"New here? Sign up"}
+      <Pressable
         onPress={() => navigation.navigate("SignUp")}
-      />
-    </View>
+        style={styles.end}
+      >
+        <Text style={styles.signupText}>New here? Sign up</Text>
+      </Pressable>
+    </ImageBackground>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#2f4f4f",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    paddingHorizontal: 25,
-  },
-  button: {
-    // flex: 1,
-    backgroundColor: "#f50",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 50,
-  },
-  baseText: {
-    paddingBottom: 20,
-  },
-  titleText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    paddingTop: 30,
-    paddingBottom: 10,
-  },
-  input: {
-    paddingVertical: 4,
-  },
-});
 export default Landing;

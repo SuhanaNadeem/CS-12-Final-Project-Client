@@ -6,9 +6,16 @@ import {
   StatusBar,
   Text,
   View,
+  Image,
+  Pressable,
+  ImageBackground,
   TextInput,
 } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
+import styles from "../styles/landing";
+import Icon from "react-native-vector-icons/FontAwesome";
+
+const pageBg = { uri: "../images/login.png" };
 
 // TODO For me - implement auto-login
 
@@ -29,29 +36,39 @@ const Login = ({ navigation }) => {
   });
 
   return (
-    <View>
-      <TextInput
-        style={styles.input}
-        onChangeText={(text) => setValues({ ...values, email: text })}
-        value={values.email}
-        placeholder="Your email"
-      />
-
-      <TextInput
-        style={styles.input}
-        onChangeText={(text) => setValues({ ...values, password: text })}
-        value={values.password}
-        secureTextEntry={true}
-        placeholder="Your password"
-      />
-
-      <Button
+    <View style={styles.loginContainer}>
+      {/* <ImageBackground source={pageBg} style={styles.image}> */}
+      <View style={styles.formContainer}>
+        <View style={styles.centered}>
+          <Icon name="binoculars" size={50} color="white" />
+        </View>
+        <Text style={styles.formText}>Email</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => setValues({ ...values, email: text })}
+          value={values.email}
+          placeholder="Your email"
+        />
+        <Text style={styles.formText}>Password</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(text) => setValues({ ...values, password: text })}
+          value={values.password}
+          secureTextEntry={true}
+          placeholder="Your password"
+        />
+      </View>
+      <Pressable
         onPress={() => {
           loginUser();
           setValues({ email: "", password: "" });
         }}
-        title="Log in"
-      />
+        style={styles.centered}
+      >
+        <Text style={styles.loginText}> Log In</Text>
+      </Pressable>
+
+      {/* </ImageBackground> */}
     </View>
   );
 };
@@ -67,35 +84,5 @@ export const LOGIN_USER = gql`
     }
   }
 `;
-
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-    flexDirection: "column",
-    paddingHorizontal: 25,
-  },
-  button: {
-    // flex: 1,
-    backgroundColor: "#f50",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 50,
-  },
-  baseText: {
-    paddingBottom: 20,
-  },
-  titleText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    paddingTop: 30,
-    paddingBottom: 10,
-  },
-  input: {
-    paddingVertical: 6,
-    backgroundColor: "#fff8dc",
-    paddingHorizontal: 8,
-    marginVertical: 12,
-  },
-});
 
 export default Login;
