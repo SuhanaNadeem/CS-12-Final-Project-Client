@@ -12,7 +12,7 @@ import { UserAuthContext } from "../context/userAuth";
 
 // TODO implement auto-login
 
-const Login = ({ navigation, styles }) => {
+const Login = ({ navigation }) => {
   const context = useContext(UserAuthContext);
 
   const [values, setValues] = useState({ email: "", password: "" });
@@ -67,5 +67,35 @@ export const LOGIN_USER = gql`
     }
   }
 `;
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: "center",
+    flexDirection: "column",
+    paddingHorizontal: 25,
+  },
+  button: {
+    // flex: 1,
+    backgroundColor: "#f50",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 50,
+  },
+  baseText: {
+    paddingBottom: 20,
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 30,
+    paddingBottom: 10,
+  },
+  input: {
+    paddingVertical: 6,
+    backgroundColor: "#fff8dc",
+    paddingHorizontal: 8,
+    marginVertical: 12,
+  },
+});
 
 export default Login;

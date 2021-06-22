@@ -18,13 +18,15 @@ import {
   registerForPushNotificationsAsync,
   sendPushNotification,
 } from "../util/notifications";
+import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 
 const InterimRecording = ({
-  navigation,
-  userId,
+  user,
   styles,
   detectedStatus,
   setDetectedStatus,
+  enabled,
+  setEnabled,
 }) => {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -67,13 +69,12 @@ const InterimRecording = ({
   }, []);
 
   const [values, setValues] = useState({
-    userId: userId && userId,
+    userId: user && user.id,
     recordingBytes: "",
   });
 
   const [recording, setRecording] = useState();
   const [start, setStart] = useState(true);
-  const [enabled, setEnabled] = useState(false);
 
   const [detectDanger, loadingDetectDanger] = useMutation(DETECT_DANGER, {
     update(_, { data: { detectDanger: detectedStatusData } }) {
@@ -89,6 +90,12 @@ const InterimRecording = ({
       console.log("Unsuccessful");
       console.log(err);
     },
+    refetchQueries: [
+      {
+        query: GET_TRANSCRIPTION_BY_USER,
+        variables: { userId: user && user.id },
+      },
+    ],
     variables: values,
     client: userClient,
   });
@@ -231,15 +238,6 @@ const InterimRecording = ({
         or misconduct is detected, an event recording is triggered and stored
         for future reference.
       </Text>
-      {/* {enabled ? (
-        <Text style={styles.baseText}>
-          Your audio is being recorded to detect danger.
-        </Text>
-      ) : (
-        <Text style={styles.baseText}>
-          Allow interim recordings to detect danger.
-        </Text>
-      )} */}
 
       <Button
         disabled={detectedStatus === "start"}
@@ -256,7 +254,6 @@ const InterimRecording = ({
           if (expoPushToken) {
             await sendPushNotification({
               expoPushToken,
-              data: { someData: "goeshere" },
               title: "Danger Detection",
               body: !enabled
                 ? "Your audio is currently being recorded to detect danger"

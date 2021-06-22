@@ -5,10 +5,10 @@ import EventRecording from "../components/EventRecording";
 import Play from "../components/Play";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
-// import Welcome from "../components/Welcome";
+import Welcome from "../components/Welcome";
 
 import * as SMS from "expo-sms";
-// import LiveTranscription from "../components/LiveTranscription";
+import LiveTranscription from "../components/LiveTranscription";
 
 // TODO Optimize
 // TODO get and play recordings (group events fix and play together)
@@ -34,16 +34,16 @@ import * as SMS from "expo-sms";
 const Record = ({ route, navigation }) => {
   const { userId } = route.params;
   const { newUser } = route.params;
-  // const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [enabled, setEnabled] = useState(false);
 
   const [indexPlaying, setIndexPlaying] = useState(-1);
 
-  // useEffect(() => {
-  //   if (newUser) {
-  //     setWelcomeOpen(true);
-  //   }
-  // }, [newUser]);
+  useEffect(() => {
+    if (newUser) {
+      setWelcomeOpen(true);
+    }
+  }, [newUser]);
 
   const [detectedStatus, setDetectedStatus] = useState("stop");
 
@@ -76,12 +76,12 @@ const Record = ({ route, navigation }) => {
 
   return user ? (
     <ScrollView style={styles.container}>
-      {/* <Welcome
+      <Welcome
         userId={userId}
         welcomeOpen={welcomeOpen}
         setWelcomeOpen={setWelcomeOpen}
         styles={styles}
-      /> */}
+      />
 
       <InterimRecording
         user={user}
@@ -89,8 +89,8 @@ const Record = ({ route, navigation }) => {
         styles={styles}
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
-        // enabled={enabled}
-        // setEnabled={setEnabled}
+        enabled={enabled}
+        setEnabled={setEnabled}
       />
       <EventRecording
         user={user}
@@ -112,7 +112,7 @@ const Record = ({ route, navigation }) => {
       {/* TODO move this and the associated mutation next to each EventRecording's play/pause/stop/delete buttons */}
       {/* <Button onPress={sendMessage} title="Share" /> */}
 
-      {/* <LiveTranscription user={user} styles={styles} enabled={enabled} /> */}
+      <LiveTranscription user={user} styles={styles} enabled={enabled} />
     </ScrollView>
   ) : (
     <></>

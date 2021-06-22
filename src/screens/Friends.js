@@ -27,6 +27,9 @@ const Friends = ({ route, navigation }) => {
     client: userClient,
   });
 
+  console.log("User in friends");
+  console.log(user);
+
   return user ? (
     <ScrollView style={styles.container}>
       <Map styles={styles} user={user} />

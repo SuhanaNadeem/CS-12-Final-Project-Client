@@ -17,18 +17,15 @@ import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
 import * as Location from "expo-location";
 import { TWILIO_VERIFIED_PHONE_NUMBER } from "@env";
+import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 
 const EventRecording = ({
-  userId,
-  setSoundToPlay,
+  user,
   styles,
   detectedStatus,
   setDetectedStatus,
 }) => {
-  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
-    variables: { userId: userId && userId },
-    client: userClient,
-  });
+  const [latestUrl, setLatestUrl] = useState();
 
   const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
     update(_, { data: { sendTwilioSMS: message } }) {
@@ -42,7 +39,11 @@ const EventRecording = ({
     },
     variables: {
       message: user && user.panicMessage,
+      // TODO once you get location working, make this the message:
+      message: user && user.panicMessage + ` Sent from ${user.location}.`,
+
       phoneNumber: user && user.panicPhone,
+      eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl,
     },
     client: userClient,
   });
@@ -62,6 +63,8 @@ const EventRecording = ({
       setLocation(location);
     })();
   }, []);
+  console.log("location.....");
+  console.log(location);
 
   let text = "Waiting..";
   if (errorMsg) {
@@ -120,12 +123,11 @@ const EventRecording = ({
 
   // const [values, setValues] = useState({ userId, eventRecordingUrl: "" });
   const [values, setValues] = useState({
-    userId,
+    userId: user && user.id,
     eventRecordingFileKey: "",
     recordingBytes: "",
   });
   const [start, setStart] = useState(true);
-  const [latestUrl, setLatestUrl] = useState();
   const [handleDanger, loadingHandleDanger] = useMutation(HANDLE_DANGER, {
     update(_, { data: { handleDanger: detectedStatusData } }) {
       console.log("handled danger");
@@ -138,6 +140,12 @@ const EventRecording = ({
       setDetectedStatus(detectedStatusData);
       console.log(detectedStatus);
     },
+    refetchQueries: [
+      {
+        query: GET_TRANSCRIPTION_BY_USER,
+        variables: { userId: user && user.id },
+      },
+    ],
     onError(err) {
       console.log(err);
     },
@@ -148,7 +156,6 @@ const EventRecording = ({
   const [recording, setRecording] = useState();
 
   // TODO: RUNS IT TWICE THE FIRST TIME
-  // TODO: LONG DELAY BETWEEN STOP/PANIC and actually doing it
 
   async function startRecording() {
     try {
@@ -203,8 +210,6 @@ const EventRecording = ({
         type: "audio/wav",
       };
 
-      setLatestUrl(fileUri);
-
       const options = {
         keyPrefix: "uploads/",
         bucket: S3_CS_BUCKET,
@@ -223,6 +228,8 @@ const EventRecording = ({
           await FileSystem.readAsStringAsync(fileUri, {
             encoding: FileSystem.EncodingType.Base64,
           }).then((bytes) => {
+            setLatestUrl(response.body.postResponse.location);
+
             console.log("latestUrl: " + latestUrl);
             setValues({
               ...values,
@@ -241,8 +248,8 @@ const EventRecording = ({
         playsInSilentModeIOS: true,
         staysActiveInBackground: true,
       });
-      const { sound } = await recording.createNewLoadedSoundAsync({});
-      setSoundToPlay(sound);
+      // const { sound } = await recording.createNewLoadedSoundAsync({});
+      // setSoundToPlay(sound);
     } catch (err) {
       // console.log("err in record.jsx stop");
     }
@@ -269,7 +276,7 @@ const EventRecording = ({
           setStart(!start);
         }
       },
-      start ? 50 : 30000
+      start ? 50 : 15000
     );
 
     if (detectedStatus === "stop") {
@@ -279,7 +286,6 @@ const EventRecording = ({
       // }
       setStart(true);
     } else if (detectedStatus === "panic") {
-      // TODO automate clicking the send button
       console.log("useeffect found detectedStatus is panic");
       stopRecording();
       setStart(true);
@@ -357,8 +363,16 @@ export const GET_USER_BY_ID = gql`
 `;
 
 export const SEND_TWILIO_SMS = gql`
-  mutation sendTwilioSMS($message: String!, $phoneNumber: String!) {
-    sendTwilioSMS(message: $message, phoneNumber: $phoneNumber)
+  mutation sendTwilioSMS(
+    $message: String!
+    $phoneNumber: String!
+    $eventRecordingUrl: String
+  ) {
+    sendTwilioSMS(
+      message: $message
+      phoneNumber: $phoneNumber
+      eventRecordingUrl: $eventRecordingUrl
+    )
   }
 `;
 

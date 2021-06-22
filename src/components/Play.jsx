@@ -8,6 +8,8 @@ const Play = ({ eventRecording, userId }) => {
   const [soundToPlay, setSoundToPlay] = useState();
 
   const [playing, setPlaying] = useState(false);
+  const [finished, setFinished] = useState(false);
+
   const [eventRecordingIndex, setEventRecordingIndex] = useState(0);
 
   // useEffect(() => {
@@ -96,19 +98,62 @@ const Play = ({ eventRecording, userId }) => {
   //   });
   // }
 
+  useEffect(() => {}, []);
+
+  useEffect(() => {
+    async function changeSound() {
+      console.log("changeSound");
+      if (finished) {
+        console.log("Entered this if statement");
+        var newIndex = (eventRecordingIndex += 1);
+        setEventRecordingIndex(newIndex);
+        var sound = await Audio.Sound.createAsync(
+          {
+            uri:
+              eventRecording &&
+              eventRecording.eventRecordingUrls[eventRecordingIndex],
+          },
+          { shouldPlay: true }
+        );
+        setSoundToPlay(sound);
+        setFinished(false);
+      }
+    }
+    changeSound();
+  }, [finished]);
+
   async function startPlaying() {
+    console.log("Index: " + eventRecordingIndex);
+    console.log(eventRecordingIndex);
     var sound = await Audio.Sound.createAsync(
-      { uri: eventRecording && eventRecording.eventRecordingUrls[0] },
+      {
+        uri:
+          eventRecording &&
+          eventRecording.eventRecordingUrls[eventRecordingIndex],
+      },
       { shouldPlay: true }
     );
     setSoundToPlay(sound);
     setPlaying(true);
 
-    if (soundToPlay) {
-      console.log("*********************************Starting to play sound..");
-      await soundToPlay.playAsync();
-      soundToPlay.unloadAsync();
+    if (soundToPlay && !finished) {
+      console.log(
+        "*********************************Starting to play soundToPlay"
+      );
+      // await soundToPlay.loadAsync();
+      await Audio.Sound.createAsync(
+        {
+          uri:
+            eventRecording &&
+            eventRecording.eventRecordingUrls[eventRecordingIndex],
+        },
+        { shouldPlay: true }
+      ).playAsync();
+      console.log("Finished ");
+      // soundToPlay.unloadAsync();
     }
+    console.log("`````````````````````````````````````````````````finished");
+    setFinished(true);
   }
 
   //   // TODO: make it so it changes to "start" again after playing once
