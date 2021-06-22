@@ -8,6 +8,8 @@ import * as Location from "expo-location";
 const Map = ({ user, styles }) => {
   // TODO get and store the user's current location, using the setUserLocation mutation.. It should send a push notification to ask once,
   // but we'll always get the user's location and store it, and just allow them to toggle whether or not anyone (including them) can see a marker for it on their map
+  // IMPORTANT - a major thing to consider is the type of the currLocation arg to setUserLocation - will your front end stuff work if you're dealing with strings?
+  // TypeDefs should be updated accordingly
 
   // TODO Create a useState for a button, enabled. Then make a Button component (imported from react-native) which
   // sets enabled to the opposite value when pressed. The onPress, before calling setEnabled, should pass in
