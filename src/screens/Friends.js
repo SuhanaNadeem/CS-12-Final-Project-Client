@@ -101,6 +101,7 @@ export const GET_USER_BY_ID = gql`
       friendIds
       requesterIds
       location
+      locationOn
       name
     }
   }
