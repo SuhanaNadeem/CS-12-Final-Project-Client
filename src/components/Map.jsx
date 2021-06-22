@@ -1,8 +1,9 @@
 import { gql, useMutation } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, View, Text } from "react-native";
 import { Audio } from "expo-av";
 import MapView from "react-native-maps";
+import * as Location from "expo-location";
 
 const Map = ({ user, styles }) => {
   // TODO get and store the user's current location, using the setUserLocation mutation.. It should send a push notification to ask once,
@@ -17,16 +18,54 @@ const Map = ({ user, styles }) => {
 
   // TODO CTRL+f refetchQueries, onPress (there's an enabled button in InterimRecordings) in Client
 
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
+
+  let text = "Waiting..";
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
+  const coords = { latitude: 37.78825, longitude: -122.4324 };
   return user && styles ? (
     <View>
       <Text style={styles.titleText}>Locations</Text>
       <Text style={styles.baseText}>
         Here are the locations of your friends, who've enabled location sharing.
       </Text>
-      <MapView style={styles.map} />
+      <Text>{text}</Text>
       {/* TODO add a button with an onPress as outlined above */}
 
       {/* TODO if user.location exists, add its marker */}
+      <MapView style={styles.map}>
+        <MapView.Marker
+          coordinate={coords}
+          title="Some Californian place idk"
+          description="Sample description"
+        />
+        {location && (
+          <MapView.Marker
+            coordinate={location.coords}
+            title={"Current location"}
+            description={"You are here."}
+          />
+        )}
+      </MapView>
 
       {/* TODO if friendLocations exists and has length > 0, map each one to put a marker for each location */}
     </View>
