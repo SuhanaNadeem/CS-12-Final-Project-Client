@@ -4,6 +4,9 @@ import { Button, Text, View, TextInput } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
 
 const SignUp = ({ navigation }) => {
+  // TODO look at the rest of the app's (especially login's) *finished UI to fix the UI of this page so it's consistent
+  // - *note, it's not finished yet but will be by the time you finish the features
+
   const context = useContext(UserAuthContext);
 
   const [values, setValues] = useState({

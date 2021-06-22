@@ -19,6 +19,10 @@ import { UserAuthContext } from "../context/userAuth";
 
 // Manage keys and other account info
 const Account = ({ route, navigation }) => {
+  // TODO look at the rest of the app's *finished UI to fix the UI of this page so it's consistent
+  // - *note, it's not finished yet but will be by the time you finish the features
+  // Also, look at what I did with the search feature to show a "Collapse" button after someone clicks "See more"
+
   const { userId } = route.params;
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
     variables: { userId: userId && userId },

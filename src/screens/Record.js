@@ -2,36 +2,19 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import { Button, StyleSheet, StatusBar, Text, ScrollView } from "react-native";
 import EventRecording from "../components/EventRecording";
-import Play from "../components/Play";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
 import Welcome from "../components/Welcome";
 
 import * as SMS from "expo-sms";
 import LiveTranscription from "../components/LiveTranscription";
-
-/*
-  enable interim recordings
-  detectDanger
-    transcribe interim recording
-    if user start key is detectedStatus
-      return true
-    else if police is detectedStatus
-      return true
-    else if thief is detectedStatus
-      return true 
-  detectedStatus is set to true (passed to EventRecording.jsx)
-  useEffect in EventRecording checks it's detectedStatus, so starts and stops every 30 seconds
-  startRecording/stopRecording for event needs to record the entire thing until they say stop/panic
-*/
+import RecordingPlayback from "../components/RecordingPlayback";
 
 const Record = ({ route, navigation }) => {
   const { userId } = route.params;
   const { newUser } = route.params;
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [enabled, setEnabled] = useState(false);
-
-  const [indexPlaying, setIndexPlaying] = useState(-1);
 
   useEffect(() => {
     if (newUser) {
@@ -40,14 +23,6 @@ const Record = ({ route, navigation }) => {
   }, [newUser]);
 
   const [detectedStatus, setDetectedStatus] = useState("stop");
-
-  const { data: { getEventRecordingsByUser: eventRecordings } = {} } = useQuery(
-    GET_EVENT_RECORDINGS_BY_USER,
-    {
-      variables: { userId },
-      client: userClient,
-    }
-  );
 
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
     variables: { userId: userId && userId },
@@ -76,7 +51,6 @@ const Record = ({ route, navigation }) => {
         setWelcomeOpen={setWelcomeOpen}
         styles={styles}
       />
-
       <InterimRecording
         user={user}
         navigation={navigation}
@@ -92,21 +66,10 @@ const Record = ({ route, navigation }) => {
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
       />
-      {/* TODO move the below to a separate component and call it here */}
-      {eventRecordings &&
-        eventRecordings.map((eventRecording, index) => (
-          <Play
-            key={index}
-            eventRecording={eventRecording}
-            userId={userId}
-            indexPlaying={indexPlaying}
-            setIndexPlaying={setIndexPlaying}
-          />
-        ))}
-      {/* TODO move this and the associated mutation next to each EventRecording's play/pause/stop/delete buttons in Play.jsx*/}
-      {/* <Button onPress={sendMessage} title="Share" /> */}
-
       <LiveTranscription user={user} styles={styles} enabled={enabled} />
+      <RecordingPlayback user={user} styles={styles} />
+      {/* TODO move this and the associated mutation next to each EventRecording's play/pause/stop/delete buttons in PlayShareRemove.jsx*/}
+      {/* <Button onPress={sendMessage} title="Share" /> */}
     </ScrollView>
   ) : (
     <></>
@@ -186,15 +149,6 @@ export const GET_USER_BY_ID = gql`
       friendIds
       requesterIds
       panicPhone
-    }
-  }
-`;
-export const GET_EVENT_RECORDINGS_BY_USER = gql`
-  query getEventRecordingsByUser($userId: String!) {
-    getEventRecordingsByUser(userId: $userId) {
-      eventRecordingUrls
-      userId
-      id
     }
   }
 `;
