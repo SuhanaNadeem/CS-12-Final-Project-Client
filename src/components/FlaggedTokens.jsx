@@ -80,7 +80,7 @@ const FlaggedTokens = ({ user, styles }) => {
         When these word or phrases are detected through interim recordings,
         event recordings will begin.
       </Text>
-      {/* TODO The following just checks if the user is an admin, and if so, we can allow them to add keys
+      {/* TODO FYI - The following just checks if the user is an admin, and if so, we can allow them to add keys
       from here (frontend). Don't work on this part yet, just an idea...*/}
       {user.email === "user1@gmail.com" ||
         (user.email === "user2@gmail.com" && (

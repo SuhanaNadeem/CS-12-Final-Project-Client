@@ -18,7 +18,7 @@ const LiveTranscription = ({ user, styles, enabled }) => {
       <Text style={styles.titleText}>Live Transcription</Text>
 
       {transcription && transcription != "" ? (
-        <Text style={styles.baseText}>{transcription.trim()}</Text>
+        <Text style={styles.baseText}>{transcription.replace(/(\r\n|\n|\r)/gm,"")}</Text>
       ) : (
         <Text style={(styles.baseText, { fontStyle: "italic" })}>
           No speaking detected.

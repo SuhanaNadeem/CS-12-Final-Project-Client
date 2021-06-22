@@ -224,7 +224,7 @@ const InterimRecording = ({
     }
 
     return () => clearInterval(interval);
-    // TODO fix this: to configure permissions as of now, you might need to uncomment the following line and
+    // TODO For me - fix this: to configure permissions as of now, you might need to uncomment the following line and
     // comment everything else in this useEffect, grant permissions through the phone, and then change it back to this original
     // commenting state
     // startRecording();

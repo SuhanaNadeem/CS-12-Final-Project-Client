@@ -39,8 +39,8 @@ const EventRecording = ({
     },
     variables: {
       message: user && user.panicMessage,
-      // TODO once you get location working, make this the message:
-      message: user && user.panicMessage + ` Sent from ${user.location}.`,
+      // TODO once you get location working in Map.jsx, make this the message:
+      // message: user && user.panicMessage + ` Sent from ${user.location}.`,
 
       phoneNumber: user && user.panicPhone,
       eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl,
@@ -63,8 +63,8 @@ const EventRecording = ({
       setLocation(location);
     })();
   }, []);
-  console.log("location.....");
-  console.log(location);
+  // console.log("location.....");
+  // console.log(location);
 
   let text = "Waiting..";
   if (errorMsg) {
@@ -155,7 +155,7 @@ const EventRecording = ({
 
   const [recording, setRecording] = useState();
 
-  // TODO: RUNS IT TWICE THE FIRST TIME
+  // TODO: For me - RUNS IT TWICE THE FIRST TIME
 
   async function startRecording() {
     try {
@@ -255,13 +255,6 @@ const EventRecording = ({
     }
   }
   const isAvailable = SMS.isAvailableAsync();
-
-  if (isAvailable) {
-    console.log("availablee");
-  } else {
-    console.log("not availablee");
-  }
-
   useEffect(() => {
     const interval = setInterval(
       async () => {

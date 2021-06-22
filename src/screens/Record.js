@@ -10,12 +10,6 @@ import Welcome from "../components/Welcome";
 import * as SMS from "expo-sms";
 import LiveTranscription from "../components/LiveTranscription";
 
-// TODO Optimize
-// TODO get and play recordings (group events fix and play together)
-// TODO page where you can see flagged tokens and add
-// TODO call/record on panic
-// TODO maps to see friends, if enabled, if panic, etc
-
 /*
   enable interim recordings
   detectDanger
@@ -64,9 +58,9 @@ const Record = ({ route, navigation }) => {
   async function sendMessage() {
     // Opens up message dialog box where user can manually enter contact + message, but the attachment is already added
     const { result } = await SMS.sendSMSAsync([], "", {
-      // TODO put the current EventRecording chunk's last url?
+      // TODO put the current EventRecording chunk's first url
       // attachments: {
-      //   uri: latestUrl,
+      //   uri: latestUrl, // CHANGE THIS
       //   mimeType: "audio/wav",
       //   filename: "myfile.wav",
       // },
@@ -98,7 +92,7 @@ const Record = ({ route, navigation }) => {
         detectedStatus={detectedStatus}
         setDetectedStatus={setDetectedStatus}
       />
-      {/* TODO move the mapping in a separate component and call it here */}
+      {/* TODO move the below to a separate component and call it here */}
       {eventRecordings &&
         eventRecordings.map((eventRecording, index) => (
           <Play
@@ -109,7 +103,7 @@ const Record = ({ route, navigation }) => {
             setIndexPlaying={setIndexPlaying}
           />
         ))}
-      {/* TODO move this and the associated mutation next to each EventRecording's play/pause/stop/delete buttons */}
+      {/* TODO move this and the associated mutation next to each EventRecording's play/pause/stop/delete buttons in Play.jsx*/}
       {/* <Button onPress={sendMessage} title="Share" /> */}
 
       <LiveTranscription user={user} styles={styles} enabled={enabled} />
@@ -118,11 +112,6 @@ const Record = ({ route, navigation }) => {
     <></>
   );
 };
-
-// TODO (1) make a mutation that stitches urls together and puts them on AWS
-// (2) make a query that goes through each EventRecording of a user and runs mutation (1), returning list of chunk urls
-// (3) map the chunk urls
-// (4) play one audio recording
 
 const styles = StyleSheet.create({
   container: {
@@ -193,6 +182,7 @@ export const GET_USER_BY_ID = gql`
       startKey
       stopKey
       panicKey
+      location
       friendIds
       requesterIds
       panicPhone
