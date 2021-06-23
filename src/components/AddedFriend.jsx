@@ -30,14 +30,16 @@ const AddedFriend = ({ friend, user }) => {
   return user && friend ? (
     <View style={styles.card}>
       <Text style={styles.cardText}>{friend.name}</Text>
-      <Icon
-        onPress={() => {
-          removeFriend();
-        }}
-        name="account-minus"
-        size={30}
-        color="#2f4f4f"
-      />
+      <View style={styles.iconContainer}>
+        <Icon
+          onPress={() => {
+            removeFriend();
+          }}
+          name="account-minus"
+          size={30}
+          color="#2f4f4f"
+        />
+      </View>
     </View>
   ) : (
     <></>

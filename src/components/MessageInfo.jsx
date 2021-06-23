@@ -4,8 +4,9 @@ import React, { useContext, useEffect, useState } from "react";
 
 import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
+import styles from "../styles/accountStyles";
 
-const MessageInfo = ({ user, styles }) => {
+const MessageInfo = ({ user }) => {
   const [values, setValues] = useState({
     userId: user && user.id,
     newPanicPhone: "",

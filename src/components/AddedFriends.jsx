@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import AddedFriend from "./AddedFriend";
@@ -13,15 +13,21 @@ const AddedFriends = ({ user }) => {
     client: userClient,
   });
 
+  const [fetchedFriends, setFetchedFriends] = useState();
+
+  useEffect(() => {
+    setFetchedFriends(friends);
+  }, [friends]);
+
   console.log("in friends:");
   console.log(friends);
-  return user && friends ? (
+  return user && fetchedFriends ? (
     <View style={{ paddingHorizontal: 25, marginBottom: 40 }}>
       <Text style={styles.titleText}>Your Friends</Text>
       <Text style={[styles.baseText, { paddingBottom: 30 }]}>
         Unfriend added users here.
       </Text>
-      {friends.map((friend, index) => (
+      {fetchedFriends.map((friend, index) => (
         <AddedFriend key={index} friend={friend} user={user} />
       ))}
     </View>

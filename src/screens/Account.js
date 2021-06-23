@@ -13,6 +13,7 @@ import FlaggedTokens from "../components/FlaggedTokens";
 import Keys from "../components/Keys";
 import Logout from "../components/Logout";
 import MessageInfo from "../components/MessageInfo";
+import styles from "../styles/accountStyles";
 
 // import NavBar from "../components/NavBar";
 import { UserAuthContext } from "../context/userAuth";
@@ -39,51 +40,14 @@ const Account = ({ route, navigation }) => {
         Here, you can manage your voice keys, login details, and more.
       </Text>
       <Logout navigation={navigation} />
-      <MessageInfo styles={styles} user={user} />
-      <Keys styles={styles} user={user} />
-      <FlaggedTokens styles={styles} user={user} />
+      <MessageInfo user={user} />
+      <Keys user={user} />
+      <FlaggedTokens user={user} />
     </ScrollView>
   ) : (
     <Text>Loading...</Text>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
-    flexDirection: "column",
-    paddingHorizontal: 25,
-  },
-  button: {
-    // flex: 1,
-    backgroundColor: "#f50",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 50,
-  },
-  baseText: {
-    paddingBottom: 20,
-  },
-  titleText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    paddingTop: 30,
-    paddingBottom: 10,
-  },
-  subTitleText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  policeText: {
-    color: "blue",
-  },
-  thiefText: {
-    color: "red",
-  },
-});
 
 export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {

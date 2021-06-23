@@ -93,7 +93,7 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
           color: "#2f4f4f",
         }}
       >
-        {String(createdAt).substring(0, 10)}
+        {String(createdAt).substring(5, 10)}
         {", "}
         {String(createdAt).substring(11, 16)}
       </Text>

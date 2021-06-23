@@ -48,7 +48,9 @@ const Requester = ({ requester, user }) => {
         <Text style={styles.cardText}>{requester.name}</Text>
         <Text style={{ fontSize: 15 }}>Add Friend</Text>
       </View>
-      <Icon name={"account-plus"} size={30} color="#2f4f4f" />
+      <View style={styles.iconContainer}>
+        <Icon name={"account-plus"} size={30} color="#2f4f4f" />{" "}
+      </View>
     </Pressable>
   ) : (
     <></>

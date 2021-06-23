@@ -18,10 +18,8 @@ export default StyleSheet.create({
     borderColor: "#2f4f4f",
     borderRadius: 15,
     borderWidth: 3,
-
     paddingVertical: 12,
     paddingHorizontal: 20,
-
     height: 55,
     overflow: "scroll",
     fontSize: 16,
@@ -30,8 +28,7 @@ export default StyleSheet.create({
 
   disabledCenteredView: {
     alignItems: "center",
-
-    paddingHorizontal: 20,
+    paddingVertical: 12,
     height: 55,
     overflow: "scroll",
     fontSize: 16,
@@ -83,16 +80,13 @@ export default StyleSheet.create({
     justifyContent: "center",
   },
   buttonBackground: {
-    flexDirection: "column",
-    paddingBottom: 15,
+    flexDirection: "row",
+    paddingTop: 15,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
+    alignContent: "center",
   },
-  disabledButtonBackground: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+
   baseText: {
     paddingBottom: 40,
     fontSize: 16,
@@ -111,9 +105,9 @@ export default StyleSheet.create({
   disabledText: {
     textTransform: "uppercase",
     fontStyle: "italic",
-    paddingTop: 14,
     fontWeight: "bold",
-    color: "gray",
+    paddingBottom: 40,
+    color: "#2f4f4f",
   },
   card: {
     width: "100%",
