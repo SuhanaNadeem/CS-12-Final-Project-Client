@@ -1,13 +1,10 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  Button,
-  StyleSheet,
   Pressable,
   Text,
-  View,
-  Image,
   ImageBackground,
+  KeyboardAvoidingView,
 } from "react-native";
 import Login from "../components/Login";
 import { UserAuthContext } from "../context/userAuth";
@@ -17,19 +14,23 @@ const Landing = ({ navigation }) => {
   const { context } = useContext(UserAuthContext);
 
   return (
-    // <View style={{ position: "absolute" }}>
-    <ImageBackground
-      source={require("../images/login.png")}
-      style={styles.container}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
     >
-      <Login navigation={navigation} />
-      <Pressable
-        onPress={() => navigation.navigate("SignUp")}
-        style={styles.end}
+      <ImageBackground
+        source={require("../images/login.png")}
+        style={styles.container}
       >
-        <Text style={styles.signupText}>New here? Sign up</Text>
-      </Pressable>
-    </ImageBackground>
+        <Login navigation={navigation} />
+        <Pressable
+          onPress={() => navigation.navigate("SignUp")}
+          style={styles.end}
+        >
+          <Text style={styles.signupText}>New here? Sign up</Text>
+        </Pressable>
+      </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 

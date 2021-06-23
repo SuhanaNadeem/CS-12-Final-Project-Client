@@ -39,8 +39,8 @@ const Search = ({ user, styles }) => {
     <View>
       <Text style={styles.titleText}>Send Friend Requests</Text>
       <Text style={styles.baseText}>
-        Request users to be friends. Note that when you make your location
-        visible, your friends will be able to see it, in case of an emergency.
+        When you make your location visible, your friends will be able to see it
+        in case of an emergency.
       </Text>
       <View
         style={{

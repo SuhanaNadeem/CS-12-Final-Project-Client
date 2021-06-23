@@ -20,7 +20,7 @@ import Map from "../components/Map";
 import { UserAuthContext } from "../context/userAuth";
 
 // Manage keys and other account info
-const Friends = ({ route, navigation }) => {
+const Track = ({ route, navigation }) => {
   const { userId } = route.params;
 
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
@@ -37,10 +37,7 @@ const Friends = ({ route, navigation }) => {
       style={{ flex: 1, backgroundColor: "white" }}
     >
       <ScrollView style={styles.container}>
-        <Search styles={styles} user={user} />
-        <Requesters styles={styles} user={user} />
-        <AddedFriends styles={styles} user={user} />
-        {/* <Map styles={styles} user={user} /> */}
+        <Map styles={styles} user={user} />
       </ScrollView>
     </KeyboardAvoidingView>
   ) : (
@@ -110,4 +107,4 @@ export const GET_USER_BY_ID = gql`
   }
 `;
 
-export default Friends;
+export default Track;

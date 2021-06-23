@@ -1,9 +1,19 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
+import { GET_FRIENDS } from "./Map";
+import { GET_FRIEND_REQUESTS } from "./Requesters";
 
-const PotentialFriend = ({ matchedUser, user, styles }) => {
+function PotentialFriend({ matchedUser, user, styles }) {
+  const { data: { getUserById: matchedUserObject } = {} } = useQuery(
+    GET_USER_BY_ID,
+    {
+      variables: { userId: matchedUser && matchedUser.id },
+      client: userClient,
+    }
+  );
+
   const [values, setValues] = useState({
     requesterId: user && user.id,
     receiverId: "",
@@ -26,6 +36,22 @@ const PotentialFriend = ({ matchedUser, user, styles }) => {
           query: GET_USER_BY_ID,
           variables: { userId: user && user.id },
         },
+        {
+          query: GET_FRIENDS,
+          variables: { userId: user && user.id },
+        },
+        {
+          query: GET_FRIEND_REQUESTS,
+          variables: { userId: user && user.id },
+        },
+        {
+          query: GET_USER_BY_ID,
+          variables: { userId: matchedUser && matchedUser.id },
+        },
+        {
+          query: GET_FRIEND_REQUESTS,
+          variables: { userId: user && user.id },
+        },
       ],
       variables: values,
       client: userClient,
@@ -37,20 +63,22 @@ const PotentialFriend = ({ matchedUser, user, styles }) => {
       <Text style={{ paddingRight: 12, color: "white" }}>
         {matchedUser.name}
       </Text>
+      <Text>,{matchedUserObject && matchedUserObject.requesterIds}</Text>
       <Button
         onPress={async () => {
           await setValues({ ...values, receiverId: matchedUser.id });
           sendFriendRequest();
         }}
         title={
-          matchedUser.requesterIds.includes(user.id)
+          matchedUserObject && matchedUserObject.requesterIds.includes(user.id)
             ? "Sent Invite"
             : user.friendIds.includes(matchedUser.id)
             ? "Added Friend"
             : "Send Invite"
         }
         disabled={
-          matchedUser.requesterIds.includes(user.id) ||
+          (matchedUserObject &&
+            matchedUserObject.requesterIds.includes(user.id)) ||
           user.friendIds.includes(matchedUser.id)
             ? true
             : false
@@ -61,7 +89,9 @@ const PotentialFriend = ({ matchedUser, user, styles }) => {
   ) : (
     <></>
   );
-};
+}
+
+// Send invite?
 
 export const SEND_FRIEND_REQUEST = gql`
   mutation sendFriendRequest($requesterId: String!, $receiverId: String!) {

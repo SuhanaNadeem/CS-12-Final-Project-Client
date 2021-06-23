@@ -1,9 +1,10 @@
+import Friends from "../screens/Friends";
+import Track from "../screens/Track";
 import Account from "../screens/Account";
 import Record from "../screens/Record";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import React from "react";
-import Friends from "../screens/Friends";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -13,7 +14,7 @@ export default function Tabs({ route }) {
   return (
     <Tab.Navigator
       initialRouteName="Record"
-      activeColor="#fff8dc"
+      activeColor="white"
       barStyle={{ backgroundColor: "#2f4f4f" }}
     >
       <Tab.Screen
@@ -28,13 +29,28 @@ export default function Tabs({ route }) {
         }}
       />
       <Tab.Screen
+        name="Track"
+        component={Track}
+        initialParams={{ userId }}
+        options={{
+          tabBarLabel: "Track",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="compass" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Friends"
         component={Friends}
         initialParams={{ userId }}
         options={{
           tabBarLabel: "Friends",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="compass" color={color} size={26} />
+            <MaterialCommunityIcons
+              name="account-group"
+              color={color}
+              size={26}
+            />
           ),
         }}
       />

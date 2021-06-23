@@ -2,17 +2,15 @@ import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
+import { GET_FRIEND_REQUESTS } from "./Requesters";
 
 const Requester = ({ requester, user, styles }) => {
-  const [values, setValues] = useState({
-    userId: user && user.id,
-    friendId: requester && requester.id,
-  });
   const [addFriend, loadingAddFriend] = useMutation(ADD_FRIEND, {
     update(_, { data: { addFriend: sendFriendRequestData } }) {
       console.log("Submitted addFriend");
     },
     onError(err) {
+      console.log("Didnt submit addFriend");
       console.log(err);
     },
     refetchQueries: [
@@ -24,8 +22,15 @@ const Requester = ({ requester, user, styles }) => {
         query: GET_FRIENDS,
         variables: { userId: user && user.id },
       },
+      {
+        query: GET_FRIEND_REQUESTS,
+        variables: { userId: user && user.id },
+      },
     ],
-    variables: values,
+    variables: {
+      userId: user && user.id,
+      requesterId: requester && requester.id,
+    },
     client: userClient,
   });
 
