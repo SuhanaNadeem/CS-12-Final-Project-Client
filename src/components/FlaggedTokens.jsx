@@ -42,20 +42,26 @@ const FlaggedTokens = ({ user }) => {
   const [tOpen, setTOpen] = useState(false);
 
   useEffect(() => {
-    //set limitedThiefTokens to the entire list
+    //set limitedThiefTokens to the entire list/limited list (toggled)
     if (thiefTokens) {
       if (tOpen) {
         setLimitedThiefTokens(thiefTokens);
-      } else {
-        setLimitedThiefTokens(thiefTokens);
+      }
+      else {
+        setLimitedThiefTokens(thiefTokens.slice(0, 5));
       }
     }
   }, [tOpen]);
 
   useEffect(() => {
-    //set limitedPoliceTokens to the entire list
-    if (pOpen && policeTokens) {
-      setLimitedPoliceTokens(policeTokens);
+    //set limitedPoliceTokens to the entire list/limited list (toggled)
+    if (policeTokens) {
+      if (pOpen) {
+        setLimitedPoliceTokens(policeTokens);
+      }
+      else {
+        setLimitedPoliceTokens(policeTokens.slice(0, 5));
+      }
     }
   }, [pOpen]);
 
@@ -78,12 +84,12 @@ const FlaggedTokens = ({ user }) => {
             type={"Police"}
           />
         ))}
-      {policeTokens && limitedPoliceTokens.length < policeTokens.length && (
+      {policeTokens && policeTokens.length > 5 && (
         <Button
           onPress={() => {
             setPOpen(!pOpen);
           }}
-          title="View more"
+          title={pOpen ? "Collapse" : "View more"}
         ></Button>
       )}
       {/*  Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
@@ -92,12 +98,12 @@ const FlaggedTokens = ({ user }) => {
         limitedThiefTokens.map((thiefToken, index) => (
           <Token key={index} style={styles} token={thiefToken} type={"Thief"} />
         ))}
-      {thiefTokens && limitedThiefTokens.length < thiefTokens.length && (
+      {thiefTokens && thiefTokens.length > 5 && (
         <Button
           onPress={() => {
             setTOpen(!tOpen);
           }}
-          title="View more"
+          title={tOpen ? "Collapse" : "View more"}
         ></Button>
       )}
     </View>

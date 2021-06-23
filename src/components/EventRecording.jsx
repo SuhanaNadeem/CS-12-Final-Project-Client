@@ -24,18 +24,6 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 // TODO For me - get the event recording group refetch to work
 
 const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
-  console.log("AWS ACCESS KEY");
-  console.log(AWS_ACCESS_KEY);
-
-  console.log("AWS SECRET KEY");
-  console.log(AWS_SECRET_KEY);
-
-  console.log("AWS REGION");
-  console.log(AWS_REGION);
-
-  console.log("S3 CS BUCKET");
-  console.log(S3_CS_BUCKET);
-
   const [latestUrl, setLatestUrl] = useState();
 
   const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
@@ -58,8 +46,6 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
               ` Sent from ${JSON.parse(user.location).coords.latitude}, ${
                 JSON.parse(user.location).coords.longitude
               }`,
-      // TODO once you get location working in Map.jsx, make this the message:
-      // message: user && user.panicMessage + ` Sent from ${user.location}.`,
 
       phoneNumber: user && user.panicPhone,
       eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl,
@@ -92,9 +78,10 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
+      {
+        setExpoPushToken(token);
+      }
     );
-
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current = Notifications.addNotificationReceivedListener(
       (notification) => {
