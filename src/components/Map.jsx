@@ -5,7 +5,7 @@ import { Audio } from "expo-av";
 import MapView from "react-native-maps";
 import * as Location from "expo-location";
 import { userClient } from "../../GraphqlApolloClients";
-// import FriendMapMarker from "./FriendMapMarker";
+import FriendMapMarker from "./FriendMapMarker";
 
 const Map = ({ user, styles }) => {
   const [location, setLocation] = useState(null);
@@ -121,6 +121,9 @@ const Map = ({ user, styles }) => {
         Here are the locations of your friends who've enabled location sharing.
       </Text>
       {/* <Text>{text}</Text> */}
+      {!location && user.locationOn &&
+      <Text>Loading location...</Text>
+      }
       <MapView style={styles.map}>
         {location && (
           <MapView.Marker
@@ -134,14 +137,12 @@ const Map = ({ user, styles }) => {
         {friends &&
           friends.map((friend, index) =>
             friend.locationOn && friend.location && friend.location != "" ? (
-              <MapView.Marker
+              <FriendMapMarker
                 key={index}
-                coordinate={JSON.parse(friend.location).coords}
-                title={friend.name}
-                description={"Your friend."}
+                friend={friend}
               />
             ) : (
-              <></>
+              <Text key={index}></Text>
             )
           )}
       </MapView>

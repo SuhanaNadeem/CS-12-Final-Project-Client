@@ -24,7 +24,7 @@ import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
-import * as Permissions from 'expo-permissions';
+// import * as Permissions from 'expo-permissions';
 
 // Fix the In-Progress misalignment
 
@@ -167,13 +167,20 @@ const InterimRecording = ({
     }
   }
 
+  const [finalStatus, setFinalStatus] = useState(false);
+  async function checkStatus() {
+    const {status: currentStatus,} = await Audio.getPermissionsAsync();
+    if (currentStatus !== "granted") {
+      await Audio.requestPermissionsAsync();
+    }
+    setFinalStatus(true);
+  }
+
   useEffect(() => {
     console.log("ennterin");
-    const { status } = Permissions.getAsync(Permissions.AUDIO_RECORDING);
-    if (status !== 'granted') {
-      Audio.requestPermissionsAsync();
-    }
-    else {
+    // const { status } = Permissions.getAsync(Permissions.AUDIO_RECORDING);
+    checkStatus();
+    if (finalStatus) {
       const interval = setInterval(
         async () => {
           if (
@@ -206,7 +213,7 @@ const InterimRecording = ({
       return () => clearInterval(interval);
     }
     // startRecording();
-  }, [enabled, start, detectedStatus]);
+  }, [enabled, start, detectedStatus, finalStatus]);
 
   return (
     <View>
