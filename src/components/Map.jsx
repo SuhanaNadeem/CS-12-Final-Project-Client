@@ -72,7 +72,7 @@ const Map = ({ user, styles }) => {
     const interval = setInterval(async () => {
       console.log("interval function entered");
       updateLocation();
-    }, 7000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [location]);
@@ -108,20 +108,20 @@ const Map = ({ user, styles }) => {
     }
   }
 
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
+  // let text = "Waiting..";
+  // if (errorMsg) {
+  //   text = errorMsg;
+  // } else if (location) {
+  //   text = JSON.stringify(location);
+  // }
 
   return user && styles ? (
-    <View>
+    <View style={{justifyContent: "center", alignItems: "center"}}>
       <Text style={styles.titleText}>Locations</Text>
       <Text style={styles.baseText}>
         Here are the locations of your friends who've enabled location sharing.
       </Text>
-      <Text>{text}</Text>
+      {/* <Text>{text}</Text> */}
       <MapView style={styles.map}>
         {location && (
           <MapView.Marker

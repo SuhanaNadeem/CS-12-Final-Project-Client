@@ -5,6 +5,7 @@ import { Audio } from "expo-av";
 import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
+import * as SMS from "expo-sms";
 
 const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
   // TODO rn when you hit pause and then hit play again, it starts from the beginning. It should start where you left off
@@ -85,6 +86,20 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
     }
   }
 
+  // TODO as mentioned below, this needs to be moved...
+  async function sendMessage() {
+    // Opens up message dialog box where user can manually enter contact + message, but the attachment is already added
+    const { result } = await SMS.sendSMSAsync([], "", {
+      // TODO put the current EventRecording chunk's first url
+      attachments: {
+        uri: eventRecording.eventRecordingUrls[eventRecordingUrls.length - 1], // CHANGE THIS
+        mimeType: "audio/wav",
+        filename: "myfile.wav",
+      },
+    });
+    console.log(result);
+  }
+
   return (
     <Pressable style={styles.card}>
       <Text
@@ -105,8 +120,16 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
           color="#2f4f4f"
         />
         <Icon
+          onPress={sendMessage}
           style={{ paddingLeft: 14 }}
           name="share"
+          size={30}
+          color="#2f4f4f"
+        />
+        <Icon
+          // onPress={}
+          style={{ paddingLeft: 14 }}
+          name="trash"
           size={30}
           color="#2f4f4f"
         />
@@ -115,4 +138,9 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
   );
 };
 
+export const DELETE_EVENT_RECORDING = gql`
+  mutation deleteEventRecording($eventRecordingId: String!) {
+    deleteEventRecording(eventRecordingId: $eventRecordingId)
+  }
+`;
 export default PlayShareRemove;

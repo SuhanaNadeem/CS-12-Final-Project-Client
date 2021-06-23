@@ -24,6 +24,18 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 // TODO For me - get the event recording group refetch to work
 
 const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
+  console.log("AWS ACCESS KEY");
+  console.log(AWS_ACCESS_KEY);
+
+  console.log("AWS SECRET KEY");
+  console.log(AWS_SECRET_KEY);
+
+  console.log("AWS REGION");
+  console.log(AWS_REGION);
+
+  console.log("S3 CS BUCKET");
+  console.log(S3_CS_BUCKET);
+
   const [latestUrl, setLatestUrl] = useState();
 
   const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
@@ -37,7 +49,8 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       console.log(err);
     },
     variables: {
-      message: user && user.panicMessage,
+      // message: user && user.panicMessage,
+      message: user.location == "" ? user && user.panicMessage : user && user.panicMessage + ` Sent from ${JSON.parse(user.location).coords.latitude}, ${JSON.parse(user.location).coords.longitude}`,
       // TODO once you get location working in Map.jsx, make this the message:
       // message: user && user.panicMessage + ` Sent from ${user.location}.`,
 
@@ -188,8 +201,10 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       };
 
       await RNS3.put(file, options).then(async (response) => {
-        if (response.status !== 201)
+        if (response.status !== 201) {
+          console.log("There is an error here!")
           throw new Error("Failed to upload recording to S3");
+        }
         console.log("event recording:");
         console.log(response.body.postResponse.location);
         if (detectedStatus === "start") {
@@ -219,6 +234,8 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       // console.error("Failed to stop recording", err);
     }
   }
+
+
   useEffect(() => {
     const interval = setInterval(
       async () => {

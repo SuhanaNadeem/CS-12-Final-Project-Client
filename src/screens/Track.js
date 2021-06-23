@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get("window").height / 2.5,
-    height: Dimensions.get("window").height / 2,
+    height: Dimensions.get("window").height / 2
   },
   baseText: {
     paddingBottom: 20,
