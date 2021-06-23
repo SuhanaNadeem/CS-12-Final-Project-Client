@@ -7,7 +7,7 @@ export default StyleSheet.create({
     // alignItems: "center",
     // justifyContent: "center",
     flexDirection: "column",
-    paddingHorizontal: 25,
+    // paddingHorizontal: 25,
   },
 
   titleText: {
@@ -18,10 +18,29 @@ export default StyleSheet.create({
     paddingBottom: 10,
   },
   centeredView: {
-    flex: 1,
-    justifyContent: "center",
+    // flex: 1,
+    // justifyContent: "center",
+    // flexDirection: "column",
     alignItems: "center",
-    marginTop: 22,
+    borderColor: "#2f4f4f",
+    borderRadius: 15,
+    borderWidth: 3,
+    // padding: 12,
+    // backgroundColor: "white",
+    // height: 50,
+    // width: "50%",
+
+    paddingVertical: 12,
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    // marginVertical: 12,
+    marginHorizontal: 115,
+    // width: "100%",
+    height: 55,
+    overflow: "scroll",
+    borderRadius: 15,
+    fontSize: 16,
+    textAlign: "center",
   },
   modalView: {
     margin: 60,
@@ -79,16 +98,26 @@ export default StyleSheet.create({
     resizeMode: "cover",
     justifyContent: "center",
   },
-  image: {
-    width: "100%",
-    resizeMode: "cover", // or 'stretch'
+  bodyImage: {
+    marginTop: 40,
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
   },
-  centered: {
+  gif: {
+    width: 75,
+    height: 75,
     flexDirection: "column",
-
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+  },
+  gifBackground: {
+    flexDirection: "column",
+    marginTop: 40,
+    paddingVertical: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#2f4f4f",
   },
   loginText: {
     flexDirection: "column",
@@ -107,6 +136,11 @@ export default StyleSheet.create({
   baseText: {
     paddingBottom: 40,
   },
+  pressableText: {
+    textTransform: "uppercase",
+    fontWeight: "bold",
+    paddingBottom: 40,
+  },
   loginText: {
     fontSize: 22,
     color: "white",
@@ -119,7 +153,7 @@ export default StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: "bold",
-    paddingTop: 30,
+    paddingTop: 40,
     paddingBottom: 10,
   },
   input: {

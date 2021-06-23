@@ -54,10 +54,6 @@ const Record = ({ route, navigation }) => {
 
   return user ? (
     <>
-      <Image
-        source={require("../images/record1.png")}
-        style={styles.image}
-      ></Image>
       <ScrollView style={styles.container}>
         <Welcome
           userId={userId}

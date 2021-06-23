@@ -40,7 +40,11 @@ const Login = ({ navigation }) => {
       {/* <ImageBackground source={pageBg} style={styles.image}> */}
       <View style={styles.formContainer}>
         <View style={styles.centered}>
-          <Icon name="binoculars" size={50} color="white" />
+          <Image
+            source={require("../images/logo.png")}
+            style={{ width: 100, height: 100 }}
+          ></Image>
+          {/* <Icon name="binoculars" size={50} color="white" /> */}
         </View>
         <Text style={styles.formText}>Email</Text>
         <TextInput

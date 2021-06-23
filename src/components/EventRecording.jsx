@@ -1,6 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState, useEffect, useRef } from "react";
-import { Button, View, Text, StyleSheet } from "react-native";
+import { Button, View, Text, Image, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { Audio } from "expo-av";
 import { RNS3 } from "react-native-aws3";
@@ -56,31 +56,6 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
     client: userClient,
   });
 
-  const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
-  }, []);
-  // console.log("location.....");
-  // console.log(location);
-
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
-
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -88,14 +63,6 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       shouldSetBadge: false,
     }),
   });
-
-  /* 1. Wait for the rest of 30 sec to be finished
- 2. Send it to AWS
- 3. Convert it to bytes
- 4. Pass 2 and 3 into the backend
- 5. Run transcription (takes time)
- 6. Transcription matching
- 7. Return "stop" if applicable */
 
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
@@ -170,10 +137,6 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       console.log("event's startRecording is detectedStatus");
       console.log(detectedStatus);
 
-      // console.log("entered start in record.jsx");
-
-      // setEnabled({ ...enabled, inProgress: true });
-
       await Audio.requestPermissionsAsync();
 
       await Audio.setAudioModeAsync({
@@ -194,16 +157,12 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
 
       setRecording(recording);
     } catch (err) {
-      // console.log("err in record.jsx start");
       // console.error("Failed to start recording", err);
     }
   }
 
   async function stopRecording() {
     try {
-      // console.log("entered stop in record.jsx");
-      // setEnabled({ ...enabled, inProgress: false });
-
       await recording.stopAndUnloadAsync();
       setRecording(undefined);
 
@@ -248,7 +207,6 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
             handleDanger();
           });
         }
-        // }
       });
 
       await Audio.setAudioModeAsync({
@@ -256,13 +214,10 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
         playsInSilentModeIOS: true,
         staysActiveInBackground: true,
       });
-      // const { sound } = await recording.createNewLoadedSoundAsync({});
-      // setSoundToPlay(sound);
     } catch (err) {
-      // console.log("err in record.jsx stop");
+      // console.error("Failed to stop recording", err);
     }
   }
-  const isAvailable = SMS.isAvailableAsync();
   useEffect(() => {
     const interval = setInterval(
       async () => {
@@ -299,14 +254,23 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
 
   return user ? (
     <View>
-      <Text style={styles.titleText}>Event Recordings</Text>
+      <Image
+        source={require("../images/record2.png")}
+        style={styles.bodyImage}
+      ></Image>
+      <View style={{ paddingHorizontal: 25 }}>
+        <Text style={styles.titleText}>Event Recordings</Text>
+        <Text style={styles.baseText}>
+          You can manually start a recording below, when you anticipate danger.
+        </Text>
+        <Text style={styles.baseText}>
+          You can also say your 'start' key or rely on our danger-detection in
+          this case, if you've allowed background recordings.
+        </Text>
+      </View>
 
-      <Text style={styles.baseText}>
-        Start, stop, and view your recordings here.
-      </Text>
-
-      <Button
-        title={detectedStatus == "start" ? "Stop" : "Start"}
+      <Pressable
+        style={styles.centeredView}
         onPress={async () => {
           if (expoPushToken) {
             await sendPushNotification({
@@ -325,7 +289,11 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
             setDetectedStatus("start");
           }
         }}
-      />
+      >
+        <Text style={styles.pressableText}>
+          {detectedStatus == "start" ? "Stop" : "Start"}
+        </Text>
+      </Pressable>
     </View>
   ) : (
     <Text>Loading...</Text>
