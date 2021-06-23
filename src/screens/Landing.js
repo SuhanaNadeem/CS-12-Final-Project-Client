@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import Login from "../components/Login";
 import { UserAuthContext } from "../context/userAuth";
-import styles from "../styles/landing";
+import styles from "../styles/landingStyles";
 
 const Landing = ({ navigation }) => {
   const { context } = useContext(UserAuthContext);

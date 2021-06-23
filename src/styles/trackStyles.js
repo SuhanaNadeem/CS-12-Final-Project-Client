@@ -1,13 +1,24 @@
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
+  map: {
+    width: Dimensions.get("window").height / 2.5,
+    height: Dimensions.get("window").height / 2,
+  },
   container: {
-    // flex: 1,
     backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
     flexDirection: "column",
-    // paddingHorizontal: 25,
+  },
+  iconAndText: {
+    alignItems: "center",
+    paddingVertical: 16,
+    marginVertical: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    borderRadius: 32,
+    shadowRadius: 32,
+    color: "white",
+    backgroundColor: "#2f4f4f",
   },
 
   titleText: {
@@ -18,27 +29,26 @@ export default StyleSheet.create({
     paddingBottom: 10,
   },
   centeredView: {
-    // flex: 1,
-    // justifyContent: "center",
-    // flexDirection: "column",
     alignItems: "center",
     borderColor: "#2f4f4f",
     borderRadius: 15,
     borderWidth: 3,
-    // padding: 12,
-    // backgroundColor: "white",
-    // height: 50,
-    // width: "50%",
 
     paddingVertical: 12,
-    backgroundColor: "white",
     paddingHorizontal: 20,
-    // marginVertical: 12,
-    marginHorizontal: 115,
-    // width: "100%",
+
     height: 55,
     overflow: "scroll",
-    borderRadius: 15,
+    fontSize: 16,
+    textAlign: "center",
+  },
+
+  disabledCenteredView: {
+    alignItems: "center",
+
+    paddingHorizontal: 20,
+    height: 55,
+    overflow: "scroll",
     fontSize: 16,
     textAlign: "center",
   },
@@ -84,13 +94,6 @@ export default StyleSheet.create({
     color: "white",
   },
   new: {
-    // backgroundColor: "white",
-    // alignItems: "center",
-    // justifyContent: "center",
-    // borderRadius: 20,
-    // marginTop: 50,
-    // width: 100,
-    // height: 50,
     color: "white",
   },
   image: {
@@ -105,11 +108,20 @@ export default StyleSheet.create({
     justifyContent: "center",
   },
   gif: {
-    width: 75,
-    height: 75,
+    width: 55,
+    height: 55,
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+  },
+  newGif: {
+    width: 55,
+    height: 55,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 15,
+    marginLeft: 10,
   },
   gifBackground: {
     flexDirection: "column",
@@ -118,6 +130,17 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#2f4f4f",
+  },
+  buttonBackground: {
+    flexDirection: "column",
+    paddingBottom: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  disabledButtonBackground: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
   loginText: {
     flexDirection: "column",
@@ -135,15 +158,53 @@ export default StyleSheet.create({
   },
   baseText: {
     paddingBottom: 40,
+    fontSize: 16,
+  },
+  baseTextEmphasized: {
+    paddingBottom: 40,
+    fontSize: 16,
+    fontStyle: "italic",
   },
   pressableText: {
     textTransform: "uppercase",
     fontWeight: "bold",
     paddingBottom: 40,
+    color: "#2f4f4f",
+  },
+  disabledText: {
+    textTransform: "uppercase",
+    fontStyle: "italic",
+    paddingTop: 14,
+    fontWeight: "bold",
+    color: "gray",
   },
   loginText: {
     fontSize: 22,
     color: "white",
+  },
+  card: {
+    width: "100%",
+    flexDirection: "row",
+    marginVertical: 8,
+    borderRadius: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderColor: "#2f4f4f",
+    borderWidth: 4,
+    elevation: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 70,
+  },
+  iconContainer: {
+    shadowColor: "#2f4f4f",
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 14,
+    justifyContent: "center",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 1,
   },
   signupText: {
     fontSize: 20,
@@ -155,6 +216,7 @@ export default StyleSheet.create({
     fontWeight: "bold",
     paddingTop: 40,
     paddingBottom: 10,
+    color: "#2f4f4f",
   },
   input: {
     paddingVertical: 6,

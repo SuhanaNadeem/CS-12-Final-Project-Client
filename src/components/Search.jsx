@@ -4,58 +4,40 @@ import React, { useContext, useEffect, useState } from "react";
 import { userClient } from "../../GraphqlApolloClients";
 import { View, TextInput, Button, Text } from "react-native";
 import PotentialFriends from "./PotentialFriends";
+import styles from "../styles/friendsStyles";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
-const Search = ({ user, styles }) => {
-  console.log("Enters Search bar");
+const Search = ({ user }) => {
   const [name, setName] = useState("");
   const [matchedUsers, setMatchedUsers] = useState();
 
-  //   const [getUserMatches, { data: { getUserMatches: matchedUsers } = {} }] = useQuery(
-  //     GET_USER_MATCHES,
-  //     {
-  //       variables: { name },
-  //       client: userClient,
-  //     }
-  //   );
   const [
     getUserMatches,
     { loading, data: { getUserMatches: fetchedUsers } = {} },
   ] = useLazyQuery(GET_USER_MATCHES, {
-    // variables: { name: values.name },
-    // update(_) {
-    //   console.log("Got users");
-    //   setName("");
-    // },
     onCompleted() {
-      console.log("Got users");
-      //   console.log(matchedUsers.length);
-      //   setName("");
       setMatchedUsers(fetchedUsers);
     },
     client: userClient,
   });
 
   return (
-    <View>
+    <View style={{ paddingHorizontal: 25 }}>
       <Text style={styles.titleText}>Send Friend Requests</Text>
       <Text style={styles.baseText}>
         When you make your location visible, your friends will be able to see it
         in case of an emergency.
       </Text>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          flex: "flex",
-        }}
-      >
+      <View style={styles.searchBar}>
         <TextInput
+          style={{ color: "white", fontSize: 16, overflow: "hidden" }}
           onChangeText={(text) => setName(text)}
           value={name}
-          style={{ overflow: "hidden" }}
           placeholder={"Search users here"}
+          placeholderTextColor="white"
         />
-        <Button
+
+        <Icon
           onPress={() => {
             console.log("Enters properly");
             //   console.log(values.name);
@@ -64,31 +46,55 @@ const Search = ({ user, styles }) => {
             });
             console.log("Exits properly");
           }}
-          title="Search"
+          name="search"
+          size={25}
+          color="white"
         />
       </View>
       {matchedUsers && matchedUsers.length != 0 ? (
-        <PotentialFriends
-          matchedUsers={matchedUsers}
-          styles={styles}
-          user={user}
-        />
+        <PotentialFriends name={name} matchedUsers={matchedUsers} user={user} />
       ) : (
         matchedUsers &&
         matchedUsers.length == 0 && (
-          <Text style={(styles.bodyText, { justifyContent: "center" })}>
-            No matches
-          </Text>
+          <View
+            style={{
+              alignContent: "center",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontStyle: "italic",
+                paddingBottom: 18,
+              }}
+            >
+              No matches
+            </Text>
+          </View>
         )
       )}
       {matchedUsers && (
-        <Button
-          onPress={() => {
-            setMatchedUsers();
-            setName("");
+        <View
+          style={{
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+            marginBottom: 40,
           }}
-          title="Clear Search"
-        />
+        >
+          <Icon
+            onPress={() => {
+              setMatchedUsers();
+              setName("");
+            }}
+            size={40}
+            color="#2f4f4f"
+            name="times"
+          />
+        </View>
       )}
     </View>
   );

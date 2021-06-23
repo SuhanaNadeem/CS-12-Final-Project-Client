@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import Requester from "./Requester";
+import styles from "../styles/friendsStyles";
 
-const Requesters = ({ user, styles }) => {
+const Requesters = ({ user }) => {
   const { data: { getFriendRequests: requesters } = {} } = useQuery(
     GET_FRIEND_REQUESTS,
     {
@@ -13,25 +14,22 @@ const Requesters = ({ user, styles }) => {
     }
   );
 
-  console.log("in friend requests:");
-  console.log(requesters);
   return user && requesters ? (
-    <View>
-      <Text style={styles.titleText}>Add Friends</Text>
+    <View style={{ paddingHorizontal: 25 }}>
+      <Text style={styles.bareTitleText}>Add Friends</Text>
       <Text style={styles.baseText}>
         You can add users who have requested to be your friend here.
       </Text>
-      {requesters.map((requester, index) => (
-        <Requester
-          key={index}
-          requester={requester}
-          styles={styles}
-          user={user}
-        />
-      ))}
+      {requesters.length != 0 && (
+        <View style={{ marginTop: 30 }}>
+          {requesters.map((requester, index) => (
+            <Requester key={index} requester={requester} user={user} />
+          ))}
+        </View>
+      )}
     </View>
   ) : (
-    <View></View>
+    <Text></Text>
   );
 };
 

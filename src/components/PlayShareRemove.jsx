@@ -1,16 +1,16 @@
 import { gql, useQuery, useMutation } from "@apollo/client";
 import React, { useEffect, useState } from "react";
-import { Button, View, Text } from "react-native";
+import { Button, View, Text, Pressable } from "react-native";
 import { Audio } from "expo-av";
 import { userClient } from "../../GraphqlApolloClients";
+import styles from "../styles/recordStyles";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
   // TODO rn when you hit pause and then hit play again, it starts from the beginning. It should start where you left off
 
   //  TODO use ternaries in the return() to check the value of playing to do the following:
   //  - show play/pause icons appropriately (replace the text),
-  //  - show 'share' icon that opens up the message dialogue box, passing the first eventRecordingUrl of this current group as an attachment
-  //    (phone # and message will be manually filled by the user) -- SEE RECORD FOR SMS CODE
   //  - 'remove' icon that deletes this entire group on press using the appropriate (already-made) mutation...
   //     needs to have getEventRecordingsByUser in refetchQueries
   //  - if you have time -- allow replay (show a replay icon) - make another function for replay
@@ -86,14 +86,32 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
   }
 
   return (
-    <View>
-      <Text>{createdAt}</Text>
-      {/* TODO format the above createdAt prettier... */}
-      <Button
-        title={playing ? "Pause" : "Play"}
-        onPress={playing ? stopPlaying : startPlaying}
-      />
-    </View>
+    <Pressable style={styles.card}>
+      <Text
+        style={{
+          fontSize: 16,
+          color: "#2f4f4f",
+        }}
+      >
+        {String(createdAt).substring(0, 10)}
+        {", "}
+        {String(createdAt).substring(11, 16)}
+      </Text>
+      <View style={styles.iconContainer}>
+        <Icon
+          onPress={playing ? stopPlaying : startPlaying}
+          name={playing ? "stop-circle" : "play-circle"}
+          size={40}
+          color="#2f4f4f"
+        />
+        <Icon
+          style={{ paddingLeft: 14 }}
+          name="share"
+          size={30}
+          color="#2f4f4f"
+        />
+      </View>
+    </Pressable>
   );
 };
 

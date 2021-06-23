@@ -17,7 +17,7 @@ import * as SMS from "expo-sms";
 import LiveTranscription from "../components/LiveTranscription";
 import RecordingPlayback from "../components/RecordingPlayback";
 
-import styles from "../styles/record";
+import styles from "../styles/recordStyles";
 
 const Record = ({ route, navigation }) => {
   const { userId } = route.params;
@@ -61,6 +61,8 @@ const Record = ({ route, navigation }) => {
           setWelcomeOpen={setWelcomeOpen}
           styles={styles}
         />
+        <LiveTranscription user={user} styles={styles} enabled={enabled} />
+
         <InterimRecording
           user={user}
           navigation={navigation}
@@ -76,11 +78,7 @@ const Record = ({ route, navigation }) => {
           detectedStatus={detectedStatus}
           setDetectedStatus={setDetectedStatus}
         />
-        <LiveTranscription user={user} styles={styles} enabled={enabled} />
         <RecordingPlayback user={user} styles={styles} />
-
-        {/* TODO move this and the associated mutation next to each EventRecording's play/pause/stop/delete buttons in PlayShareRemove.jsx*/}
-        {/* <Button onPress={sendMessage} title="Share" /> */}
       </ScrollView>
     </>
   ) : (

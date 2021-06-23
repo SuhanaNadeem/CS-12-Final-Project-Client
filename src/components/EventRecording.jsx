@@ -18,7 +18,8 @@ import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
 import * as Location from "expo-location";
 import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
-import styles from "../styles/record";
+import styles from "../styles/recordStyles";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 // TODO For me - get the event recording group refetch to work
 
@@ -264,36 +265,59 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
           You can manually start a recording below, when you anticipate danger.
         </Text>
         <Text style={styles.baseText}>
-          You can also say your 'start' key or rely on our danger-detection in
-          this case, if you've allowed background recordings.
+          You can also say your 'start' voice key or rely on our
+          danger-detection, if you've allowed background recordings.
+        </Text>
+        <Text style={styles.baseText}>
+          Event recordings can be stopped for future reference with your 'stop'
+          voice key, and an emergency text message to your panic contact can be
+          sent with your 'panic' voice key.
         </Text>
       </View>
-
-      <Pressable
-        style={styles.centeredView}
-        onPress={async () => {
-          if (expoPushToken) {
-            await sendPushNotification({
-              expoPushToken,
-              data: { someData: "goeshere" },
-              title: "Danger Handling",
-              body:
-                detectedStatus === "start" // need to print the opposite because setting happens after
-                  ? "Event recording has been stopped and will be handled"
-                  : detectedStatus === "stop" && "Event recording has started",
-            });
-          }
-          if (detectedStatus === "start") {
-            setDetectedStatus("stop");
-          } else if (detectedStatus === "stop") {
-            setDetectedStatus("start");
-          }
-        }}
-      >
-        <Text style={styles.pressableText}>
-          {detectedStatus == "start" ? "Stop" : "Start"}
-        </Text>
-      </Pressable>
+      <View style={styles.buttonBackground}>
+        <Icon
+          style={{ marginBottom: 15 }}
+          name={detectedStatus == "start" ? "microphone" : "microphone-slash"}
+          size={30}
+          color="#2f4f4f"
+        />
+        <Pressable
+          style={({ pressed }) => [
+            {
+              shadowColor: "#2f4f4f",
+              shadowOffset: pressed
+                ? { width: 0, height: 1 }
+                : { width: 0, height: 0 },
+              shadowOpacity: pressed ? 0.8 : 0,
+              shadowRadius: pressed ? 0 : 1,
+            },
+            styles.centeredView,
+          ]}
+          onPress={async () => {
+            if (expoPushToken) {
+              await sendPushNotification({
+                expoPushToken,
+                data: { someData: "goeshere" },
+                title: "Danger Handling",
+                body:
+                  detectedStatus === "start" // need to print the opposite because setting happens after
+                    ? "Event recording has been stopped and will be handled"
+                    : detectedStatus === "stop" &&
+                      "Event recording has started",
+              });
+            }
+            if (detectedStatus === "start") {
+              setDetectedStatus("stop");
+            } else if (detectedStatus === "stop") {
+              setDetectedStatus("start");
+            }
+          }}
+        >
+          <Text style={styles.pressableText}>
+            {detectedStatus == "start" ? "Stop" : "Start"}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   ) : (
     <Text>Loading...</Text>

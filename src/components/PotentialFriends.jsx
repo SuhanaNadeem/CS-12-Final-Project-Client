@@ -2,8 +2,9 @@ import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { Button, View, Text } from "react-native";
 import PotentialFriend from "./PotentialFriend";
+import styles from "../styles/friendsStyles";
 
-const PotentialFriends = ({ matchedUsers, user, styles }) => {
+const PotentialFriends = ({ name, matchedUsers, user }) => {
   // console.log("In users");
   // console.log("users in here:");
   // console.log(users);
@@ -13,9 +14,9 @@ const PotentialFriends = ({ matchedUsers, user, styles }) => {
         (matchedUser, index) =>
           matchedUser.id != user.id && (
             <PotentialFriend
+              name={name}
               key={index}
               matchedUser={matchedUser}
-              styles={styles}
               user={user}
             />
           )

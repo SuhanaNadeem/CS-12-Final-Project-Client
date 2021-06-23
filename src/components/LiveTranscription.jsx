@@ -1,28 +1,35 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import styles from "../styles/recordStyles";
 
-const LiveTranscription = ({ user, styles, enabled }) => {
-  const { data: { getTranscriptionByUser: transcription } = {} } = useQuery(
+const LiveTranscription = ({ user, enabled }) => {
+  const [currentTranscription, setCurrentTranscription] = useState("");
+
+  var { data: { getTranscriptionByUser: transcription } = {} } = useQuery(
     GET_TRANSCRIPTION_BY_USER,
     {
       variables: { userId: user && user.id },
       client: userClient,
     }
   );
+  useEffect(() => {
+    setCurrentTranscription(transcription);
+  }, [transcription]);
+  console.log("Inside live transcri");
+  console.log(transcription);
 
   return enabled ? (
-    <View>
+    <View style={{ paddingHorizontal: 25 }}>
       <Text style={styles.titleText}>Live Transcription</Text>
-
-      {transcription && transcription != "" ? (
-        <Text style={styles.baseText}>{transcription.replace(/(\r\n|\n|\r)/gm,"")}</Text>
-      ) : (
-        <Text style={(styles.baseText, { fontStyle: "italic" })}>
-          No speaking detected.
+      {currentTranscription && currentTranscription != "" ? (
+        <Text style={styles.baseText}>
+          {currentTranscription.replace(/(\r\n|\n|\r)/gm, "")}
         </Text>
+      ) : (
+        <Text style={styles.baseTextEmphasized}>No speaking detected.</Text>
       )}
     </View>
   ) : (

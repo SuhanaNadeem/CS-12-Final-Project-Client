@@ -1,0 +1,166 @@
+import { StyleSheet } from "react-native";
+
+export default StyleSheet.create({
+  container: {
+    backgroundColor: "#fff",
+    flexDirection: "column",
+  },
+
+  titleText: {
+    fontSize: 20,
+    color: "#2f4f4f",
+    fontWeight: "bold",
+    paddingTop: 30,
+    paddingBottom: 10,
+  },
+  centeredView: {
+    alignItems: "center",
+    borderColor: "#2f4f4f",
+    borderRadius: 15,
+    borderWidth: 3,
+
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+
+    height: 55,
+    overflow: "scroll",
+    fontSize: 16,
+    textAlign: "center",
+  },
+
+  disabledCenteredView: {
+    alignItems: "center",
+
+    paddingHorizontal: 20,
+    height: 55,
+    overflow: "scroll",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  modalView: {
+    margin: 60,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: "#2f4f4f",
+    marginTop: 15,
+  },
+  textStyle: {
+    color: "white",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+  },
+  bodyImage: {
+    marginTop: 40,
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
+  },
+  buttonBackground: {
+    flexDirection: "column",
+    paddingBottom: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  disabledButtonBackground: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  baseText: {
+    paddingBottom: 40,
+    fontSize: 16,
+  },
+  baseTextEmphasized: {
+    paddingBottom: 40,
+    fontSize: 16,
+    fontStyle: "italic",
+  },
+  pressableText: {
+    textTransform: "uppercase",
+    fontWeight: "bold",
+    paddingBottom: 40,
+    color: "#2f4f4f",
+  },
+  disabledText: {
+    textTransform: "uppercase",
+    fontStyle: "italic",
+    paddingTop: 14,
+    fontWeight: "bold",
+    color: "gray",
+  },
+  card: {
+    width: "100%",
+    flexDirection: "row",
+    marginVertical: 8,
+    borderRadius: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderColor: "#2f4f4f",
+    borderWidth: 4,
+    elevation: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 70,
+  },
+  iconContainer: {
+    shadowColor: "#2f4f4f",
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 14,
+    justifyContent: "center",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 1,
+  },
+  signupText: {
+    fontSize: 20,
+    fontStyle: "italic",
+    color: "white",
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingTop: 40,
+    paddingBottom: 10,
+    color: "#2f4f4f",
+  },
+  input: {
+    paddingVertical: 6,
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    marginVertical: 12,
+    width: "100%",
+    height: 55,
+    overflow: "scroll",
+    borderRadius: 15,
+    marginBottom: 30,
+    fontSize: 16,
+  },
+});

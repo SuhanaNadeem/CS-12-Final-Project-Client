@@ -12,12 +12,8 @@ import {
   TextInput,
 } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
-import styles from "../styles/landing";
+import styles from "../styles/landingStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
-
-const pageBg = { uri: "../images/login.png" };
-
-// TODO For me - implement auto-login
 
 const Login = ({ navigation }) => {
   const context = useContext(UserAuthContext);

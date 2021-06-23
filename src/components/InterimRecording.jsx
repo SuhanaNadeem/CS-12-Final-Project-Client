@@ -22,7 +22,8 @@ import {
 } from "../util/notifications";
 import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
-import styles from "../styles/record";
+import styles from "../styles/recordStyles";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 const InterimRecording = ({
   user,
@@ -203,49 +204,85 @@ const InterimRecording = ({
       <View style={{ paddingHorizontal: 25 }}>
         <Text style={styles.titleText}>Background Recordings</Text>
         <Text style={styles.baseText}>
-          If misconduct is detected in these recordings, an Event Recording is
+          If misconduct is detected in the background, an event recording is
           triggered and stored for future reference. Background recordings
           themselves are not stored.
         </Text>
         <Text style={styles.baseText}>
-          Allow thief-, police-, and other danger-detection.
+          Allow danger-detection against thieves and police.
         </Text>
       </View>
-      <Pressable
-        disabled={detectedStatus === "start"}
-        onPress={async () => {
-          if (expoPushToken) {
-            await sendPushNotification({
-              expoPushToken,
-              title: "Danger Detection",
-              body: !enabled
-                ? "Your audio is currently being recorded to detect danger"
-                : "Recording audio to detect danger has been disabled",
-            });
-          }
-          setEnabled(!enabled);
-        }}
-        style={styles.centeredView}
+      <View
+        style={
+          detectedStatus === "start"
+            ? styles.disabledButtonBackground
+            : styles.buttonBackground
+        }
       >
-        <Text style={styles.pressableText}>
-          {enabled
-            ? detectedStatus == "start"
-              ? "In Progress"
-              : "Disallow"
-            : detectedStatus == "start"
-            ? "In Progress"
-            : "Allow"}
-        </Text>
-      </Pressable>
-
-      {enabled && (
-        <View style={styles.gifBackground}>
+        <Icon
+          style={{ marginBottom: 15 }}
+          name={
+            enabled && detectedStatus != "start"
+              ? "microphone-alt"
+              : "microphone-alt-slash"
+          }
+          size={30}
+          color="#2f4f4f"
+        />
+        <Pressable
+          disabled={detectedStatus === "start"}
+          onPress={async () => {
+            if (expoPushToken) {
+              await sendPushNotification({
+                expoPushToken,
+                title: "Danger Detection",
+                body: !enabled
+                  ? "Your audio is currently being recorded to detect danger"
+                  : "Recording audio to detect danger has been disabled",
+              });
+            }
+            setEnabled(!enabled);
+          }}
+          style={
+            detectedStatus === "start"
+              ? styles.disabledCenteredView
+              : ({ pressed }) => [
+                  {
+                    shadowColor: "#2f4f4f",
+                    shadowOffset: pressed
+                      ? { width: 0, height: 1 }
+                      : { width: 0, height: 0 },
+                    shadowOpacity: pressed ? 0.8 : 0,
+                    shadowRadius: pressed ? 0 : 1,
+                  },
+                  styles.centeredView,
+                ]
+          }
+        >
+          <Text
+            style={
+              detectedStatus === "start"
+                ? styles.disabledText
+                : styles.pressableText
+            }
+          >
+            {enabled
+              ? detectedStatus == "start"
+                ? "In-Progress"
+                : "Disallow"
+              : detectedStatus == "start"
+              ? "In-Progress"
+              : "Allow"}
+          </Text>
+        </Pressable>
+        {/* {enabled && detectedStatus != "start" && (
           <Image
-            source={require("../images/interim.gif")}
-            style={styles.gif}
+            source={require("../images/tinyLogo.gif")}
+            style={styles.newGif}
           ></Image>
-        </View>
-      )}
+        )} */}
+      </View>
+
       <StatusBar style="light" />
     </View>
   );
