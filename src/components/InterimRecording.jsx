@@ -25,6 +25,8 @@ import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
+// Fix the In-Progress misalignment
+
 const InterimRecording = ({
   user,
   detectedStatus,
@@ -203,87 +205,74 @@ const InterimRecording = ({
       ></Image>
       <View style={{ paddingHorizontal: 25 }}>
         <Text style={styles.titleText}>Background Recordings</Text>
-        <Text style={styles.baseText}>
+        {/* <Text style={styles.baseText}>
           If misconduct is detected in the background, an event recording is
           triggered and stored for future reference. Background recordings
           themselves are not stored.
-        </Text>
-        <Text style={styles.baseText}>
+        </Text>*/}
+        <Text style={{ fontSize: 16, paddingBottom: 20 }}>
           Allow danger-detection against thieves and police.
         </Text>
-      </View>
-      <View
-        style={
-          detectedStatus === "start"
-            ? styles.disabledButtonBackground
-            : styles.buttonBackground
-        }
-      >
-        <Icon
-          style={{ marginBottom: 15 }}
-          name={
-            enabled && detectedStatus != "start"
-              ? "microphone-alt"
-              : "microphone-alt-slash"
-          }
-          size={30}
-          color="#2f4f4f"
-        />
-        <Pressable
-          disabled={detectedStatus === "start"}
-          onPress={async () => {
-            if (expoPushToken) {
-              await sendPushNotification({
-                expoPushToken,
-                title: "Danger Detection",
-                body: !enabled
-                  ? "Your audio is currently being recorded to detect danger"
-                  : "Recording audio to detect danger has been disabled",
-              });
-            }
-            setEnabled(!enabled);
-          }}
-          style={
-            detectedStatus === "start"
-              ? styles.disabledCenteredView
-              : ({ pressed }) => [
-                  {
-                    shadowColor: "#2f4f4f",
-                    shadowOffset: pressed
-                      ? { width: 0, height: 1 }
-                      : { width: 0, height: 0 },
-                    shadowOpacity: pressed ? 0.8 : 0,
-                    shadowRadius: pressed ? 0 : 1,
-                  },
-                  styles.centeredView,
-                ]
-          }
-        >
-          <Text
+        <View style={styles.buttonBackground}>
+          <Pressable
+            disabled={detectedStatus === "start"}
+            onPress={async () => {
+              if (expoPushToken) {
+                await sendPushNotification({
+                  expoPushToken,
+                  title: "Danger Detection",
+                  body: !enabled
+                    ? "Your audio is currently being recorded to detect danger"
+                    : "Recording audio to detect danger has been disabled",
+                });
+              }
+              setEnabled(!enabled);
+            }}
             style={
               detectedStatus === "start"
-                ? styles.disabledText
-                : styles.pressableText
+                ? styles.disabledCenteredView
+                : ({ pressed }) => [
+                    {
+                      shadowColor: "#2f4f4f",
+                      shadowOffset: pressed
+                        ? { width: 0, height: 1 }
+                        : { width: 0, height: 0 },
+                      shadowOpacity: pressed ? 0.8 : 0,
+                      shadowRadius: pressed ? 0 : 1,
+                    },
+                    styles.centeredView,
+                  ]
             }
           >
-            {enabled
-              ? detectedStatus == "start"
+            <Text
+              style={
+                detectedStatus === "start"
+                  ? styles.disabledText
+                  : styles.pressableText
+              }
+            >
+              {enabled
+                ? detectedStatus == "start"
+                  ? "In-Progress"
+                  : "Disallow"
+                : detectedStatus == "start"
                 ? "In-Progress"
-                : "Disallow"
-              : detectedStatus == "start"
-              ? "In-Progress"
-              : "Allow"}
-          </Text>
-        </Pressable>
-        {/* {enabled && detectedStatus != "start" && (
-          <Image
-            source={require("../images/tinyLogo.gif")}
-            style={styles.newGif}
-          ></Image>
-        )} */}
+                : "Allow"}
+            </Text>
+          </Pressable>
+          <View style={styles.iconContainer}>
+            <Icon
+              name={
+                enabled && detectedStatus != "start"
+                  ? "microphone-alt"
+                  : "microphone-alt-slash"
+              }
+              size={30}
+              color="#2f4f4f"
+            />
+          </View>
+        </View>
       </View>
-
-      <StatusBar style="light" />
     </View>
   );
 };

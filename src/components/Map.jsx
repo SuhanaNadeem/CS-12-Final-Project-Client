@@ -95,8 +95,7 @@ const Map = ({ user, styles }) => {
       setLocation(location);
     }
   }
-  console.log("Friends:");
-  console.log(friends);
+
   async function toggleLocation() {
     toggleLocationOn();
     // Privacy feature, set location to empty string in case it is sent to a friend's app

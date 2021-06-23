@@ -50,7 +50,14 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
     },
     variables: {
       // message: user && user.panicMessage,
-      message: user.location == "" ? user && user.panicMessage : user && user.panicMessage + ` Sent from ${JSON.parse(user.location).coords.latitude}, ${JSON.parse(user.location).coords.longitude}`,
+      message:
+        user.location == ""
+          ? user && user.panicMessage
+          : user &&
+            user.panicMessage +
+              ` Sent from ${JSON.parse(user.location).coords.latitude}, ${
+                JSON.parse(user.location).coords.longitude
+              }`,
       // TODO once you get location working in Map.jsx, make this the message:
       // message: user && user.panicMessage + ` Sent from ${user.location}.`,
 
@@ -278,9 +285,11 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       ></Image>
       <View style={{ paddingHorizontal: 25 }}>
         <Text style={styles.titleText}>Event Recordings</Text>
-        <Text style={styles.baseText}>
-          You can manually start a recording below, when you anticipate danger.
+        <Text style={{ fontSize: 16, paddingBottom: 20 }}>
+          Start a recording when you anticipate danger or rely on your
+          voice-activated 'start' key and background danger-detection.
         </Text>
+        {/*
         <Text style={styles.baseText}>
           You can also say your 'start' voice key or rely on our
           danger-detection, if you've allowed background recordings.
@@ -289,51 +298,54 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
           Event recordings can be stopped for future reference with your 'stop'
           voice key, and an emergency text message to your panic contact can be
           sent with your 'panic' voice key.
-        </Text>
-      </View>
-      <View style={styles.buttonBackground}>
-        <Icon
-          style={{ marginBottom: 15 }}
-          name={detectedStatus == "start" ? "microphone" : "microphone-slash"}
-          size={30}
-          color="#2f4f4f"
-        />
-        <Pressable
-          style={({ pressed }) => [
-            {
-              shadowColor: "#2f4f4f",
-              shadowOffset: pressed
-                ? { width: 0, height: 1 }
-                : { width: 0, height: 0 },
-              shadowOpacity: pressed ? 0.8 : 0,
-              shadowRadius: pressed ? 0 : 1,
-            },
-            styles.centeredView,
-          ]}
-          onPress={async () => {
-            if (expoPushToken) {
-              await sendPushNotification({
-                expoPushToken,
-                data: { someData: "goeshere" },
-                title: "Danger Handling",
-                body:
-                  detectedStatus === "start" // need to print the opposite because setting happens after
-                    ? "Event recording has been stopped and will be handled"
-                    : detectedStatus === "stop" &&
-                      "Event recording has started",
-              });
-            }
-            if (detectedStatus === "start") {
-              setDetectedStatus("stop");
-            } else if (detectedStatus === "stop") {
-              setDetectedStatus("start");
-            }
-          }}
-        >
-          <Text style={styles.pressableText}>
-            {detectedStatus == "start" ? "Stop" : "Start"}
-          </Text>
-        </Pressable>
+        </Text> */}
+        <View style={styles.buttonBackground}>
+          <Pressable
+            style={({ pressed }) => [
+              {
+                shadowColor: "#2f4f4f",
+                shadowOffset: pressed
+                  ? { width: 0, height: 1 }
+                  : { width: 0, height: 0 },
+                shadowOpacity: pressed ? 0.8 : 0,
+                shadowRadius: pressed ? 0 : 1,
+              },
+              styles.centeredView,
+            ]}
+            onPress={async () => {
+              if (expoPushToken) {
+                await sendPushNotification({
+                  expoPushToken,
+                  data: { someData: "goeshere" },
+                  title: "Danger Handling",
+                  body:
+                    detectedStatus === "start" // need to print the opposite because setting happens after
+                      ? "Event recording has been stopped and will be handled"
+                      : detectedStatus === "stop" &&
+                        "Event recording has started",
+                });
+              }
+              if (detectedStatus === "start") {
+                setDetectedStatus("stop");
+              } else if (detectedStatus === "stop") {
+                setDetectedStatus("start");
+              }
+            }}
+          >
+            <Text style={styles.pressableText}>
+              {detectedStatus == "start" ? "Stop" : "Start"}
+            </Text>
+          </Pressable>
+          <View style={styles.iconContainer}>
+            <Icon
+              name={
+                detectedStatus == "start" ? "microphone" : "microphone-slash"
+              }
+              size={30}
+              color="#2f4f4f"
+            />
+          </View>
+        </View>
       </View>
     </View>
   ) : (

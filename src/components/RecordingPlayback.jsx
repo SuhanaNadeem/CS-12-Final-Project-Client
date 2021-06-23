@@ -20,7 +20,7 @@ const RecordingPlayback = ({ user }) => {
         source={require("../images/record3.png")}
         style={styles.bodyImage}
       ></Image>
-      <View style={{ paddingHorizontal: 25 }}>
+      <View style={{ paddingHorizontal: 25, marginBottom: 40 }}>
         <Text style={styles.titleText}>Saved Recordings</Text>
         {eventRecordings.map((eventRecording, index) => (
           <PlayShareRemove

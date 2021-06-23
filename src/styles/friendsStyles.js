@@ -254,7 +254,7 @@ export default StyleSheet.create({
     height: 55,
     alignContent: "center",
     alignItems: "center",
-    paddingHorizontal: 25,
+    paddingHorizontal: 20,
     paddingVertical: 5,
     backgroundColor: "#2f4f4f",
     marginVertical: 40,

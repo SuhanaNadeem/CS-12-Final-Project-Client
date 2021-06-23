@@ -88,16 +88,18 @@ function PotentialFriend({ name, matchedUser, user }) {
             : "Send Request"}
         </Text>
       </View>
-      <Icon
-        name={
-          (matchedUser && matchedUser.requesterIds.includes(user.id)) ||
-          user.friendIds.includes(matchedUser.id)
-            ? "check"
-            : "send"
-        }
-        size={30}
-        color="#2f4f4f"
-      />
+      <View style={styles.iconContainer}>
+        <Icon
+          name={
+            (matchedUser && matchedUser.requesterIds.includes(user.id)) ||
+            user.friendIds.includes(matchedUser.id)
+              ? "check"
+              : "send"
+          }
+          size={30}
+          color="#2f4f4f"
+        />
+      </View>
     </Pressable>
   ) : (
     <></>

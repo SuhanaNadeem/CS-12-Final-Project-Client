@@ -4,8 +4,9 @@ import React, { useContext, useEffect, useState } from "react";
 
 import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
+import styles from "../styles/accountStyles";
 
-const Keys = ({ user, styles }) => {
+const Keys = ({ user }) => {
   const [startKeyValues, setStartKeyValues] = useState({
     userId: user && user.id,
     startKey: "",
