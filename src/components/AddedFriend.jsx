@@ -4,7 +4,7 @@ import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import styles from "../styles/friendsStyles";
-import { GET_USER_MATCHES } from "./PotentialFriend";
+// import { GET_USER_MATCHES } from "./PotentialFriend";
 
 const AddedFriend = ({ friend, user }) => {
   const [values, setValues] = useState({
@@ -58,6 +58,28 @@ export const REMOVE_FRIEND = gql`
 export const GET_FRIENDS = gql`
   query getFriends($userId: String!) {
     getFriends(userId: $userId) {
+      id
+      name
+      password
+      email
+      startKey
+      panicKey
+      stopKey
+      createdAt
+      token
+      location
+      locationOn
+      friendIds
+      requesterIds
+      panicMessage
+      panicPhone
+    }
+  }
+`;
+
+export const GET_USER_MATCHES = gql`
+  query getUserMatches($name: String!) {
+    getUserMatches(name: $name) {
       id
       name
       password

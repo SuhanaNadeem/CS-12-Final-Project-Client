@@ -6,7 +6,6 @@ import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as SMS from "expo-sms";
-import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 
 const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
   const [soundToPlay, setSoundToPlay] = useState();
@@ -156,4 +155,16 @@ export const DELETE_EVENT_RECORDING = gql`
     deleteEventRecording(eventRecordingId: $eventRecordingId)
   }
 `;
+
+export const GET_EVENT_RECORDINGS_BY_USER = gql`
+  query getEventRecordingsByUser($userId: String!) {
+    getEventRecordingsByUser(userId: $userId) {
+      eventRecordingUrls
+      userId
+      createdAt
+      id
+    }
+  }
+`;
+
 export default PlayShareRemove;

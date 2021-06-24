@@ -2,8 +2,8 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState, useEffect } from "react";
 import { Button, View, Text, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-import { GET_FRIENDS } from "./AddedFriend";
-import { GET_FRIEND_REQUESTS } from "./Requester";
+// import { GET_FRIENDS } from "./AddedFriend";
+// import { GET_FRIEND_REQUESTS } from "./Requester";
 
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -113,24 +113,18 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
-
       name
       password
       email
-
       startKey
       panicKey
       stopKey
-
       createdAt
       token
-
       location
       locationOn
-
       friendIds
       requesterIds
-
       panicMessage
       panicPhone
     }
@@ -141,27 +135,52 @@ export const GET_USER_MATCHES = gql`
   query getUserMatches($name: String!) {
     getUserMatches(name: $name) {
       id
-
       name
       password
       email
-
       startKey
       panicKey
       stopKey
-
       createdAt
       token
-
       location
       locationOn
-
       friendIds
       requesterIds
-
       panicMessage
       panicPhone
     }
   }
 `;
+
+export const GET_FRIEND_REQUESTS = gql`
+  query getFriendRequests($userId: String!) {
+    getFriendRequests(userId: $userId) {
+      id
+      email
+      startKey
+      stopKey
+      name
+      panicKey
+    }
+  }
+`;
+
+export const GET_FRIENDS = gql`
+  query getFriends($userId: String!) {
+    getFriends(userId: $userId) {
+      id
+      email
+      startKey
+      stopKey
+      panicKey
+      friendIds
+      requesterIds
+      location
+      locationOn
+      name
+    }
+  }
+`;
+
 export default PotentialFriend;

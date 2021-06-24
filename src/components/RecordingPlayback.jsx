@@ -4,6 +4,7 @@ import { Button, View, Text, Image } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import PlayShareRemove from "./PlayShareRemove";
 import styles from "../styles/recordStyles";
+import { GET_EVENT_RECORDINGS_BY_USER } from "./PlayShareRemove";
 
 const RecordingPlayback = ({ user }) => {
   const { data: { getEventRecordingsByUser: eventRecordings } = {} } = useQuery(
@@ -36,16 +37,5 @@ const RecordingPlayback = ({ user }) => {
     <></>
   );
 };
-
-export const GET_EVENT_RECORDINGS_BY_USER = gql`
-  query getEventRecordingsByUser($userId: String!) {
-    getEventRecordingsByUser(userId: $userId) {
-      eventRecordingUrls
-      userId
-      createdAt
-      id
-    }
-  }
-`;
 
 export default RecordingPlayback;
