@@ -48,7 +48,7 @@ const Requester = ({ requester, user }) => {
         <Text style={{ fontSize: 15 }}>Add Friend</Text>
       </View>
       <View style={styles.iconContainer}>
-        <Icon name={"account-plus"} size={30} color="#2f4f4f" />{" "}
+        <Icon name={"account-plus"} size={30} color="#2f4f4f" />
       </View>
     </Pressable>
   ) : (
@@ -66,13 +66,26 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
-      email
-      startKey
-      stopKey
-      panicKey
+
       name
-      requesterIds
+      password
+      email
+
+      startKey
+      panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
       friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
     }
   }
 `;

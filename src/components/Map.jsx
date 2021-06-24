@@ -131,7 +131,6 @@ const Map = ({ user }) => {
             description={"You are here."}
           />
         )}
-        {/* {friends && friends.map((friend, index) => (friend.locationOn && friend.location && friend.location != "" && <MapView.Marker coordinate={JSON.parse(friend.location).coords} title={friend.name} description={"Your friend."}/>))} */}
         {friends &&
           friends.map((friend, index) =>
             friend.locationOn && friend.location && friend.location != "" ? (
@@ -189,15 +188,26 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
+
+      name
+      password
       email
+
       startKey
-      stopKey
       panicKey
-      friendIds
-      requesterIds
+      stopKey
+
+      createdAt
+      token
+
       location
       locationOn
-      name
+
+      friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
     }
   }
 `;

@@ -99,9 +99,12 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
     // Opens up message dialog box where user can manually enter contact + message, but the attachment is already added
     const { result } = await SMS.sendSMSAsync([], "", {
       attachments: {
-        uri: eventRecording.eventRecordingUrls[eventRecording.eventRecordingUrls.length - 1], // CHANGE THIS
+        uri:
+          eventRecording.eventRecordingUrls[
+            eventRecording.eventRecordingUrls.length - 1
+          ],
         mimeType: "audio/wav",
-        filename: "myfile.wav",
+        filename: "alert.wav",
       },
     });
     console.log(result);
@@ -115,7 +118,7 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
           color: "#2f4f4f",
         }}
       >
-        {String(createdAt).substring(5, 10)}
+        {String(createdAt).substring(2, 10)}
         {", "}
         {String(createdAt).substring(11, 16)}
       </Text>
@@ -135,10 +138,9 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
         />
         <Icon
           onPress={async () => {
-              await stopPlaying();
-              deleteEventRecording();
-            }
-          }
+            await stopPlaying();
+            deleteEventRecording();
+          }}
           style={{ paddingLeft: 14 }}
           name="trash"
           size={30}

@@ -2,11 +2,11 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState, useEffect } from "react";
 import { Button, View, Text, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-import { GET_FRIENDS } from "./Map";
-import { GET_FRIEND_REQUESTS } from "./Requesters";
+import { GET_FRIENDS } from "./AddedFriend";
+import { GET_FRIEND_REQUESTS } from "./Requester";
+
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { GET_USER_MATCHES } from "./Search";
 
 function PotentialFriend({ name, matchedUser, user }) {
   const [values, setValues] = useState({
@@ -38,10 +38,6 @@ function PotentialFriend({ name, matchedUser, user }) {
         variables: { userId: user && user.id },
       },
       {
-        query: GET_USER_BY_ID,
-        variables: { userId: matchedUser && matchedUser.id },
-      },
-      {
         query: GET_USER_MATCHES,
         variables: { name: name && name },
       },
@@ -49,7 +45,6 @@ function PotentialFriend({ name, matchedUser, user }) {
     variables: values,
     client: userClient,
   });
-  console.log("Got name " + name);
   return user && matchedUser ? (
     <Pressable
       onPress={async () => {
@@ -118,15 +113,55 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
-      email
-      startKey
-      stopKey
-      panicKey
+
       name
-      requesterIds
+      password
+      email
+
+      startKey
+      panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
       friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
     }
   }
 `;
 
+export const GET_USER_MATCHES = gql`
+  query getUserMatches($name: String!) {
+    getUserMatches(name: $name) {
+      id
+
+      name
+      password
+      email
+
+      startKey
+      panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
+      friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
+    }
+  }
+`;
 export default PotentialFriend;

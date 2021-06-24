@@ -94,7 +94,7 @@ const FlaggedTokens = ({ user }) => {
             }}
             size={35}
             color="#2f4f4f"
-            name={pOpen ? "expand-alt" : "times"}
+            name={pOpen ? "times" : "expand-alt"}
           />
         </View>
       )}
@@ -120,7 +120,7 @@ const FlaggedTokens = ({ user }) => {
             }}
             size={35}
             color="#2f4f4f"
-            name={tOpen ? "expand-alt" : "times"}
+            name={tOpen ? "times" : "expand-alt"}
           />
         </View>
       )}
@@ -137,10 +137,26 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
+
+      name
+      password
       email
+
       startKey
-      stopKey
       panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
+      friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
     }
   }
 `;

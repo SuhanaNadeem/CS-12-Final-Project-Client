@@ -113,7 +113,7 @@ export default StyleSheet.create({
     textTransform: "uppercase",
     fontStyle: "italic",
     fontWeight: "bold",
-    paddingBottom: 40,
+    paddingBottom: 30,
     color: "#2f4f4f",
   },
   card: {

@@ -21,7 +21,7 @@ const Requesters = ({ user }) => {
       <Text style={styles.baseText}>
         You can add users who have requested to be your friend here.
       </Text>
-      {requesters.length != 0 && (
+      {requesters && requesters.length != 0 && (
         <View style={{ marginTop: 30 }}>
           {requesters.map((requester, index) => (
             <Requester key={index} requester={requester} user={user} />

@@ -15,6 +15,7 @@ import Requesters from "../components/Requesters";
 import Search from "../components/Search";
 import AddedFriends from "../components/AddedFriends";
 import styles from "../styles/friendsStyles";
+import { GET_USER_BY_ID } from "../components/PotentialFriend";
 
 // Manage keys and other account info
 const Friends = ({ route }) => {
@@ -43,21 +44,21 @@ const Friends = ({ route }) => {
   );
 };
 
-export const GET_USER_BY_ID = gql`
-  query getUserById($userId: String!) {
-    getUserById(userId: $userId) {
-      id
-      email
-      startKey
-      stopKey
-      panicKey
-      friendIds
-      requesterIds
-      location
-      locationOn
-      name
-    }
-  }
-`;
+// export const GET_USER_BY_ID = gql`
+//   query getUserById($userId: String!) {
+//     getUserById(userId: $userId) {
+//       id
+//       email
+//       startKey
+//       stopKey
+//       panicKey
+//       friendIds
+//       requesterIds
+//       location
+//       locationOn
+//       name
+//     }
+//   }
+// `;
 
 export default Friends;

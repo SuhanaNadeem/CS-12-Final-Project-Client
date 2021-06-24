@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import {
   Button,
   StyleSheet,
@@ -12,6 +12,11 @@ import EventRecording from "../components/EventRecording";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
 import Welcome from "../components/Welcome";
+import * as Notifications from "expo-notifications";
+import {
+  registerForPushNotificationsAsync,
+  sendPushNotification,
+} from "../util/notifications";
 
 import * as SMS from "expo-sms";
 import LiveTranscription from "../components/LiveTranscription";
@@ -24,6 +29,46 @@ const Record = ({ route, navigation }) => {
   const { newUser } = route.params;
   const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [enabled, setEnabled] = useState(false);
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      setExpoPushToken(token);
+    });
+
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        setNotification(notification);
+      }
+    );
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log(response);
+      }
+    );
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, [notification]);
 
   useEffect(() => {
     if (newUser) {
@@ -57,12 +102,14 @@ const Record = ({ route, navigation }) => {
           setDetectedStatus={setDetectedStatus}
           enabled={enabled}
           setEnabled={setEnabled}
+          expoPushToken={expoPushToken}
         />
         <EventRecording
           user={user}
           styles={styles}
           detectedStatus={detectedStatus}
           setDetectedStatus={setDetectedStatus}
+          expoPushToken={expoPushToken}
         />
         <RecordingPlayback user={user} styles={styles} />
       </ScrollView>
