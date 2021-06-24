@@ -7,19 +7,24 @@ import { RNS3 } from "react-native-aws3";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import * as FileSystem from "expo-file-system";
-import * as Notifications from "expo-notifications";
-import * as SMS from "expo-sms";
-import {
-  registerForPushNotificationsAsync,
-  sendPushNotification,
-} from "../util/notifications";
+import { sendPushNotification } from "../util/notifications";
 import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
-import * as Location from "expo-location";
 import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
+
+/* Event recordings are triggered by (a) the user's pre-set 'start' voice key, (b) police 
+speech-detection, or (c) thief speech-detection. They are stopped by (d) the user's pre-set 'stop'
+voice key, or (e) their pre-set 'panic' key (which programmatically sends a (pre-selected) text 
+message to their emergency contact in addition to stopping the event recording). 
+
+This component handles periodic `handleDanger` mutation calls if background recordings, managed in
+InterimRecording.jsx, have picked up one of (a), (b), or (c). Each call of `handleDanger` sends the
+last audio recording (a component of the entire event) to be transcribed and analysed. As soon as a
+`handleDanger` call detects (d) or (e), the event recording is completed and appropriate action is 
+taken. */
 
 const EventRecording = ({
   user,
@@ -29,15 +34,13 @@ const EventRecording = ({
 }) => {
   const [latestUrl, setLatestUrl] = useState();
 
-  const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
-    update(_, { data: { sendTwilioSMS: message } }) {
-      console.log(message);
-    },
-    onError(err) {
-      console.log(user.panicMessage);
-      console.log(user.panicPhone);
-      console.log(err);
-    },
+  const [sendTwilioSMS] = useMutation(SEND_TWILIO_SMS, {
+    // update(_, { data: { sendTwilioSMS: message } }) {
+    //   console.log(message);
+    // },
+    // onError(err) {
+    //   console.log(err);
+    // },
     variables: {
       message:
         user.location == ""
@@ -47,10 +50,9 @@ const EventRecording = ({
             user.panicMessage +
               ` Sent from ${JSON.parse(user.location).coords.latitude}, ${
                 JSON.parse(user.location).coords.longitude
-              }`,
-
+              }`, // Append the user's current location, if available, to the 'panic' message they chose.
       phoneNumber: user && user.panicPhone,
-      eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl,
+      eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl, //
     },
     refetchQueries: [
       {
