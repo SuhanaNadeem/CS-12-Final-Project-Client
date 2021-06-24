@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Button, View, Text, Modal, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 
+// Welcome component to be displayed to the user
 const Welcome = ({ userId, welcomeOpen, setWelcomeOpen, styles }) => {
   console.log("In Welcome");
   console.log(userId);

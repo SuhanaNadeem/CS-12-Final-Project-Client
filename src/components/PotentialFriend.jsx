@@ -8,6 +8,10 @@ import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
 
+// Used by PotentialFriends.jsx to display individual users from a list of search results and give the user the option to
+// send a friend request to those users. Utilizes the sendFriendRequest mutation to add the current user to their potential friend's
+// requesterIds.
+
 function PotentialFriend({ name, matchedUser, user }) {
   const [values, setValues] = useState({
     requesterId: user && user.id,

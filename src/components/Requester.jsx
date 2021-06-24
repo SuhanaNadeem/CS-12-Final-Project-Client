@@ -6,6 +6,9 @@ import { GET_FRIENDS } from "./AddedFriend";
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
+// A component used by the Requester component that allows a user to add another user who has requested to friend them.
+// Utilizes the addFriend mutation to accept friend requests and add their userIds to the user's friendIds
+
 const Requester = ({ requester, user }) => {
   const [addFriend, loadingAddFriend] = useMutation(ADD_FRIEND, {
     update(_, { data: { addFriend: sendFriendRequestData } }) {
