@@ -62,12 +62,13 @@ const EventRecording = ({
     recordingBytes: "",
   });
   const [handleDanger] = useMutation(HANDLE_DANGER, {
-    update() {
+    update(_, { data: { handleDanger: detectedStatusData } }) {
       setHandleDangerValues({
         ...handleDangerValues,
         eventRecordingUrl: "",
         eventRecordingFileKey: "",
       });
+      setDetectedStatus(detectedStatusData);
     },
     // Live transcription needs to be updated
     refetchQueries: [

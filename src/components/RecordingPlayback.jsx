@@ -27,6 +27,10 @@ const RecordingPlayback = ({ user }) => {
       ></Image>
       <View style={{ paddingHorizontal: 25, marginBottom: 40 }}>
         <Text style={styles.titleText}>Saved Recordings</Text>
+        <Text style={{ fontSize: 16, paddingBottom: 20 }}>
+          Play back, share via text message, or delete your event recordings as
+          you'd like.
+        </Text>
         {eventRecordings.map((eventRecording, index) => (
           <PlayShareRemove
             eventRecording={eventRecording}

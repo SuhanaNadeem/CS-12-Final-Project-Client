@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/recordStyles";
@@ -11,10 +11,6 @@ Resources:
 */
 
 const LiveTranscription = ({ user, enabled }) => {
-  // Store the fetched transcription in a state to allow refetching to work as expected
-
-  // const [currentTranscription, setCurrentTranscription] = useState("");
-
   const { data: { getTranscriptionByUser: transcription } = {} } = useQuery(
     GET_TRANSCRIPTION_BY_USER,
     {
@@ -22,12 +18,6 @@ const LiveTranscription = ({ user, enabled }) => {
       client: userClient,
     }
   );
-  // useEffect(() => {
-  //   if (transcription) {
-  //     console.log
-  //     setCurrentTranscription(transcription);
-  //   }
-  // }, [transcription]);
 
   return enabled ? ( // Only display if background recordings are displayed
     <View style={{ paddingHorizontal: 25 }}>
