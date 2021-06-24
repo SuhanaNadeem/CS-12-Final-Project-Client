@@ -24,42 +24,15 @@ const wsLink = new WebSocketLink({
     onError: async (error) => {
       if (
         error.message.contains("authorization") &&
-        !(await AsyncStorage.getItem("jwtToken")) &&
-        !(await AsyncStorage.getItem("adminJwtToken"))
+        !(await AsyncStorage.getItem("jwtToken"))
       ) {
-        // Reset the WS connection for it to carry the new JWT.
         wsLink.subscriptionClient.close(false, false);
       }
     },
     connectionParams: async () => ({
-      AdminAuth: `Bearer ${await AsyncStorage.getItem("adminJwtToken")}`,
       UserAuth: `Bearer ${await AsyncStorage.getItem("jwtToken")}`,
     }),
   },
-});
-
-const adminAuthLink = setContext(async () => {
-  const adminToken = await AsyncStorage.getItem("adminJwtToken");
-  return {
-    headers: {
-      Authorization: adminToken ? `Bearer ${adminToken}` : "",
-    },
-  };
-});
-const adminLink = split(
-  ({ query }) => {
-    const { kind, operation } = getMainDefinition(query);
-    return kind === "OperationDefinition" && operation === "subscription";
-  },
-  wsLink,
-  adminAuthLink.concat(httpLink)
-);
-
-export const adminClient = new ApolloClient({
-  link: adminLink,
-  uri: backendURI,
-  cache: new InMemoryCache(),
-  defaultOptions: { watchQuery: { fetchPolicy: "cache-and-network" } },
 });
 
 const userAuthLink = setContext(async () => {

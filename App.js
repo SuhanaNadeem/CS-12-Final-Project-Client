@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { persistCache } from "apollo3-cache-persist";
 import { InMemoryCache } from "@apollo/client/cache";
 import { ApolloProvider } from "@apollo/client";
-import { adminClient } from "./GraphqlApolloClients";
+import { userClient } from "./GraphqlApolloClients";
 
 import Record from "./src/screens/Record";
 import Landing from "./src/screens/Landing";
@@ -34,7 +34,7 @@ export default function App() {
       <Text>Loading cache...</Text>
     </View>
   ) : (
-    <ApolloProvider client={adminClient}>
+    <ApolloProvider client={userClient}>
       <UserAuthProvider>
         <NavigationContainer>
           {/* <Stack.Navigator initialRouteName="Landing">
