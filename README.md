@@ -32,11 +32,12 @@ For many people, in recent times especially, simply walking the streets of their
 - Expo MapView SDK
 - Expo AV SDK
 - Google Cloud Speech-to-Text
-- **Stack**
-    - MongoDB
-    - GraphQL and Apollo
-    - React Native
-    - Expo
+
+### Stack
+- MongoDB
+- Apollo GraphQL
+- React Native
+- Expo
 
 ### Notes
 - This app relies heavily on the Google Cloud Speech-to-Text API for transcribing audio recordings as well as Amazon's S3 service for storing these recordings. As such, an internet connection is required for our app to function as intended.
