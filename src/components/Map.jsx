@@ -5,7 +5,7 @@ import { Audio } from "expo-av";
 import MapView from "react-native-maps";
 import * as Location from "expo-location";
 import { userClient } from "../../GraphqlApolloClients";
-// import FriendMapMarker from "./FriendMapMarker";
+import FriendMapMarker from "./FriendMapMarker";
 import styles from "../styles/trackStyles";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -109,12 +109,12 @@ const Map = ({ user }) => {
     }
   }
 
-  let text = "Waiting..";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
+  // let text = "Waiting..";
+  // if (errorMsg) {
+  //   text = errorMsg;
+  // } else if (location) {
+  //   text = JSON.stringify(location);
+  // }
 
   return user ? (
     <View style={{ paddingHorizontal: 25 }}>
@@ -135,14 +135,9 @@ const Map = ({ user }) => {
         {friends &&
           friends.map((friend, index) =>
             friend.locationOn && friend.location && friend.location != "" ? (
-              <MapView.Marker
-                key={index}
-                coordinate={JSON.parse(friend.location).coords}
-                title={friend.name}
-                description={"Your friend."}
-              />
+              <FriendMapMarker key={index} friend={friend} />
             ) : (
-              <></>
+              <Text key={index}></Text>
             )
           )}
       </MapView>

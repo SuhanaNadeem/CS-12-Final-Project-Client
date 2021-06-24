@@ -38,20 +38,6 @@ const Record = ({ route, navigation }) => {
     client: userClient,
   });
 
-  // TODO as mentioned below, this needs to be moved...
-  async function sendMessage() {
-    // Opens up message dialog box where user can manually enter contact + message, but the attachment is already added
-    const { result } = await SMS.sendSMSAsync([], "", {
-      // TODO put the current EventRecording chunk's first url
-      // attachments: {
-      //   uri: latestUrl, // CHANGE THIS
-      //   mimeType: "audio/wav",
-      //   filename: "myfile.wav",
-      // },
-    });
-    console.log(result);
-  }
-
   return user ? (
     <>
       <ScrollView style={styles.container}>

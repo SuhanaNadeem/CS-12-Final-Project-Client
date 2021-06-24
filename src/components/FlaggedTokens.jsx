@@ -43,20 +43,24 @@ const FlaggedTokens = ({ user }) => {
   const [tOpen, setTOpen] = useState(false);
 
   useEffect(() => {
-    //set limitedThiefTokens to the entire list
+    //set limitedThiefTokens to the entire list/limited list (toggled)
     if (thiefTokens) {
       if (tOpen) {
         setLimitedThiefTokens(thiefTokens);
       } else {
-        setLimitedThiefTokens(thiefTokens);
+        setLimitedThiefTokens(thiefTokens.slice(0, 5));
       }
     }
   }, [tOpen]);
 
   useEffect(() => {
-    //set limitedPoliceTokens to the entire list
-    if (pOpen && policeTokens) {
-      setLimitedPoliceTokens(policeTokens);
+    //set limitedPoliceTokens to the entire list/limited list (toggled)
+    if (policeTokens) {
+      if (pOpen) {
+        setLimitedPoliceTokens(policeTokens);
+      } else {
+        setLimitedPoliceTokens(policeTokens.slice(0, 5));
+      }
     }
   }, [pOpen]);
 
@@ -74,7 +78,7 @@ const FlaggedTokens = ({ user }) => {
         limitedPoliceTokens.map((policeToken, index) => (
           <Token key={index} token={policeToken} />
         ))}
-      {policeTokens && limitedPoliceTokens.length < policeTokens.length && (
+      {policeTokens && policeTokens.length > 5 && (
         <View
           style={{
             alignContent: "center",
@@ -90,7 +94,7 @@ const FlaggedTokens = ({ user }) => {
             }}
             size={35}
             color="#2f4f4f"
-            name="expand-alt"
+            name={pOpen ? "expand-alt" : "times"}
           />
         </View>
       )}
@@ -100,7 +104,7 @@ const FlaggedTokens = ({ user }) => {
         limitedThiefTokens.map((thiefToken, index) => (
           <Token key={index} token={thiefToken} />
         ))}
-      {thiefTokens && limitedThiefTokens.length < thiefTokens.length && (
+      {thiefTokens && thiefTokens.length > 5 && (
         <View
           style={{
             alignContent: "center",
@@ -116,7 +120,7 @@ const FlaggedTokens = ({ user }) => {
             }}
             size={35}
             color="#2f4f4f"
-            name="expand-alt"
+            name={tOpen ? "expand-alt" : "times"}
           />
         </View>
       )}

@@ -5,24 +5,34 @@ import { Audio } from "expo-av";
 import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
+import * as SMS from "expo-sms";
+import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 
 const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
-  // TODO rn when you hit pause and then hit play again, it starts from the beginning. It should start where you left off
-
-  //  TODO use ternaries in the return() to check the value of playing to do the following:
-  //  - show play/pause icons appropriately (replace the text),
-  //  - 'remove' icon that deletes this entire group on press using the appropriate (already-made) mutation...
-  //     needs to have getEventRecordingsByUser in refetchQueries
-  //  - if you have time -- allow replay (show a replay icon) - make another function for replay
-
-  // I think each of these PlayShareRemove should look like the cards in the right screen here: https://cdn.dribbble.com/users/481951/screenshots/7710920/media/943884515fe15857846abf4e0cf11d02.png?compress=1&resize=400x300
-  // (except with the three icons we need instead of just the one) -- you'll have to Google styling stuff
-
-  // TODO ctrl+f Awesome to see how to use icons. You'll have to google the icon lib to see what's available, and make the icons pressable
-
   const [soundToPlay, setSoundToPlay] = useState();
 
   const [playing, setPlaying] = useState(false);
+
+  const [deleteEventRecording, loadingDeleteEventRecording] = useMutation(
+    DELETE_EVENT_RECORDING,
+    {
+      update() {
+        console.log("deleteEventRecording called");
+      },
+      onError(err) {
+        console.log("Unsuccessful");
+        console.log(err);
+      },
+      refetchQueries: [
+        {
+          query: GET_EVENT_RECORDINGS_BY_USER,
+          variables: { userId: userId && userId },
+        },
+      ],
+      variables: { eventRecordingId: eventRecording && eventRecording.id },
+      client: userClient,
+    }
+  );
 
   useEffect(() => {
     return soundToPlay
@@ -85,6 +95,18 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
     }
   }
 
+  async function sendMessage() {
+    // Opens up message dialog box where user can manually enter contact + message, but the attachment is already added
+    const { result } = await SMS.sendSMSAsync([], "", {
+      attachments: {
+        uri: eventRecording.eventRecordingUrls[eventRecording.eventRecordingUrls.length - 1], // CHANGE THIS
+        mimeType: "audio/wav",
+        filename: "myfile.wav",
+      },
+    });
+    console.log(result);
+  }
+
   return (
     <Pressable style={styles.card}>
       <Text
@@ -105,8 +127,20 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
           color="#2f4f4f"
         />
         <Icon
+          onPress={sendMessage}
           style={{ paddingLeft: 14 }}
           name="share"
+          size={30}
+          color="#2f4f4f"
+        />
+        <Icon
+          onPress={async () => {
+              await stopPlaying();
+              deleteEventRecording();
+            }
+          }
+          style={{ paddingLeft: 14 }}
+          name="trash"
           size={30}
           color="#2f4f4f"
         />
@@ -115,4 +149,9 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
   );
 };
 
+export const DELETE_EVENT_RECORDING = gql`
+  mutation deleteEventRecording($eventRecordingId: String!) {
+    deleteEventRecording(eventRecordingId: $eventRecordingId)
+  }
+`;
 export default PlayShareRemove;

@@ -47,8 +47,6 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
               ` Sent from ${JSON.parse(user.location).coords.latitude}, ${
                 JSON.parse(user.location).coords.longitude
               }`,
-      // TODO once you get location working in Map.jsx, make this the message:
-      // message: user && user.panicMessage + ` Sent from ${user.location}.`,
 
       phoneNumber: user && user.panicPhone,
       eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl,
@@ -81,9 +79,10 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
+      {
+        setExpoPushToken(token);
+      }
     );
-
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current = Notifications.addNotificationReceivedListener(
       (notification) => {
@@ -197,8 +196,10 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       };
 
       await RNS3.put(file, options).then(async (response) => {
-        if (response.status !== 201)
+        if (response.status !== 201) {
+          console.log("There is an error here!")
           throw new Error("Failed to upload recording to S3");
+        }
         console.log("event recording:");
         console.log(response.body.postResponse.location);
         if (detectedStatus === "start") {
@@ -228,6 +229,8 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       // console.error("Failed to stop recording", err);
     }
   }
+
+
   useEffect(() => {
     const interval = setInterval(
       async () => {

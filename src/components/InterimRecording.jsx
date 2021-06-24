@@ -24,6 +24,7 @@ import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
+// import * as Permissions from 'expo-permissions';
 
 // Fix the In-Progress misalignment
 
@@ -48,9 +49,14 @@ const InterimRecording = ({
   const responseListener = useRef();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
+    console.log("ENTERING THIS USE EFFECT");
+    registerForPushNotificationsAsync().then((token) => {
+      console.log("token:");
+      console.log(token);
+      setExpoPushToken(token);
+    });
+    console.log("expoPushToken::");
+    console.log(expoPushToken);
 
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current = Notifications.addNotificationReceivedListener(
@@ -72,7 +78,7 @@ const InterimRecording = ({
       );
       Notifications.removeNotificationSubscription(responseListener.current);
     };
-  }, []);
+  }, [notification]);
 
   const [values, setValues] = useState({
     userId: user && user.id,
@@ -159,35 +165,53 @@ const InterimRecording = ({
     }
   }
 
+  const [finalStatus, setFinalStatus] = useState(false);
+  async function checkStatus() {
+    const { status: currentStatus } = await Audio.getPermissionsAsync();
+    if (currentStatus !== "granted") {
+      await Audio.requestPermissionsAsync();
+    }
+    setFinalStatus(true);
+  }
+
   useEffect(() => {
     console.log("ennterin");
-    const interval = setInterval(
-      async () => {
-        if (
-          enabled &&
-          // !enabled.inProgress &&
-          detectedStatus === "stop"
-        ) {
-          if (start) {
-            // console.log(1);
-            await startRecording();
-          } else {
-            // console.log(2);
-            await stopRecording();
+    // const { status } = Permissions.getAsync(Permissions.AUDIO_RECORDING);
+    checkStatus();
+    if (finalStatus) {
+      const interval = setInterval(
+        async () => {
+          if (
+            enabled &&
+            // !enabled.inProgress &&
+            detectedStatus === "stop"
+          ) {
+            if (start) {
+              // console.log(1);
+              await startRecording();
+            } else {
+              // console.log(2);
+              await stopRecording();
+            }
+            setStart(!start);
           }
-          setStart(!start);
-        }
-      },
-      start ? 50 : 10000
-    );
+        },
+        start ? 50 : 10000
+      );
 
-    if (detectedStatus === "start" || !enabled) {
-      stopRecording();
-      setStart(true);
+      // if (!enabled.allowed && !enabled.inProgress && detectedStatus === "stop") {
+      if (detectedStatus === "start" || !enabled) {
+        // if (recording) {
+        stopRecording();
+        // }
+        setStart(true);
+        // setRecording(undefined);
+      }
+
+      return () => clearInterval(interval);
     }
-
-    return () => clearInterval(interval);
-  }, [enabled, start, detectedStatus]);
+    // startRecording();
+  }, [enabled, start, detectedStatus, finalStatus]);
 
   return (
     <View>
@@ -210,6 +234,7 @@ const InterimRecording = ({
             disabled={detectedStatus === "start"}
             onPress={async () => {
               if (expoPushToken) {
+                console.log("ENTERS THIS");
                 await sendPushNotification({
                   expoPushToken,
                   title: "Danger Detection",
