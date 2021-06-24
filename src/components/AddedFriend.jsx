@@ -1,23 +1,20 @@
 import { gql, useMutation } from "@apollo/client";
-import React, { useState } from "react";
-import { Button, View, Text } from "react-native";
+import React from "react";
+import { View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import styles from "../styles/friendsStyles";
-// import { GET_USER_MATCHES } from "./PotentialFriend";
+
+/* Displays a user that has already been added as a friend by the current user. */
 
 const AddedFriend = ({ friend, user }) => {
-  const [values, setValues] = useState({
-    userId: user && user.id,
-    friendId: friend && friend.id,
-  });
   const [removeFriend] = useMutation(REMOVE_FRIEND, {
-    update() {
-      console.log("Submitted removeFriend");
-    },
-    onError(err) {
-      console.log(err);
-    },
+    // update() {
+    //   console.log("Submitted removeFriend");
+    // },
+    // onError(err) {
+    //   console.log(err);
+    // },
     refetchQueries: [
       {
         query: GET_FRIENDS,
@@ -28,10 +25,14 @@ const AddedFriend = ({ friend, user }) => {
         variables: { name: user && user.name },
       },
     ],
-    variables: values,
+    variables: {
+      userId: user && user.id,
+      friendId: friend && friend.id,
+    },
     client: userClient,
   });
 
+  // Once `user` and `friend` have loaded, display the friend's name and allow them to be "unfriended"
   return user && friend ? (
     <View style={styles.card}>
       <Text style={styles.cardText}>{friend.name}</Text>
@@ -50,6 +51,7 @@ const AddedFriend = ({ friend, user }) => {
     <></>
   );
 };
+
 export const REMOVE_FRIEND = gql`
   mutation removeFriend($friendId: String!, $userId: String!) {
     removeFriend(friendId: $friendId, userId: $userId)
