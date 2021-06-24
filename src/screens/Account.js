@@ -7,6 +7,7 @@ import {
   View,
   TextInput,
   StyleSheet,
+  KeyboardAvoidingView,
 } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import FlaggedTokens from "../components/FlaggedTokens";
@@ -34,18 +35,28 @@ const Account = ({ route, navigation }) => {
   console.log(user);
 
   return user ? (
-    <ScrollView style={styles.container}>
-      <Text style={styles.titleText}>Hi, {user.name}</Text>
-      <Text style={styles.bodyText}>
-        Here, you can manage your voice keys, login details, and more.
-      </Text>
-      <Logout navigation={navigation} />
-      <MessageInfo user={user} />
-      <Keys user={user} />
-      <FlaggedTokens user={user} />
-    </ScrollView>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1, backgroundColor: "#2f4f4f" }}
+    >
+      <ScrollView style={styles.container}>
+        <View style={{ paddingHorizontal: 25 }}>
+          <Text style={styles.titleText}>Hi, {user.name}</Text>
+          <Text style={styles.baseText}>
+            Here, you can manage your emergency message contact and phone, voice
+            keys, and more.
+          </Text>
+        </View>
+        <Logout navigation={navigation} />
+        <MessageInfo user={user} />
+        <Keys user={user} />
+        <FlaggedTokens user={user} />
+      </ScrollView>
+    </KeyboardAvoidingView>
   ) : (
-    <Text>Loading...</Text>
+    <View style={styles.loadingContainer}>
+      <Text>Loading...</Text>
+    </View>
   );
 };
 

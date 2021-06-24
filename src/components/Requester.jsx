@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Button, View, Text, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { GET_FRIENDS } from "./AddedFriend";
-import { GET_FRIEND_REQUESTS } from "./Requesters";
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -49,7 +48,7 @@ const Requester = ({ requester, user }) => {
         <Text style={{ fontSize: 15 }}>Add Friend</Text>
       </View>
       <View style={styles.iconContainer}>
-        <Icon name={"account-plus"} size={30} color="#2f4f4f" />{" "}
+        <Icon name={"account-plus"} size={30} color="#2f4f4f" />
       </View>
     </Pressable>
   ) : (
@@ -67,15 +66,40 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
-      email
-      startKey
-      stopKey
-      panicKey
+
       name
-      requesterIds
+      password
+      email
+
+      startKey
+      panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
       friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
     }
   }
 `;
 
+export const GET_FRIEND_REQUESTS = gql`
+  query getFriendRequests($userId: String!) {
+    getFriendRequests(userId: $userId) {
+      id
+      email
+      startKey
+      stopKey
+      name
+      panicKey
+    }
+  }
+`;
 export default Requester;

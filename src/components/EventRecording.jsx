@@ -21,15 +21,17 @@ import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
-// TODO For me - get the event recording group refetch to work
-
-const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
+const EventRecording = ({
+  user,
+  detectedStatus,
+  setDetectedStatus,
+  expoPushToken,
+}) => {
   const [latestUrl, setLatestUrl] = useState();
 
   const [sendTwilioSMS, loadingSendPhoneCode] = useMutation(SEND_TWILIO_SMS, {
     update(_, { data: { sendTwilioSMS: message } }) {
       console.log(message);
-      console.log("sendTwilioSMS successful");
     },
     onError(err) {
       console.log(user.panicMessage);
@@ -37,11 +39,11 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       console.log(err);
     },
     variables: {
-      // message: user && user.panicMessage,
       message:
         user.location == ""
           ? user && user.panicMessage
           : user &&
+            JSON.parse(user.location) &&
             user.panicMessage +
               ` Sent from ${JSON.parse(user.location).coords.latitude}, ${
                 JSON.parse(user.location).coords.longitude
@@ -63,48 +65,6 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
     client: userClient,
   });
 
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: false,
-      shouldSetBadge: false,
-    }),
-  });
-
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
-
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      {
-        setExpoPushToken(token);
-      }
-    );
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        setNotification(notification);
-      }
-    );
-
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        console.log(response);
-      }
-    );
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
-
-  // const [values, setValues] = useState({ userId, eventRecordingUrl: "" });
   const [values, setValues] = useState({
     userId: user && user.id,
     eventRecordingFileKey: "",
@@ -196,7 +156,7 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
 
       await RNS3.put(file, options).then(async (response) => {
         if (response.status !== 201) {
-          console.log("There is an error here!")
+          console.log("There is an error here!");
           throw new Error("Failed to upload recording to S3");
         }
         console.log("event recording:");
@@ -228,7 +188,6 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       // console.error("Failed to stop recording", err);
     }
   }
-
 
   useEffect(() => {
     const interval = setInterval(
@@ -301,6 +260,7 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
             ]}
             onPress={async () => {
               if (expoPushToken) {
+                console.log("ENTERS THIS");
                 await sendPushNotification({
                   expoPushToken,
                   data: { someData: "goeshere" },
@@ -336,7 +296,9 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       </View>
     </View>
   ) : (
-    <Text>Loading...</Text>
+    <View style={styles.loadingContainer}>
+      <Text>Loading...</Text>
+    </View>
   );
 };
 
@@ -358,15 +320,26 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
+
+      name
+      password
       email
+
       startKey
-      stopKey
       panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
+      friendIds
+      requesterIds
+
       panicMessage
       panicPhone
-      name
-      requesterIds
-      friendIds
     }
   }
 `;

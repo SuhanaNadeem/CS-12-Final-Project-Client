@@ -2,9 +2,10 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { UserAuthContext } from "../context/userAuth";
 import React, { useContext, useEffect, useState } from "react";
 
-import { Button, Text, View, TextInput } from "react-native";
+import { Button, Text, View, TextInput, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/accountStyles";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const MessageInfo = ({ user }) => {
   const [values, setValues] = useState({
@@ -37,16 +38,25 @@ const MessageInfo = ({ user }) => {
   );
 
   return user ? (
-    <View>
-      <Text style={styles.titleText}>Manage Message Info</Text>
+    <View
+      style={{
+        paddingHorizontal: 25,
+        backgroundColor: "#2f4f4f",
+        height: 300,
+        marginVertical: 20,
+      }}
+    >
+      <Text style={styles.altTitleText}>Configure Message Info</Text>
 
       <TextInput
         onChangeText={(text) => {
           setValues({ ...values, newPanicPhone: text.toString() });
         }}
-        keyboardType={"phone-pad"}
+        style={styles.input}
+        // keyboardType={"phone-pad"}
         value={values.newPanicPhone}
         placeholder={user.panicPhone ? user.panicPhone : "Your panic phone"}
+        placeholderTextColor="#2f4f4f"
       />
       <TextInput
         onChangeText={(text) => setValues({ ...values, newPanicMessage: text })}
@@ -54,9 +64,11 @@ const MessageInfo = ({ user }) => {
         placeholder={
           user.panicMessage ? user.panicMessage : "Your panic message"
         }
+        style={styles.input}
+        placeholderTextColor="#2f4f4f"
       />
 
-      <Button
+      <Pressable
         onPress={() => {
           console.log("passing:");
           console.log(values);
@@ -67,8 +79,18 @@ const MessageInfo = ({ user }) => {
             newPanicMessage: undefined,
           });
         }}
-        title="Set message info"
-      />
+        style={styles.centered}
+      >
+        <Text style={styles.altSubmitText}>Submit</Text>
+        <View style={styles.iconContainer}>
+          <Icon
+            name="ios-checkmark-done-circle-outline"
+            size={30}
+            color="white"
+            style={{ paddingTop: 8, paddingLeft: 10 }}
+          />
+        </View>
+      </Pressable>
     </View>
   ) : (
     <View>
@@ -100,13 +122,24 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
-      email
-      startKey
-      stopKey
-      panicKey
+
       name
-      requesterIds
+      password
+      email
+
+      startKey
+      panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
       friendIds
+      requesterIds
+
       panicMessage
       panicPhone
     }

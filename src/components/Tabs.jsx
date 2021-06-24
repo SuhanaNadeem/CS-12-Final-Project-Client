@@ -10,6 +10,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 export default function Tabs({ route }) {
   const { userId } = route.params;
+  const { newUser } = route.params;
 
   return (
     <Tab.Navigator
@@ -20,7 +21,7 @@ export default function Tabs({ route }) {
       <Tab.Screen
         name="Record"
         component={Record}
-        initialParams={{ userId }}
+        initialParams={{ userId, newUser }}
         options={{
           tabBarLabel: "Record",
           tabBarIcon: ({ color }) => (

@@ -6,42 +6,24 @@ import { createUploadLink } from "apollo-upload-client";
 import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const backendURI = "http://192.168.0.27:5000/";
-// const wsURI = "ws://192.168.0.27:5000/subscriptions";
+const backendURI = "http://192.168.0.27:5000/";
+const wsURI = "ws://192.168.0.27:5000/subscriptions";
 
-const backendURI = "http://192.168.2.84:5000/";
-const wsURI = "ws://192.168.2.84:5000/subscriptions";
-
-// const backendURI =
-//   process.env.NODE_ENV === "production"
-//     ? "https://cs-12-final-project.herokuapp.com/"
-//     : "https://192.168.137.1/";
-
-// const wsURI =
-//   process.env.NODE_ENV === "production"
-//     ? `wss://cs-12-final-project.herokuapp.com/subscriptions`
-//     : "ws://192.168.137.1/subscriptions";
+// const backendURI = "http://192.168.2.84:5000/";
+// const wsURI = "ws://192.168.2.84:5000/subscriptions";
 
 const httpLink = createUploadLink({
   uri: backendURI,
-  // credentials: "include",
 });
-// const initState = async () => {
-//   var userAuthToken = await AsyncStorage.getItem("adminJwtToken");
-//   var adminAuthToken = await AsyncStorage.getItem("jwtToken");
-// };
-// initState();
+
 const wsLink = new WebSocketLink({
   uri: wsURI,
   options: {
     reconnect: true,
     lazy: true,
-    // timeout: 30000,
     onError: async (error) => {
-      // error.message has to match what the server returns.
       if (
         error.message.contains("authorization") &&
-        // (adminAuthToken || userAuthToken)
         !(await AsyncStorage.getItem("jwtToken")) &&
         !(await AsyncStorage.getItem("adminJwtToken"))
       ) {

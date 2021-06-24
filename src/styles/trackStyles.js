@@ -1,91 +1,20 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+import React from "react";
 
 export default StyleSheet.create({
-  map: {
-    width: Dimensions.get("window").height / 2.5,
-    height: Dimensions.get("window").height / 2,
-  },
   container: {
-    backgroundColor: "#fff",
-    flexDirection: "column",
-  },
-  iconAndText: {
-    alignItems: "center",
-    paddingVertical: 16,
-    marginVertical: 10,
-    flexDirection: "row",
     justifyContent: "center",
-    borderRadius: 32,
-    shadowRadius: 32,
-    color: "white",
+    flexDirection: "column",
+    height: "100%",
+    width: "100%",
+    alignContent: "center",
     backgroundColor: "#2f4f4f",
   },
-
-  titleText: {
-    fontSize: 20,
-    color: "#2f4f4f",
-    fontWeight: "bold",
-    paddingTop: 30,
-    paddingBottom: 10,
-  },
-  centeredView: {
-    alignItems: "center",
-    borderColor: "#2f4f4f",
-    borderRadius: 15,
-    borderWidth: 3,
-
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-
-    height: 55,
-    overflow: "scroll",
-    fontSize: 16,
-    textAlign: "center",
-  },
-
-  disabledCenteredView: {
-    alignItems: "center",
-
-    paddingHorizontal: 20,
-    height: 55,
-    overflow: "scroll",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  modalView: {
-    margin: 60,
+  mapContainer: {
     backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    flexDirection: "column",
+    marginBottom: 40,
   },
-  button: {
-    borderRadius: 15,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    elevation: 2,
-  },
-  buttonClose: {
-    backgroundColor: "#2f4f4f",
-    marginTop: 15,
-  },
-  textStyle: {
-    color: "white",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
-
   formContainer: {
     paddingHorizontal: 40,
   },
@@ -94,6 +23,13 @@ export default StyleSheet.create({
     color: "white",
   },
   new: {
+    // backgroundColor: "white",
+    // alignItems: "center",
+    // justifyContent: "center",
+    // borderRadius: 20,
+    // marginTop: 50,
+    // width: 100,
+    // height: 50,
     color: "white",
   },
   image: {
@@ -101,46 +37,28 @@ export default StyleSheet.create({
     resizeMode: "cover",
     justifyContent: "center",
   },
-  bodyImage: {
-    marginTop: 40,
+  backgroundImage: {
     flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
+    resizeMode: "cover", // or 'stretch'
   },
-  gif: {
-    width: 55,
-    height: 55,
-    flexDirection: "column",
+  centered: {
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    marginVertical: 10,
   },
-  newGif: {
-    width: 55,
-    height: 55,
-    flexDirection: "column",
+  submitText: {
+    fontSize: 16,
+    paddingTop: 10,
+    color: "#2f4f4f",
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 15,
-    marginLeft: 10,
-  },
-  gifBackground: {
-    flexDirection: "column",
-    marginTop: 40,
-    paddingVertical: 15,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#2f4f4f",
-  },
-  buttonBackground: {
-    flexDirection: "column",
-    paddingBottom: 15,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  disabledButtonBackground: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    fontSize: 16,
+    color: "#2f4f4f",
   },
   loginText: {
     flexDirection: "column",
@@ -148,6 +66,14 @@ export default StyleSheet.create({
     paddingTop: 2,
     justifyContent: "center",
     marginVertical: 10,
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  map: {
+    width: "100%",
+    height: 450,
+    marginBottom: 20,
+    borderRadius: 20,
   },
   end: {
     flexDirection: "column",
@@ -160,51 +86,9 @@ export default StyleSheet.create({
     paddingBottom: 40,
     fontSize: 16,
   },
-  baseTextEmphasized: {
-    paddingBottom: 40,
-    fontSize: 16,
-    fontStyle: "italic",
-  },
-  pressableText: {
-    textTransform: "uppercase",
-    fontWeight: "bold",
-    paddingBottom: 40,
-    color: "#2f4f4f",
-  },
-  disabledText: {
-    textTransform: "uppercase",
-    fontStyle: "italic",
-    paddingTop: 14,
-    fontWeight: "bold",
-    color: "gray",
-  },
   loginText: {
     fontSize: 22,
     color: "white",
-  },
-  card: {
-    width: "100%",
-    flexDirection: "row",
-    marginVertical: 8,
-    borderRadius: 15,
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderColor: "#2f4f4f",
-    borderWidth: 4,
-    elevation: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    height: 70,
-  },
-  iconContainer: {
-    shadowColor: "#2f4f4f",
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 14,
-    justifyContent: "center",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.8,
-    shadowRadius: 1,
   },
   signupText: {
     fontSize: 20,

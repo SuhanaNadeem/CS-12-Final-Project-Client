@@ -5,7 +5,14 @@ export default StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "column",
   },
-
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 16,
+    color: "#2f4f4f",
+  },
   titleText: {
     fontSize: 20,
     color: "#2f4f4f",
@@ -106,7 +113,7 @@ export default StyleSheet.create({
     textTransform: "uppercase",
     fontStyle: "italic",
     fontWeight: "bold",
-    paddingBottom: 40,
+    paddingBottom: 30,
     color: "#2f4f4f",
   },
   card: {

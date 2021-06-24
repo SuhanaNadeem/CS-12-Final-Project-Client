@@ -7,51 +7,33 @@ import {
   Text,
   View,
   TextInput,
+  Pressable,
 } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
+import styles from "../styles/accountStyles";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Logout = ({ navigation }) => {
   const { logoutUser } = useContext(UserAuthContext);
   return (
-    <Button
+    <Pressable
       onPress={() => {
         logoutUser();
         navigation.navigate("Landing");
       }}
-      title="Log Out"
-      style={styles.button}
-    />
+      style={styles.centered}
+    >
+      <Text style={styles.submitText}>Log Out</Text>
+      <View>
+        <Icon
+          name="logout"
+          size={30}
+          color="#2f4f4f"
+          style={{ paddingTop: 8, paddingLeft: 10 }}
+        />
+      </View>
+    </Pressable>
   );
 };
 
 export default Logout;
-
-const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    backgroundColor: "#fff",
-    // alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    paddingHorizontal: 25,
-  },
-  button: {
-    // flex: 1,
-    backgroundColor: "#f50",
-    alignItems: "center",
-    // justifyContent: "center",
-    marginLeft: 25,
-  },
-  baseText: {
-    paddingBottom: 20,
-  },
-  titleText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    paddingTop: 30,
-    paddingBottom: 10,
-  },
-  input: {
-    paddingVertical: 4,
-  },
-});

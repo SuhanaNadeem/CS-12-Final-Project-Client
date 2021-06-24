@@ -8,6 +8,7 @@ import { useRoute } from "@react-navigation/core";
 import Token from "./Token";
 import { ScrollView } from "react-native";
 import styles from "../styles/accountStyles";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 const FlaggedTokens = ({ user }) => {
   const { data: { getPoliceTokens: policeTokens } = {} } = useQuery(
@@ -46,8 +47,7 @@ const FlaggedTokens = ({ user }) => {
     if (thiefTokens) {
       if (tOpen) {
         setLimitedThiefTokens(thiefTokens);
-      }
-      else {
+      } else {
         setLimitedThiefTokens(thiefTokens.slice(0, 5));
       }
     }
@@ -58,57 +58,75 @@ const FlaggedTokens = ({ user }) => {
     if (policeTokens) {
       if (pOpen) {
         setLimitedPoliceTokens(policeTokens);
-      }
-      else {
+      } else {
         setLimitedPoliceTokens(policeTokens.slice(0, 5));
       }
     }
   }, [pOpen]);
 
   return limitedPoliceTokens && limitedThiefTokens && user ? (
-    <View>
-      <Text style={styles.titleText}>Manage Flagged Tokens</Text>
+    <View style={{ paddingHorizontal: 25 }}>
+      <Text style={styles.titleText}>View Flagged Tokens</Text>
       <Text style={styles.baseText}>
-        When these word or phrases are detected through interim recordings,
-        event recordings will begin.
+        When these phrases or your voice keys are detected through background
+        recordings, event recordings will be triggered.
       </Text>
 
       {/* Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
-      <Text style={styles.subTitleText}>Police tokens:</Text>
+      <Text style={styles.subTitleText}>Police Tokens</Text>
       {limitedPoliceTokens && // Replace this with limitedPoliceTokens
         limitedPoliceTokens.map((policeToken, index) => (
-          <Token
-            key={index}
-            style={styles}
-            token={policeToken}
-            type={"Police"}
-          />
+          <Token key={index} token={policeToken} />
         ))}
       {policeTokens && policeTokens.length > 5 && (
-        <Button
-          onPress={() => {
-            setPOpen(!pOpen);
+        <View
+          style={{
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+            marginBottom: 25,
           }}
-          title={pOpen ? "Collapse" : "View more"}
-        ></Button>
+        >
+          <Icon
+            onPress={() => {
+              setPOpen(!pOpen);
+            }}
+            size={35}
+            color="#2f4f4f"
+            name={pOpen ? "times" : "expand-alt"}
+          />
+        </View>
       )}
       {/*  Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
-      <Text style={styles.subTitleText}>Thief tokens:</Text>
+      <Text style={styles.subTitleText}>Thief Tokens</Text>
       {limitedThiefTokens &&
         limitedThiefTokens.map((thiefToken, index) => (
-          <Token key={index} style={styles} token={thiefToken} type={"Thief"} />
+          <Token key={index} token={thiefToken} />
         ))}
       {thiefTokens && thiefTokens.length > 5 && (
-        <Button
-          onPress={() => {
-            setTOpen(!tOpen);
+        <View
+          style={{
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+            marginBottom: 25,
           }}
-          title={tOpen ? "Collapse" : "View more"}
-        ></Button>
+        >
+          <Icon
+            onPress={() => {
+              setTOpen(!tOpen);
+            }}
+            size={35}
+            color="#2f4f4f"
+            name={tOpen ? "times" : "expand-alt"}
+          />
+        </View>
       )}
     </View>
   ) : (
-    <View>
+    <View style={styles.loadingContainer}>
       <Text>Loading...</Text>
     </View>
   );
@@ -119,10 +137,26 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
+
+      name
+      password
       email
+
       startKey
-      stopKey
       panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
+      friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
     }
   }
 `;

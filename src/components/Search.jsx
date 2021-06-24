@@ -6,6 +6,7 @@ import { View, TextInput, Button, Text } from "react-native";
 import PotentialFriends from "./PotentialFriends";
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import { GET_USER_MATCHES } from "./PotentialFriend";
 
 const Search = ({ user }) => {
   const [name, setName] = useState("");
@@ -99,17 +100,5 @@ const Search = ({ user }) => {
     </View>
   );
 };
-
-export const GET_USER_MATCHES = gql`
-  query getUserMatches($name: String!) {
-    getUserMatches(name: $name) {
-      name
-      email
-      id
-      requesterIds
-      friendIds
-    }
-  }
-`;
 
 export default Search;

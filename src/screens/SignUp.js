@@ -1,7 +1,16 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Text, View, TextInput } from "react-native";
+import {
+  Button,
+  Text,
+  View,
+  TextInput,
+  KeyboardAvoidingView,
+  Pressable,
+  ImageBackground,
+} from "react-native";
 import { UserAuthContext } from "../context/userAuth";
+import styles from "../styles/landingStyles";
 
 const SignUp = ({ navigation }) => {
   // TODO look at the rest of the app's (especially login's) *finished UI to fix the UI of this page so it's consistent
@@ -20,7 +29,7 @@ const SignUp = ({ navigation }) => {
       console.log("Sign up successful");
       context.loginUser(userData);
       console.log(userData);
-      navigation.navigate("Record", { userId: userData.id, newUser: true });
+      navigation.navigate("Home", { userId: userData.id, newUser: true });
     },
     onError(err) {
       console.log(err);
@@ -29,40 +38,65 @@ const SignUp = ({ navigation }) => {
   });
 
   return (
-    <View>
-      <Text>Enter your name, email, and password</Text>
-      <TextInput
-        onChangeText={(text) => setValues({ ...values, name: text })}
-        value={values.name}
-        placeholder="Your name"
-      />
-      <TextInput
-        onChangeText={(text) => setValues({ ...values, email: text })}
-        value={values.email}
-        placeholder="Your email"
-      />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ImageBackground
+        source={require("../images/signup.png")}
+        style={styles.container}
+      >
+        <View style={styles.loginContainer}>
+          <View style={styles.formContainer}>
+            <Text style={styles.formText}>Name</Text>
+            <TextInput
+              onChangeText={(text) => setValues({ ...values, name: text })}
+              value={values.name}
+              placeholder="Your name"
+              style={styles.input}
+            />
+            <Text style={styles.formText}>Email</Text>
 
-      <TextInput
-        onChangeText={(text) => setValues({ ...values, password: text })}
-        value={values.password}
-        secureTextEntry={true}
-        placeholder="Your password"
-      />
-      <TextInput
-        onChangeText={(text) => setValues({ ...values, confirmPassword: text })}
-        value={values.confirmPassword}
-        secureTextEntry={true}
-        placeholder="Confirm password"
-      />
+            <TextInput
+              onChangeText={(text) => setValues({ ...values, email: text })}
+              value={values.email}
+              placeholder="Your email"
+              style={styles.input}
+            />
+            <Text style={styles.formText}>Password</Text>
 
-      <Button
-        onPress={() => {
-          signupUser();
-          setValues({ email: "", password: "" });
-        }}
-        title="Sign up"
-      />
-    </View>
+            <TextInput
+              onChangeText={(text) => setValues({ ...values, password: text })}
+              value={values.password}
+              secureTextEntry={true}
+              placeholder="Your password"
+              style={styles.input}
+            />
+            <Text style={styles.formText}>Confirm Password</Text>
+
+            <TextInput
+              onChangeText={(text) =>
+                setValues({ ...values, confirmPassword: text })
+              }
+              value={values.confirmPassword}
+              secureTextEntry={true}
+              placeholder="Confirm password"
+              style={styles.input}
+            />
+          </View>
+        </View>
+
+        <Pressable
+          onPress={() => {
+            signupUser();
+            setValues({ email: "", password: "" });
+          }}
+          style={styles.end}
+        >
+          <Text style={styles.loginText}>Sign Up</Text>
+        </Pressable>
+      </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 

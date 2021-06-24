@@ -4,14 +4,15 @@ import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import styles from "../styles/friendsStyles";
+import { GET_USER_MATCHES } from "./PotentialFriend";
 
 const AddedFriend = ({ friend, user }) => {
   const [values, setValues] = useState({
     userId: user && user.id,
     friendId: friend && friend.id,
   });
-  const [removeFriend, loadingRemoveFriend] = useMutation(REMOVE_FRIEND, {
-    update(_, { data: { removeFriend: removeFriendData } }) {
+  const [removeFriend] = useMutation(REMOVE_FRIEND, {
+    update() {
       console.log("Submitted removeFriend");
     },
     onError(err) {
@@ -21,6 +22,10 @@ const AddedFriend = ({ friend, user }) => {
       {
         query: GET_FRIENDS,
         variables: { userId: user && user.id },
+      },
+      {
+        query: GET_USER_MATCHES,
+        variables: { name: user && user.name },
       },
     ],
     variables: values,
@@ -54,13 +59,26 @@ export const GET_FRIENDS = gql`
   query getFriends($userId: String!) {
     getFriends(userId: $userId) {
       id
-      email
-      startKey
-      stopKey
-      panicKey
+
       name
-      requesterIds
+      password
+      email
+
+      startKey
+      panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
       friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
     }
   }
 `;

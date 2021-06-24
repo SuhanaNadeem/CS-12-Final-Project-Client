@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/accountStyles";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const Keys = ({ user }) => {
   const [startKeyValues, setStartKeyValues] = useState({
@@ -75,51 +76,79 @@ const Keys = ({ user }) => {
   });
 
   return user ? (
-    <View>
-      <Text style={styles.titleText}>Manage Keys</Text>
+    <View style={{ paddingHorizontal: 25 }}>
+      <Text style={styles.bodyTitleText}>Set Voice Keys</Text>
 
-      <TextInput
-        onChangeText={(text) =>
-          setStartKeyValues({ ...startKeyValues, startKey: text })
-        }
-        value={startKeyValues.startKey}
-        placeholder={user.startKey ? user.startKey : "Your start key"}
-      />
-      <Button
-        onPress={() => {
-          setStartKey();
-          setStartKeyValues({ ...startKeyValues, startKey: "" });
-        }}
-        title="Set start key"
-      />
-      <TextInput
-        onChangeText={(text) =>
-          setStopKeyValues({ ...stopKeyValues, stopKey: text })
-        }
-        value={stopKeyValues.stopKey}
-        placeholder={user.stopKey ? user.stopKey : "Your stop key"}
-      />
-      <Button
-        onPress={() => {
-          setStopKey();
-          setStopKeyValues({ ...stopKeyValues, stopKey: "" });
-        }}
-        title="Set stop key"
-      />
-      <TextInput
-        onChangeText={(text) =>
-          setPanicKeyValues({ ...panicKeyValues, panicKey: text })
-        }
-        value={panicKeyValues.panicKey}
-        placeholder={user.panicKey ? user.panicKey : "Your panic key"}
-      />
-      <Button
-        onPress={() => {
-          setPanicKey();
-          setPanicKeyValues({ ...panicKeyValues, panicKey: "" });
-        }}
-        title="Set panic key"
-      />
+      <View style={styles.keyBar}>
+        <TextInput
+          onChangeText={(text) =>
+            setStartKeyValues({ ...startKeyValues, startKey: text })
+          }
+          value={startKeyValues.startKey}
+          placeholder={user.startKey ? user.startKey : "Your start key"}
+          style={{ color: "#2f4f4f", fontSize: 16, overflow: "hidden" }}
+          placeholderTextColor="rgba(47, 79, 79, 0.7)"
+        />
+
+        <View style={styles.iconContainer}>
+          <Icon
+            name="enter"
+            size={40}
+            color="#2f4f4f"
+            onPress={() => {
+              setStartKey();
+              setStartKeyValues({ ...startKeyValues, startKey: "" });
+            }}
+          />
+        </View>
+      </View>
+
+      <View style={styles.keyBar}>
+        <TextInput
+          onChangeText={(text) =>
+            setStopKeyValues({ ...stopKeyValues, stopKey: text })
+          }
+          value={stopKeyValues.stopKey}
+          placeholder={user.stopKey ? user.stopKey : "Your stop key"}
+          style={{ color: "#2f4f4f", fontSize: 16, overflow: "hidden" }}
+          placeholderTextColor="rgba(47, 79, 79, 0.7)"
+        />
+
+        <View style={styles.iconContainer}>
+          <Icon
+            name="enter"
+            size={40}
+            color="#2f4f4f"
+            onPress={() => {
+              setStopKey();
+              setStopKeyValues({ ...stopKeyValues, stopKey: "" });
+            }}
+          />
+        </View>
+      </View>
+      <View style={styles.keyBar}>
+        <TextInput
+          onChangeText={(text) =>
+            setPanicKeyValues({ ...panicKeyValues, panicKey: text })
+          }
+          value={panicKeyValues.panicKey}
+          placeholder={user.panicKey ? user.panicKey : "Your panic key"}
+          style={{ color: "#2f4f4f", fontSize: 16, overflow: "hidden" }}
+          placeholderTextColor="rgba(47, 79, 79, 0.7)"
+        />
+
+        <View style={styles.iconContainer}>
+          <Icon
+            name="enter"
+            size={40}
+            color="#2f4f4f"
+            onPress={() => {
+              setPanicKey();
+              setPanicKeyValues({ ...panicKeyValues, panicKey: "" });
+            }}
+          />
+        </View>
+      </View>
     </View>
   ) : (
     <View>
@@ -150,13 +179,26 @@ export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {
       id
-      email
-      startKey
-      stopKey
-      panicKey
+
       name
-      requesterIds
+      password
+      email
+
+      startKey
+      panicKey
+      stopKey
+
+      createdAt
+      token
+
+      location
+      locationOn
+
       friendIds
+      requesterIds
+
+      panicMessage
+      panicPhone
     }
   }
 `;

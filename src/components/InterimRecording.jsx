@@ -24,9 +24,6 @@ import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
-// import * as Permissions from 'expo-permissions';
-
-// Fix the In-Progress misalignment
 
 const InterimRecording = ({
   user,
@@ -34,54 +31,8 @@ const InterimRecording = ({
   setDetectedStatus,
   enabled,
   setEnabled,
+  expoPushToken,
 }) => {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: false,
-      shouldSetBadge: false,
-    }),
-  });
-
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
-
-  useEffect(() => {
-    console.log("ENTERING THIS USE EFFECT");
-    registerForPushNotificationsAsync().then((token) =>
-    {
-      console.log("token:");
-      console.log(token);
-      setExpoPushToken(token);
-    }
-    );
-    console.log("expoPushToken::");
-    console.log(expoPushToken);
-
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        setNotification(notification);
-      }
-    );
-
-    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        console.log(response);
-      }
-    );
-
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, [notification]);
-
   const [values, setValues] = useState({
     userId: user && user.id,
     recordingBytes: "",
@@ -169,7 +120,7 @@ const InterimRecording = ({
 
   const [finalStatus, setFinalStatus] = useState(false);
   async function checkStatus() {
-    const {status: currentStatus,} = await Audio.getPermissionsAsync();
+    const { status: currentStatus } = await Audio.getPermissionsAsync();
     if (currentStatus !== "granted") {
       await Audio.requestPermissionsAsync();
     }
