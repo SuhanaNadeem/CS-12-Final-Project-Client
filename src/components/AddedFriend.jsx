@@ -12,9 +12,9 @@ const AddedFriend = ({ friend, user }) => {
     // update() {
     //   console.log("Submitted removeFriend");
     // },
-    // onError(err) {
-    //   console.log(err);
-    // },
+    onError(err) {
+      console.log(err);
+    },
     refetchQueries: [
       {
         query: GET_FRIENDS,

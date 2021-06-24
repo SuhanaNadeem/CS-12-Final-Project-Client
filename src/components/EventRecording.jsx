@@ -4,14 +4,12 @@ import { Button, View, Text, Image, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { Audio } from "expo-av";
 import { RNS3 } from "react-native-aws3";
-import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import * as FileSystem from "expo-file-system";
 import { sendPushNotification } from "../util/notifications";
 import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
 import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
-import { GET_EVENT_RECORDINGS_BY_USER } from "./RecordingPlayback";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
@@ -32,15 +30,21 @@ const EventRecording = ({
   setDetectedStatus,
   expoPushToken,
 }) => {
-  const [latestUrl, setLatestUrl] = useState();
+  const [handleDangerValues, setHandleDangerValues] = useState({
+    userId: user && user.id,
+    eventRecordingFileKey: "",
+    recordingBytes: "",
+  });
+  const [start, setStart] = useState(true); // Used to start and stop the recordings periodically
+  const [recording, setRecording] = useState(); // Store current audio recording object for global access
 
   const [sendTwilioSMS] = useMutation(SEND_TWILIO_SMS, {
     // update(_, { data: { sendTwilioSMS: message } }) {
     //   console.log(message);
     // },
-    // onError(err) {
-    //   console.log(err);
-    // },
+    onError(err) {
+      console.log(err);
+    },
     variables: {
       message:
         user.location == ""
@@ -52,39 +56,19 @@ const EventRecording = ({
                 JSON.parse(user.location).coords.longitude
               }`, // Append the user's current location, if available, to the 'panic' message they chose.
       phoneNumber: user && user.panicPhone,
-      eventRecordingUrl: latestUrl && latestUrl != "" && latestUrl, //
     },
-    refetchQueries: [
-      {
-        query: GET_TRANSCRIPTION_BY_USER,
-        variables: { userId: user && user.id },
-      },
-      {
-        query: GET_EVENT_RECORDINGS_BY_USER,
-        variables: { userId: user && user.id },
-      },
-    ],
     client: userClient,
   });
 
-  const [values, setValues] = useState({
-    userId: user && user.id,
-    eventRecordingFileKey: "",
-    recordingBytes: "",
-  });
-  const [start, setStart] = useState(true);
-  const [handleDanger, loadingHandleDanger] = useMutation(HANDLE_DANGER, {
-    update(_, { data: { handleDanger: detectedStatusData } }) {
-      console.log("handled danger");
-      setValues({
-        ...values,
+  const [handleDanger] = useMutation(HANDLE_DANGER, {
+    update() {
+      setHandleDangerValues({
+        ...handleDangerValues,
         eventRecordingUrl: "",
         eventRecordingFileKey: "",
       });
-      console.log("event's update's detectedStatus:");
-      setDetectedStatus(detectedStatusData);
-      console.log(detectedStatus);
     },
+    // Live transcription needs to be updated
     refetchQueries: [
       {
         query: GET_TRANSCRIPTION_BY_USER,
@@ -94,38 +78,30 @@ const EventRecording = ({
     onError(err) {
       console.log(err);
     },
-    variables: values,
+    variables: handleDangerValues,
     client: userClient,
   });
 
-  const [recording, setRecording] = useState();
-
-  // TODO: For me - RUNS IT TWICE THE FIRST TIME
-
   async function startRecording() {
     try {
-      console.log("event's startRecording is detectedStatus");
-      console.log(detectedStatus);
-
+      // Request permissions and configure device audio mode
       await Audio.requestPermissionsAsync();
-
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
         staysActiveInBackground: true,
       });
 
+      // Prepare and start new recording
       const recording = new Audio.Recording();
-
       await recording.prepareToRecordAsync(
         RECORDING_OPTIONS_PRESET_HIGH_QUALITY
       );
-
       await recording.startAsync();
 
-      console.log("STARTED EVENT RECORDING at " + Date());
+      console.log("STARTED EVENT RECORDING");
 
-      setRecording(recording);
+      setRecording(recording); // Load the current recording into the useState
     } catch (err) {
       // console.error("Failed to start recording", err);
     }
@@ -133,20 +109,21 @@ const EventRecording = ({
 
   async function stopRecording() {
     try {
+      // Clear the current recording object
       await recording.stopAndUnloadAsync();
       setRecording(undefined);
 
-      console.log("STOPPED EVENT RECORDING at " + Date());
+      console.log("STOPPED EVENT RECORDING");
 
+      // Get the file just stored by its local device URI
       const fileUri = recording.getURI();
-
-      // Upload file to AWS S3 Bucket
       const file = {
         uri: fileUri,
         name: `${uuidv4()}.wav`,
         type: "audio/wav",
       };
 
+      // Configure AWS upload settings
       const options = {
         keyPrefix: "uploads/",
         bucket: S3_CS_BUCKET,
@@ -156,23 +133,21 @@ const EventRecording = ({
         successActionStatus: 201,
       };
 
+      // Upload recording to AWS
       await RNS3.put(file, options).then(async (response) => {
         if (response.status !== 201) {
-          console.log("There is an error here!");
           throw new Error("Failed to upload recording to S3");
         }
-        console.log("event recording:");
-        console.log(response.body.postResponse.location);
+
+        // If the last run of `handleDanger` didn't indicate to 'stop' or 'panic', run it again
         if (detectedStatus === "start") {
+          // Get the bytes of the audio file from its URI
           await FileSystem.readAsStringAsync(fileUri, {
             encoding: FileSystem.EncodingType.Base64,
           }).then((bytes) => {
-            setLatestUrl(response.body.postResponse.location);
-
-            console.log("latestUrl: " + latestUrl);
-            setValues({
-              ...values,
-              // eventRecordingFileKey: response.body.postResponse.key,
+            // Call `handleDanger` with appropriate values
+            setHandleDangerValues({
+              ...handleDangerValues,
               recordingBytes: bytes,
               eventRecordingUrl: response.body.postResponse.location,
             });
@@ -180,26 +155,22 @@ const EventRecording = ({
           });
         }
       });
-
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: true,
-      });
     } catch (err) {
       // console.error("Failed to stop recording", err);
     }
   }
 
+  // This useEffect runs every time `status` or `detectedStatus` changes (i.e. per `handleDanger`
+  // call, it's refreshed)
   useEffect(() => {
+    // Alternate between stopping and starting a recording every 15 s, with a 50 ms pause to
+    // avoid recordConflicts -- this records 15 s long event recording components
     const interval = setInterval(
       async () => {
         if (detectedStatus === "start") {
           if (start) {
-            console.log("startRec");
             await startRecording();
           } else {
-            console.log("stopRec");
             await stopRecording();
           }
           setStart(!start);
@@ -209,13 +180,11 @@ const EventRecording = ({
     );
 
     if (detectedStatus === "stop") {
-      console.log("useeffect found detectedStatus is stop, without panic");
-      // if (recording) {
+      // The user has said their 'stop' key -- just wants to end the event recording
       stopRecording();
-      // }
       setStart(true);
     } else if (detectedStatus === "panic") {
-      console.log("useeffect found detectedStatus is panic");
+      // The user has said their 'panic' key -- wants to end the event recording and send a Twilio SMS
       stopRecording();
       setStart(true);
       sendTwilioSMS();
@@ -237,16 +206,6 @@ const EventRecording = ({
           Start a recording when you anticipate danger or rely on your
           voice-activated 'start' key and background danger-detection.
         </Text>
-        {/*
-        <Text style={styles.baseText}>
-          You can also say your 'start' voice key or rely on our
-          danger-detection, if you've allowed background recordings.
-        </Text>
-        <Text style={styles.baseText}>
-          Event recordings can be stopped for future reference with your 'stop'
-          voice key, and an emergency text message to your panic contact can be
-          sent with your 'panic' voice key.
-        </Text> */}
         <View style={styles.buttonBackground}>
           <Pressable
             style={({ pressed }) => [
@@ -341,16 +300,8 @@ export const GET_USER_BY_ID = gql`
 `;
 
 export const SEND_TWILIO_SMS = gql`
-  mutation sendTwilioSMS(
-    $message: String!
-    $phoneNumber: String!
-    $eventRecordingUrl: String
-  ) {
-    sendTwilioSMS(
-      message: $message
-      phoneNumber: $phoneNumber
-      eventRecordingUrl: $eventRecordingUrl
-    )
+  mutation sendTwilioSMS($message: String!, $phoneNumber: String!) {
+    sendTwilioSMS(message: $message, phoneNumber: $phoneNumber)
   }
 `;
 
