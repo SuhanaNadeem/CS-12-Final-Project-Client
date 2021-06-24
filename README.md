@@ -49,3 +49,13 @@ For many people, in recent times especially, simply walking the streets of their
 - This app relies heavily on the Google Cloud Speech-to-Text API for transcribing audio recordings as well as Amazon's S3 service for storing these recordings. As such, an internet connection is required for our app to function as intended.
 
 ### Sources
+- **Recordings and Storage**
+    - [React Native S3 Module](https://www.npmjs.com/package/react-native-aws3)
+    - [Expo Audio SDK Docs](https://docs.expo.io/versions/latest/sdk/audio/)
+- **Location and Maps**
+    - [Expo Location SDK Docs](https://docs.expo.io/versions/latest/sdk/location/)
+    - [Expo MapView SDK Docs](https://docs.expo.io/versions/latest/sdk/map-view/)
+- **Messaging and Sharing**
+    - [Twilio SMS](https://www.twilio.com/messaging)
+    - [Expo Notifications SDK Docs](https://docs.expo.io/versions/latest/sdk/notifications/)
+    - [Expo SMS SDK Docs](https://docs.expo.io/versions/v41.0.0/sdk/sms/)
