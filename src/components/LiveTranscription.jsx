@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/recordStyles";
@@ -11,21 +11,28 @@ Resources:
 */
 
 const LiveTranscription = ({ user, enabled }) => {
-  const { data: { getTranscriptionByUser: transcription } = {} } = useQuery(
+  // Store the fetched transcription in a state to allow refetching to work as expected
+
+  const [currentTranscription, setCurrentTranscription] = useState("");
+
+  var { data: { getTranscriptionByUser: transcription } = {} } = useQuery(
     GET_TRANSCRIPTION_BY_USER,
     {
       variables: { userId: user && user.id },
       client: userClient,
     }
   );
+  useEffect(() => {
+    setCurrentTranscription(transcription);
+  }, [transcription]);
 
   return enabled ? ( // Only display if background recordings are displayed
     <View style={{ paddingHorizontal: 25 }}>
       <Text style={styles.titleText}>Live Transcription</Text>
 
-      {transcription && transcription != "" ? (
+      {currentTranscription && currentTranscription != "" ? (
         <Text style={styles.baseText}>
-          {transcription.replace(/(\r\n|\n|\r)/gm, "")}
+          {currentTranscription.replace(/(\r\n|\n|\r)/gm, "")}
         </Text>
       ) : (
         <Text style={styles.baseTextEmphasized}>No speech detected.</Text>
