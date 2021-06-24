@@ -1,24 +1,15 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import React from "react";
 import { ScrollView } from "react-native";
-import {
-  Button,
-  Text,
-  View,
-  TextInput,
-  StyleSheet,
-  Dimensions,
-  KeyboardAvoidingView,
-} from "react-native";
+import { Text, View, KeyboardAvoidingView } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-import Requesters from "../components/Requesters";
-import Search from "../components/Search";
-import AddedFriends from "../components/AddedFriends";
 import Map from "../components/Map";
 import styles from "../styles/trackStyles";
 
-// Manage keys and other account info
-const Track = ({ route, navigation }) => {
+/* This page allows the user to view their/their friends locations and toggle location sharing and
+  refresh. See comments in `src/components` for details. */
+
+const Track = ({ route }) => {
   const { userId } = route.params;
 
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {

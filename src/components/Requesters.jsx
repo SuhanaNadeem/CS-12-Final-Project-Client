@@ -1,14 +1,14 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useState } from "react";
-import { Button, View, Text } from "react-native";
+import { useQuery } from "@apollo/client";
+import React from "react";
+import { View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import Requester from "./Requester";
 import styles from "../styles/friendsStyles";
 import { GET_FRIEND_REQUESTS } from "./Requester";
 
-// A component that displays all friend requests that the user has received, mapping each of them to a Requester component
-// where the user can choose to accept or ignore a request. Utilizes the getFriendRequests query to gather a list of User objects
-// who have requested to friend the user.
+/* A component that displays all friend requests that the user has received, mapping each of them to a Requester component
+  where the user can choose to accept or ignore a request. Utilizes the getFriendRequests query to gather a list of User objects
+  who have requested to friend the user. */
 
 const Requesters = ({ user }) => {
   const { data: { getFriendRequests: requesters } = {} } = useQuery(

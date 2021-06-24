@@ -1,17 +1,10 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState } from "react";
-import {
-  Button,
-  StyleSheet,
-  StatusBar,
-  Text,
-  View,
-  TextInput,
-  Pressable,
-} from "react-native";
+import React, { useContext } from "react";
+import { Text, View, Pressable } from "react-native";
 import { UserAuthContext } from "../context/userAuth";
 import styles from "../styles/accountStyles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
+/* Allow the user to logout via a button. */
 
 const Logout = ({ navigation }) => {
   const { logoutUser } = useContext(UserAuthContext);

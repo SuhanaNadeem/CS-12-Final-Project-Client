@@ -1,7 +1,6 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+import React, { useContext, useState } from "react";
 import {
-  Button,
   Text,
   View,
   TextInput,
@@ -12,23 +11,20 @@ import {
 import { UserAuthContext } from "../context/userAuth";
 import styles from "../styles/landingStyles";
 
+/* This page allows the user to sign up for Street Guard, pushing them to login if successful. 
+  See comments in `src/components` for details. */
+
 const SignUp = ({ navigation }) => {
-  // TODO look at the rest of the app's (especially login's) *finished UI to fix the UI of this page so it's consistent
-  // - *note, it's not finished yet but will be by the time you finish the features
-
   const context = useContext(UserAuthContext);
-
   const [values, setValues] = useState({
     email: "",
     password: "",
     name: "",
     confirmPassword: "",
   });
-  const [signupUser, loadingUser] = useMutation(SIGNUP_USER, {
+  const [signupUser] = useMutation(SIGNUP_USER, {
     update(_, { data: { signupUser: userData } }) {
-      console.log("Sign up successful");
-      context.loginUser(userData);
-      console.log(userData);
+      context.loginUser(userData); // Log in the user if signup is successful
       navigation.navigate("Home", { userId: userData.id, newUser: true });
     },
     onError(err) {

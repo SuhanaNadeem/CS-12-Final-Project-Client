@@ -1,5 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
-import React from "react";
+import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
   container: {
@@ -13,23 +12,12 @@ export default StyleSheet.create({
   mapContainer: {
     backgroundColor: "white",
     flexDirection: "column",
-    marginBottom: 40,
   },
   formContainer: {
     paddingHorizontal: 40,
   },
   formText: {
     fontSize: 20,
-    color: "white",
-  },
-  new: {
-    // backgroundColor: "white",
-    // alignItems: "center",
-    // justifyContent: "center",
-    // borderRadius: 20,
-    // marginTop: 50,
-    // width: 100,
-    // height: 50,
     color: "white",
   },
   image: {
@@ -47,11 +35,19 @@ export default StyleSheet.create({
     justifyContent: "center",
     marginVertical: 10,
   },
+  centeredEnd: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    marginBottom: 34,
+  },
   submitText: {
     fontSize: 16,
     paddingTop: 10,
     color: "#2f4f4f",
   },
+
   loadingContainer: {
     flex: 1,
     backgroundColor: "white",

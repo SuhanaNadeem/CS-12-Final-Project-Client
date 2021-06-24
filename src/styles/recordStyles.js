@@ -114,6 +114,7 @@ export default StyleSheet.create({
     fontStyle: "italic",
     fontWeight: "bold",
     paddingBottom: 30,
+    paddingTop: 8,
     color: "#2f4f4f",
   },
   card: {

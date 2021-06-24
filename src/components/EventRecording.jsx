@@ -1,6 +1,6 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useState, useEffect, useRef } from "react";
-import { Button, View, Text, Image, Pressable } from "react-native";
+import { gql, useMutation } from "@apollo/client";
+import React, { useState, useEffect } from "react";
+import { View, Text, Image, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { Audio } from "expo-av";
 import { RNS3 } from "react-native-aws3";
@@ -9,6 +9,7 @@ import * as FileSystem from "expo-file-system";
 import { sendPushNotification } from "../util/notifications";
 import { AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_REGION, S3_CS_BUCKET } from "@env";
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from "./InterimRecording";
+import { GET_EVENT_RECORDINGS_BY_USER } from "./PlayShareRemove";
 import { GET_TRANSCRIPTION_BY_USER } from "./LiveTranscription";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -30,11 +31,6 @@ const EventRecording = ({
   setDetectedStatus,
   expoPushToken,
 }) => {
-  const [handleDangerValues, setHandleDangerValues] = useState({
-    userId: user && user.id,
-    eventRecordingFileKey: "",
-    recordingBytes: "",
-  });
   const [start, setStart] = useState(true); // Used to start and stop the recordings periodically
   const [recording, setRecording] = useState(); // Store current audio recording object for global access
 
@@ -60,6 +56,11 @@ const EventRecording = ({
     client: userClient,
   });
 
+  const [handleDangerValues, setHandleDangerValues] = useState({
+    userId: user && user.id,
+    eventRecordingFileKey: "",
+    recordingBytes: "",
+  });
   const [handleDanger] = useMutation(HANDLE_DANGER, {
     update() {
       setHandleDangerValues({
@@ -72,6 +73,10 @@ const EventRecording = ({
     refetchQueries: [
       {
         query: GET_TRANSCRIPTION_BY_USER,
+        variables: { userId: user && user.id },
+      },
+      {
+        query: GET_EVENT_RECORDINGS_BY_USER,
         variables: { userId: user && user.id },
       },
     ],
@@ -155,6 +160,11 @@ const EventRecording = ({
           });
         }
       });
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: true,
+      });
     } catch (err) {
       // console.error("Failed to stop recording", err);
     }
@@ -164,7 +174,7 @@ const EventRecording = ({
   // call, it's refreshed)
   useEffect(() => {
     // Alternate between stopping and starting a recording every 15 s, with a 50 ms pause to
-    // avoid recordConflicts -- this records 15 s long event recording components
+    // avoid record conflicts -- this records 15 s long event recording components
     const interval = setInterval(
       async () => {
         if (detectedStatus === "start") {
@@ -176,7 +186,7 @@ const EventRecording = ({
           setStart(!start);
         }
       },
-      start ? 50 : 15000
+      start ? 50 : 15000 // Ternary to switch between stopping previously started recording and starting new one
     );
 
     if (detectedStatus === "stop") {
@@ -209,6 +219,7 @@ const EventRecording = ({
         <View style={styles.buttonBackground}>
           <Pressable
             style={({ pressed }) => [
+              // Handle style change when button is pressed
               {
                 shadowColor: "#2f4f4f",
                 shadowOffset: pressed
@@ -220,19 +231,19 @@ const EventRecording = ({
               styles.centeredView,
             ]}
             onPress={async () => {
+              // If we have permission, send notifications at different milestones in `handleDanger`
               if (expoPushToken) {
-                console.log("ENTERS THIS");
                 await sendPushNotification({
                   expoPushToken,
-                  data: { someData: "goeshere" },
                   title: "Danger Handling",
                   body:
-                    detectedStatus === "start" // need to print the opposite because setting happens after
+                    detectedStatus === "start" // Need to print the opposite because setting updates slow
                       ? "Event recording has been stopped and will be handled"
                       : detectedStatus === "stop" &&
                         "Event recording has started",
                 });
               }
+              // Toggle detectedStatus
               if (detectedStatus === "start") {
                 setDetectedStatus("stop");
               } else if (detectedStatus === "stop") {

@@ -1,35 +1,34 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState, useRef } from "react";
-import {
-  Button,
-  StyleSheet,
-  StatusBar,
-  Text,
-  Image,
-  ScrollView,
-} from "react-native";
+import { gql, useQuery } from "@apollo/client";
+import React, { useEffect, useState, useRef } from "react";
+import { ScrollView } from "react-native";
 import EventRecording from "../components/EventRecording";
 import InterimRecording from "../components/InterimRecording";
 import { userClient } from "../../GraphqlApolloClients";
 import Welcome from "../components/Welcome";
 import * as Notifications from "expo-notifications";
-import {
-  registerForPushNotificationsAsync,
-  sendPushNotification,
-} from "../util/notifications";
-
-import * as SMS from "expo-sms";
+import { registerForPushNotificationsAsync } from "../util/notifications";
 import LiveTranscription from "../components/LiveTranscription";
 import RecordingPlayback from "../components/RecordingPlayback";
-
 import styles from "../styles/recordStyles";
 
-const Record = ({ route, navigation }) => {
-  const { userId } = route.params;
-  const { newUser } = route.params;
-  const [welcomeOpen, setWelcomeOpen] = useState(false);
-  const [enabled, setEnabled] = useState(false);
+/* This page allows the user to start event and background recordings through speech-to-text and various
+  other analyses. See comments in `src/components` for details. */
 
+const Record = ({ route, navigation }) => {
+  const { userId } = route.params; // Grab user info from the route
+  const { newUser } = route.params;
+
+  const [welcomeOpen, setWelcomeOpen] = useState(false); // Open the welcome modal if applicable
+
+  const [enabled, setEnabled] = useState(false); // Global state that checks if background recordings are enabled
+  const [detectedStatus, setDetectedStatus] = useState("stop"); // Global state that checks the state of event recordings, set after calls to danger detection mutations
+
+  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
+    variables: { userId: userId && userId },
+    client: userClient,
+  });
+
+  // Lines 32-72 set up push notifications
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -38,6 +37,7 @@ const Record = ({ route, navigation }) => {
     }),
   });
 
+  // States required for push notification configuration
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -70,18 +70,12 @@ const Record = ({ route, navigation }) => {
     };
   }, [notification]);
 
+  // Open the welcome modal if needed
   useEffect(() => {
     if (newUser) {
       setWelcomeOpen(true);
     }
   }, [newUser]);
-
-  const [detectedStatus, setDetectedStatus] = useState("stop");
-
-  const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
-    variables: { userId: userId && userId },
-    client: userClient,
-  });
 
   return user ? (
     <>

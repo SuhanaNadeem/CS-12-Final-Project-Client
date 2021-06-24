@@ -7,35 +7,33 @@ import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/accountStyles";
 import Icon from "react-native-vector-icons/Ionicons";
 
+/* Allow user to configure each of their voice keys, 'start', 'stop', and 'panic'. */
+
 const MessageInfo = ({ user }) => {
+  // Set mutation values in a state, to be able to update on input
   const [values, setValues] = useState({
     userId: user && user.id,
     newPanicPhone: "",
     newPanicMessage: "",
   });
-  console.log("user;");
-  console.log(user);
-  console.log(user.panicMessage);
-  const [setMessageInfo, loadingSetMessageInfo] = useMutation(
-    SET_MESSAGE_INFO,
-    {
-      update(_, { data: { setMessageInfo: updatedUser } }) {
-        console.log(updatedUser);
-        console.log("setMessageInfo successful");
+  const [setMessageInfo] = useMutation(SET_MESSAGE_INFO, {
+    // update(_, { data: { setMessageInfo: updatedUser } }) {
+    //   console.log(updatedUser);
+    //   console.log("setMessageInfo successful");
+    // },
+    onError(err) {
+      console.log(err);
+    },
+    // Refetch user to display message info changes
+    refetchQueries: [
+      {
+        query: GET_USER_BY_ID,
+        variables: { userId: user && user.id },
       },
-      onError(err) {
-        console.log(err);
-      },
-      refetchQueries: [
-        {
-          query: GET_USER_BY_ID,
-          variables: { userId: user && user.id },
-        },
-      ],
-      variables: values,
-      client: userClient,
-    }
-  );
+    ],
+    variables: values,
+    client: userClient,
+  });
 
   return user ? (
     <View
@@ -53,7 +51,6 @@ const MessageInfo = ({ user }) => {
           setValues({ ...values, newPanicPhone: text.toString() });
         }}
         style={styles.input}
-        // keyboardType={"phone-pad"}
         value={values.newPanicPhone}
         placeholder={user.panicPhone ? user.panicPhone : "Your panic phone"}
         placeholderTextColor="#2f4f4f"
@@ -93,9 +90,7 @@ const MessageInfo = ({ user }) => {
       </Pressable>
     </View>
   ) : (
-    <View>
-      <Text>Loading panic info...</Text>
-    </View>
+    <></>
   );
 };
 

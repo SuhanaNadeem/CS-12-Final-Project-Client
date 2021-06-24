@@ -1,14 +1,6 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState } from "react";
-import {
-  Button,
-  Text,
-  ScrollView,
-  View,
-  TextInput,
-  StyleSheet,
-  KeyboardAvoidingView,
-} from "react-native";
+import { gql, useQuery } from "@apollo/client";
+import React from "react";
+import { Text, ScrollView, View, KeyboardAvoidingView } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import FlaggedTokens from "../components/FlaggedTokens";
 import Keys from "../components/Keys";
@@ -16,23 +8,15 @@ import Logout from "../components/Logout";
 import MessageInfo from "../components/MessageInfo";
 import styles from "../styles/accountStyles";
 
-// import NavBar from "../components/NavBar";
-import { UserAuthContext } from "../context/userAuth";
+/* This page allows the user to log out, configure their 'panic' contact info, set their voice keys, and view the
+flagged tokens in our growing database. See comments in `src/components` for details. */
 
-// Manage keys and other account info
 const Account = ({ route, navigation }) => {
-  // TODO look at the rest of the app's *finished UI to fix the UI of this page so it's consistent
-  // - *note, it's not finished yet but will be by the time you finish the features
-  // Also, look at what I did with the search feature to show a "Collapse" button after someone clicks "See more"
-
-  const { userId } = route.params;
+  const { userId } = route.params; // Grab the userId from the route, passed on navigate
   const { data: { getUserById: user } = {} } = useQuery(GET_USER_BY_ID, {
     variables: { userId: userId && userId },
     client: userClient,
   });
-
-  console.log("user in acc:");
-  console.log(user);
 
   return user ? (
     <KeyboardAvoidingView

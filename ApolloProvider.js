@@ -5,6 +5,7 @@ import App from "./App";
 import { userClient } from "./GraphqlApolloClients";
 
 const App = () => (
+  // Wrap app in userClient to access back-end
   <ApolloProvider client={userClient}>
     <App />
   </ApolloProvider>

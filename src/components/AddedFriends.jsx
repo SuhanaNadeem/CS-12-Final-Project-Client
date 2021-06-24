@@ -20,19 +20,18 @@ const AddedFriends = ({ user }) => {
     setFetchedFriends(friends);
   }, [friends]);
 
-  return (
-    user &&
-    fetchedFriends && (
-      <View style={{ paddingHorizontal: 25, marginBottom: 40 }}>
-        <Text style={styles.titleText}>Your Friends</Text>
-        <Text style={[styles.baseText, { paddingBottom: 30 }]}>
-          Unfriend added users here.
-        </Text>
-        {fetchedFriends.map((friend, index) => (
-          <AddedFriend key={index} friend={friend} user={user} />
-        ))}
-      </View>
-    )
+  return user && fetchedFriends ? (
+    <View style={{ paddingHorizontal: 25, marginBottom: 40 }}>
+      <Text style={styles.titleText}>Your Friends</Text>
+      <Text style={[styles.baseText, { paddingBottom: 30 }]}>
+        Unfriend added users here.
+      </Text>
+      {fetchedFriends.map((friend, index) => (
+        <AddedFriend key={index} friend={friend} user={user} />
+      ))}
+    </View>
+  ) : (
+    <></>
   );
 };
 

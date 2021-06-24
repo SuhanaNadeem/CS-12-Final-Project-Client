@@ -7,6 +7,14 @@ import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IP_ADDRESS } from "@env";
 
+/* This file connects our Expo CLI app to our backend via Apollo GraphQL, creating a custom 
+client for us to us in the front-end.
+
+Resources:
+- https://www.apollographql.com/docs/react/integrations/react-native/
+- https://docs.expo.io/versions/latest/sdk/async-storage/
+*/
+
 const backendURI = "http://" + IP_ADDRESS + ":5000/";
 const wsURI = "ws://" + IP_ADDRESS + ":5000/subscriptions";
 

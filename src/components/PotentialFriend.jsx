@@ -1,16 +1,13 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useState, useEffect } from "react";
-import { Button, View, Text, Pressable } from "react-native";
+import { gql, useMutation } from "@apollo/client";
+import React, { useState } from "react";
+import { View, Text, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-// import { GET_FRIENDS } from "./AddedFriend";
-// import { GET_FRIEND_REQUESTS } from "./Requester";
-
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-// Used by PotentialFriends.jsx to display individual users from a list of search results and give the user the option to
-// send a friend request to those users. Utilizes the sendFriendRequest mutation to add the current user to their potential friend's
-// requesterIds.
+/* Used by PotentialFriends.jsx to display individual users from a list of search results and give the user the option to
+ send a friend request to those users. Utilizes the `sendFriendRequest` mutation to add the current user to their potential friend's
+ requesterIds. */
 
 function PotentialFriend({ name, matchedUser, user }) {
   const [values, setValues] = useState({
@@ -19,11 +16,10 @@ function PotentialFriend({ name, matchedUser, user }) {
   });
   const [sendFriendRequest] = useMutation(SEND_FRIEND_REQUEST, {
     update() {
-      console.log("Submitted sendFriendRequest");
       setValues({
         ...values,
         receiverId: "",
-      });
+      }); // Reset the receiver ID
     },
     onError(err) {
       console.log(err);
@@ -59,7 +55,7 @@ function PotentialFriend({ name, matchedUser, user }) {
         (matchedUser && matchedUser.requesterIds.includes(user.id)) ||
         user.friendIds.includes(matchedUser.id)
           ? true
-          : false
+          : false // Button is disabled if the user is already friends with this user or has already requested to be
       }
       style={({ pressed }) => [
         {
@@ -69,11 +65,11 @@ function PotentialFriend({ name, matchedUser, user }) {
             : { width: 0, height: 0 },
           shadowOpacity: pressed ? 0.8 : 0,
           shadowRadius: pressed ? 0 : 1,
-        },
+        }, // Handle style change on press
         (matchedUser && matchedUser.requesterIds.includes(user.id)) ||
         user.friendIds.includes(matchedUser.id)
           ? styles.disabledCard
-          : styles.card,
+          : styles.card, // Handle style change if button is disabled (i.e. request cannot be sent)
       ]}
     >
       <View style={{ flexDirection: "column", color: "white" }}>
@@ -104,8 +100,6 @@ function PotentialFriend({ name, matchedUser, user }) {
     <></>
   );
 }
-
-// Send invite?
 
 export const SEND_FRIEND_REQUEST = gql`
   mutation sendFriendRequest($requesterId: String!, $receiverId: String!) {

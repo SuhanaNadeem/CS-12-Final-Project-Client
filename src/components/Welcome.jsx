@@ -1,12 +1,8 @@
-import { gql, useMutation } from "@apollo/client";
-import React, { useState } from "react";
-import { Button, View, Text, Modal, Pressable } from "react-native";
-import { userClient } from "../../GraphqlApolloClients";
+import React from "react";
+import { View, Text, Modal, Pressable } from "react-native";
 
-// Welcome component to be displayed to the user
+// Welcome component to be displayed to the user when they first sign up
 const Welcome = ({ userId, welcomeOpen, setWelcomeOpen, styles }) => {
-  console.log("In Welcome");
-  console.log(userId);
   return userId ? (
     <Modal
       animationType="fade"

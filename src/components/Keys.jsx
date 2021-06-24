@@ -1,25 +1,27 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { UserAuthContext } from "../context/userAuth";
-import React, { useContext, useEffect, useState } from "react";
-
-import { Button, Text, View, TextInput } from "react-native";
+import { gql, useMutation } from "@apollo/client";
+import React, { useState } from "react";
+import { Text, View, TextInput } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/accountStyles";
 import Icon from "react-native-vector-icons/Ionicons";
 
+/* Set each of the users voice keys, used to indicate 'start', 'stop', or 'panic' with reference to event recordings. */
+
 const Keys = ({ user }) => {
+  // Call setStartKey with the entered values, stored in a state to allow updates
   const [startKeyValues, setStartKeyValues] = useState({
     userId: user && user.id,
     startKey: "",
   });
-  const [setStartKey, loadingSetStartKey] = useMutation(SET_START_KEY, {
-    update(_, { data: { setStartKey: startKey } }) {
-      console.log(startKey);
-      console.log("Start key set successful");
-    },
+  const [setStartKey] = useMutation(SET_START_KEY, {
+    // update(_, { data: { setStartKey: startKey } }) {
+    //   console.log(startKey);
+    //   console.log("Start key set successful");
+    // },
     onError(err) {
       console.log(err);
     },
+    // Need to update the key display
     refetchQueries: [
       {
         query: GET_USER_BY_ID,
@@ -30,18 +32,20 @@ const Keys = ({ user }) => {
     client: userClient,
   });
 
+  // Call setStopKey with the entered values, stored in a state to allow updates
   const [stopKeyValues, setStopKeyValues] = useState({
     userId: user && user.id,
     stopKey: "",
   });
-  const [setStopKey, loadingSetStopKey] = useMutation(SET_STOP_KEY, {
-    update(_, { data: { setStopKey: stopKey } }) {
-      console.log(stopKey);
-      console.log("Stop key set successful");
-    },
+  const [setStopKey] = useMutation(SET_STOP_KEY, {
+    // update(_, { data: { setStopKey: stopKey } }) {
+    //   console.log(stopKey);
+    //   console.log("Stop key set successful");
+    // },
     onError(err) {
       console.log(err);
     },
+    // Need to update the key display
     refetchQueries: [
       {
         query: GET_USER_BY_ID,
@@ -52,19 +56,20 @@ const Keys = ({ user }) => {
     client: userClient,
   });
 
+  // Call setPanicKey with the entered values, stored in a state to allow updates
   const [panicKeyValues, setPanicKeyValues] = useState({
     userId: user && user.id,
     panicKey: "",
   });
-  const [setPanicKey, loadingSetPanicKey] = useMutation(SET_PANIC_KEY, {
-    update(_, { data: { setPanicKey: panicKey } }) {
-      console.log(panicKey);
-
-      console.log("Panic key set successful");
-    },
+  const [setPanicKey] = useMutation(SET_PANIC_KEY, {
+    // update(_, { data: { setPanicKey: panicKey } }) {
+    //   console.log(panicKey);
+    //   console.log("Panic key set successful");
+    // },
     onError(err) {
       console.log(err);
     },
+    // Need to update the key display
     refetchQueries: [
       {
         query: GET_USER_BY_ID,

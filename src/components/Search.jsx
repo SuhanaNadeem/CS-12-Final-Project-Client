@@ -1,17 +1,15 @@
-import { gql, useMutation, useQuery, useLazyQuery } from "@apollo/client";
-import { UserAuthContext } from "../context/userAuth";
-import React, { useContext, useEffect, useState } from "react";
+import { gql, useLazyQuery } from "@apollo/client";
+import React, { useState } from "react";
 import { userClient } from "../../GraphqlApolloClients";
-import { View, TextInput, Button, Text } from "react-native";
+import { View, TextInput, Text } from "react-native";
 import PotentialFriends from "./PotentialFriends";
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
-import { DrawerLayoutAndroidBase } from "react-native";
 // import { GET_USER_MATCHES } from "./PotentialFriend";
 
-// The Search component is displayed in the Friends screen of the app and is used to search through the database
-// of users to add friends. This component uses the getUserMatches query to find users in the database matching
-// the search terms, and displays them to the user who will have the option to add them.
+/* The Search component is displayed in the Friends screen of the app and is used to search through the database
+  of users to add friends. This component uses the getUserMatches query to find users in the database matching
+  the search terms, and displays them to the user who will have the option to add them. */
 
 const Search = ({ user }) => {
   const [name, setName] = useState("");
@@ -19,13 +17,13 @@ const Search = ({ user }) => {
 
   const [
     getUserMatches,
-    { loading, data: { getUserMatches: fetchedUsers } = {} },
+    { data: { getUserMatches: fetchedUsers } = {} },
   ] = useLazyQuery(GET_USER_MATCHES, {
     onCompleted() {
       setMatchedUsers(fetchedUsers);
     },
     client: userClient,
-  });
+  }); // Use a lazy query to be able to call the query when the search field is entered
 
   return (
     <View style={{ paddingHorizontal: 25 }}>
@@ -45,7 +43,6 @@ const Search = ({ user }) => {
 
         <Icon
           onPress={() => {
-            console.log("Enters properly");
             getUserMatches({
               variables: { name: name },
             });

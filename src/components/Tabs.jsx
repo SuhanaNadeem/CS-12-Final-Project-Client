@@ -8,6 +8,8 @@ import React from "react";
 
 const Tab = createMaterialBottomTabNavigator();
 
+/* Tabs handles navigation between screens visible to the user when they are signed in. */
+
 export default function Tabs({ route }) {
   const { userId } = route.params;
   const { newUser } = route.params;

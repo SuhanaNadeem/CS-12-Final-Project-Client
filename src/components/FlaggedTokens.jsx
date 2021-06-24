@@ -1,14 +1,13 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { UserAuthContext } from "../context/userAuth";
-import React, { useContext, useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import React, { useEffect, useState } from "react";
 
-import { Button, Text, View, TextInput } from "react-native";
+import { Text, View } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
-import { useRoute } from "@react-navigation/core";
 import Token from "./Token";
-import { ScrollView } from "react-native";
 import styles from "../styles/accountStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
+
+/* Map all the flagged tokens stored in MongoDB by category. */
 
 const FlaggedTokens = ({ user }) => {
   const { data: { getPoliceTokens: policeTokens } = {} } = useQuery(
@@ -30,7 +29,7 @@ const FlaggedTokens = ({ user }) => {
   const [limitedPoliceTokens, setLimitedPoliceTokens] = useState([]);
   const [limitedThiefTokens, setLimitedThiefTokens] = useState([]);
   useEffect(() => {
-    //set limitedThiefTokens to the entire list
+    // Set limitedThiefTokens to the entire list
     if (policeTokens) {
       setLimitedPoliceTokens(policeTokens.slice(0, 5));
     }
@@ -43,7 +42,7 @@ const FlaggedTokens = ({ user }) => {
   const [tOpen, setTOpen] = useState(false);
 
   useEffect(() => {
-    //set limitedThiefTokens to the entire list/limited list (toggled)
+    // Set limitedThiefTokens to the entire list/limited list (toggled)
     if (thiefTokens) {
       if (tOpen) {
         setLimitedThiefTokens(thiefTokens);
@@ -54,7 +53,7 @@ const FlaggedTokens = ({ user }) => {
   }, [tOpen]);
 
   useEffect(() => {
-    //set limitedPoliceTokens to the entire list/limited list (toggled)
+    // Set limitedPoliceTokens to the entire list/limited list (toggled)
     if (policeTokens) {
       if (pOpen) {
         setLimitedPoliceTokens(policeTokens);
@@ -72,9 +71,9 @@ const FlaggedTokens = ({ user }) => {
         recordings, event recordings will be triggered.
       </Text>
 
-      {/* Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
+      {/* Map each thief token to a Police component */}
       <Text style={styles.subTitleText}>Police Tokens</Text>
-      {limitedPoliceTokens && // Replace this with limitedPoliceTokens
+      {limitedPoliceTokens &&
         limitedPoliceTokens.map((policeToken, index) => (
           <Token key={index} token={policeToken} />
         ))}
@@ -98,7 +97,7 @@ const FlaggedTokens = ({ user }) => {
           />
         </View>
       )}
-      {/*  Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
+      {/* Map each thief token to a Token component */}
       <Text style={styles.subTitleText}>Thief Tokens</Text>
       {limitedThiefTokens &&
         limitedThiefTokens.map((thiefToken, index) => (
@@ -132,7 +131,6 @@ const FlaggedTokens = ({ user }) => {
   );
 };
 
-// follow this for getPoliceTokens and getThiefTokens, and specify token and name after line 44
 export const GET_USER_BY_ID = gql`
   query getUserById($userId: String!) {
     getUserById(userId: $userId) {

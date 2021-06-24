@@ -28,7 +28,8 @@ For many people, in recent times especially, simply walking the streets of their
 - Send push notifications asking for audio and location permission, and notifying background/event recording start/stop
 
 ### How it Works
-When logged into the app, the user will be presented with the option to allow background recordings. When enabled, Street Guard will record chunks of audio which will be match against a database of keywords and phrases used by police officers and thieves, triggering the recording to be saved when a match is found. These phrases are not restricted purely to the app's database however; users themselves are able to set their own start, stop, and panic key phrases that they themselves can use to trigger events in our app, like saving recordings and sending SMS messages with location data. Users can friend others in the app as well in order to monitor their friends and be able to view their location if they choose to have the feature enabled.
+
+When logged into the app, the user will be presented with the option to allow background recordings. When enabled, Street Guard will record chunks of audio which will be match against a database of keywords and phrases used by police officers and thieves, triggering the recording to be saved when a match is found. These phrases are not restricted purely to the app's database however; users themselves are able to set their own start, stop, and panic key phrases that they can use to trigger events in our app, like saving recordings and sending SMS messages with location data. Users can friend others in the app as well, in order to monitor their friends' locations if they choose to have the feature enabled.
 
 ### API List
 
@@ -47,17 +48,46 @@ When logged into the app, the user will be presented with the option to allow ba
 
 ### Notes
 
-- This app relies heavily on the Google Cloud Speech-to-Text API for transcribing audio recordings as well as Amazon's S3 service for storing these recordings. As such, an internet connection is required for our app to function as intended.
+- Ideally, audio would be streamed from the user's microphone to the our server for speech-to-text and danger-detection, as well as event recordings themselves. In order to build a program that works efficiently with our tools (Expo specifically), we've simplified streaming to periodic, short chunks of audio, for both background and event recordings.
+- The programmatical SMS feature is enabled via a
+  trial account, allowing only certain phone numbers to be messaged to on 'panic'. Purchasing a Twilio account and removing the code indicated in `sendTwilioSMS()` would fix this.
+- This app relies on the Google Cloud Speech-to-Text API for transcribing audio recordings as well as Amazon's S3 service for storing these recordings. As such, an internet connection is required for our app to function as intended. In the future, it would be ideal to
+  fulfill both these features off the web, using
+  downloaded local maps and built-in libraries.
 
 ### Sources
 
+Here are our major sources for this project. More sources are included in specific parts of our client and server apps, as well as our `package.json` files in both ends.
+
+- **App Setup and Learning Resources**
+
+  - [Introduction to Expo Docs](https://docs.expo.io/)
+  - [Apollo GraphQL React Native Docs](https://www.apollographql.com/docs/react/integrations/react-native/)
+  - [Expo Async Storage Docs](https://docs.expo.io/versions/latest/sdk/async-storage/)
+  - [React Native Style](https://reactnative.dev/docs/style)
+  - [Expo Routing and Navigation Docs](https://docs.expo.io/guides/routing-and-navigation/)
+  - [React Native Icons](https://oblador.github.io/react-native-vector-icons/)
+
+* **Transcriptions (Speech-to-Text)**
+
+  - [Google Cloud Speech-to-Text Docs](https://cloud.google.com/speech-to-text/docs/libraries)
+  - [Google Cloud Speech-to-Text Node.js Demo](https://www.youtube.com/watch?v=naZ8oEKuR44&ab_channel=GoogleCloudTech)
+
 - **Recordings and Storage**
+
   - [React Native S3 Module](https://www.npmjs.com/package/react-native-aws3)
   - [Expo Audio SDK Docs](https://docs.expo.io/versions/latest/sdk/audio/)
+  - [Amazon S3 Node.js Docs](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-started-nodejs.html)
+
 - **Location and Maps**
+
   - [Expo Location SDK Docs](https://docs.expo.io/versions/latest/sdk/location/)
   - [Expo MapView SDK Docs](https://docs.expo.io/versions/latest/sdk/map-view/)
-- **Messaging and Sharing**
-  - [Twilio SMS](https://www.twilio.com/messaging)
+
+- **Sharing and Messaging**
+
+  - [Twilio SMS Send Messages Docs](https://www.twilio.com/docs/sms/send-messages)
+  - [Twilio SMS Node.js Quickstart Docs](https://www.twilio.com/docs/sms/quickstart/node)
   - [Expo Notifications SDK Docs](https://docs.expo.io/versions/latest/sdk/notifications/)
   - [Expo SMS SDK Docs](https://docs.expo.io/versions/v41.0.0/sdk/sms/)
+  - [GraphQL Filter Search Article](https://www.howtographql.com/react-apollo/7-filtering-searching-the-list-of-links/) [MongoDB Docs Aggregation](https://docs.mongodb.com/manual/tutorial/text-search-in-aggregation/)

@@ -21,7 +21,7 @@ const Login = ({ navigation }) => {
   const [values, setValues] = useState({ email: "", password: "" });
   const [loginUser, loadingUser] = useMutation(LOGIN_USER, {
     update(_, { data: { loginUser: userData } }) {
-      console.log("Login successful");
+      // Set context of current user to allow access to user-related data, and navigate to user-specific screen
       context.loginUser(userData);
       navigation.navigate("Home", { userId: userData.id });
     },
@@ -33,14 +33,12 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.loginContainer}>
-      {/* <ImageBackground source={pageBg} style={styles.image}> */}
       <View style={styles.formContainer}>
         <View style={styles.centered}>
           <Image
             source={require("../images/logo.png")}
             style={{ width: 100, height: 100 }}
           ></Image>
-          {/* <Icon name="binoculars" size={50} color="white" /> */}
         </View>
         <Text style={styles.formText}>Email</Text>
         <TextInput
@@ -67,8 +65,6 @@ const Login = ({ navigation }) => {
       >
         <Text style={styles.loginText}> Log In</Text>
       </Pressable>
-
-      {/* </ImageBackground> */}
     </View>
   );
 };

@@ -1,3 +1,7 @@
+/* This file defines functions responsible for notification sending and configuration 
+Source:
+- https://docs.expo.io/push-notifications/overview/ */
+
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 
@@ -14,9 +18,6 @@ export async function sendPushNotification({
     title,
     body,
     data,
-    // title: "Title",
-    // body: "Body",
-    // data: { someData: "goes here" },
   };
 
   await fetch("https://exp.host/--/api/v2/push/send", {
@@ -32,9 +33,7 @@ export async function sendPushNotification({
 
 export async function registerForPushNotificationsAsync() {
   let token;
-  console.log("registerForPushNotificationsAsync entered");
   if (Constants.isDevice) {
-    console.log("Constants.isDevice condition true");
     const {
       status: existingStatus,
     } = await Notifications.getPermissionsAsync();
@@ -47,11 +46,8 @@ export async function registerForPushNotificationsAsync() {
       alert("Failed to get push token for push notification!");
       return;
     }
-    console.log("await Notifications.getExpoPushTokenAsync()");
-    console.log(await Notifications.getExpoPushTokenAsync())
+
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log("token:");
-    console.log(token);
   } else {
     alert("Must use physical device for Push Notifications");
   }

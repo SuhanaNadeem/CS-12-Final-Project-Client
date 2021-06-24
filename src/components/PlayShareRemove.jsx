@@ -1,42 +1,42 @@
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import React, { useEffect, useState } from "react";
-import { Button, View, Text, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { Audio } from "expo-av";
 import { userClient } from "../../GraphqlApolloClients";
 import styles from "../styles/recordStyles";
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as SMS from "expo-sms";
 
-const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
-  const [soundToPlay, setSoundToPlay] = useState();
+/* Allow the user to play/stop, share (via Expo SMS), or remove an entire event recording. Note that these are composed of 
+several event recording components, and so are played recursively in queue. */
 
+const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
+  // States to track playing status and sound object
+  const [soundToPlay, setSoundToPlay] = useState();
   const [playing, setPlaying] = useState(false);
 
-  const [deleteEventRecording, loadingDeleteEventRecording] = useMutation(
-    DELETE_EVENT_RECORDING,
-    {
-      update() {
-        console.log("deleteEventRecording called");
+  const [deleteEventRecording] = useMutation(DELETE_EVENT_RECORDING, {
+    // update() {
+    //   console.log("deleteEventRecording called");
+    // },
+    onError(err) {
+      console.log(err);
+    },
+    // Refetch after, to remove from display
+    refetchQueries: [
+      {
+        query: GET_EVENT_RECORDINGS_BY_USER,
+        variables: { userId: userId && userId },
       },
-      onError(err) {
-        console.log("Unsuccessful");
-        console.log(err);
-      },
-      refetchQueries: [
-        {
-          query: GET_EVENT_RECORDINGS_BY_USER,
-          variables: { userId: userId && userId },
-        },
-      ],
-      variables: { eventRecordingId: eventRecording && eventRecording.id },
-      client: userClient,
-    }
-  );
+    ],
+    variables: { eventRecordingId: eventRecording && eventRecording.id },
+    client: userClient,
+  });
 
+  // Sound must be unloaded from memory on changes
   useEffect(() => {
     return soundToPlay
       ? () => {
-          console.log("Unloading Sound");
           soundToPlay.unloadAsync();
         }
       : undefined;
@@ -45,8 +45,10 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
   var count = 0;
 
   async function startPlaying() {
+    // Play till the last event recording component in this group...
+
     if (count < eventRecording.eventRecordingUrls.length) {
-      console.log("Enters this if");
+      // Prepare Audio recording by configuring device audio mdode
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -56,8 +58,8 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
         staysActiveInBackground: true,
         playThroughEarpieceAndroid: true,
       });
-      console.log("Current index: " + count);
 
+      // Play the current event recording component in this group
       const { sound } = await Audio.Sound.createAsync(
         {
           uri: eventRecording && eventRecording.eventRecordingUrls[count],
@@ -66,15 +68,15 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
       );
       setSoundToPlay(sound);
       setPlaying(true);
+
       sound.setOnPlaybackStatusUpdate(async (status) => {
+        // Once the current recording component finishes playing, play the next one (https://forums.expo.io/t/is-it-possible-to-check-when-sound-has-finished-playing/27679)
         if (status.didJustFinish === true) {
           count += 1;
           startPlaying();
         }
       });
-      console.log("reaching here");
     } else {
-      console.log("No more left");
       await stopPlaying();
     }
   }
@@ -86,11 +88,8 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
         await soundToPlay.pauseAsync();
         await soundToPlay.unloadAsync();
       } catch (e) {
-        console.log("error in stop...");
-        console.log(e);
+        // console.log(e);
       }
-
-      console.log("Stopping sound..");
     }
   }
 
@@ -111,6 +110,7 @@ const PlayShareRemove = ({ createdAt, eventRecording, userId }) => {
 
   return (
     <Pressable style={styles.card}>
+      {/* Format createdAt nicely to label the event recording */}
       <Text
         style={{
           fontSize: 16,

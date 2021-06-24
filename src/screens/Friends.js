@@ -1,15 +1,7 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState } from "react";
+import { useQuery } from "@apollo/client";
+import React from "react";
 import { ScrollView } from "react-native";
-import {
-  Button,
-  Text,
-  View,
-  TextInput,
-  StyleSheet,
-  Dimensions,
-  KeyboardAvoidingView,
-} from "react-native";
+import { Text, View, KeyboardAvoidingView } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import Requesters from "../components/Requesters";
 import Search from "../components/Search";
@@ -17,7 +9,9 @@ import AddedFriends from "../components/AddedFriends";
 import styles from "../styles/friendsStyles";
 import { GET_USER_BY_ID } from "../components/PotentialFriend";
 
-// Manage keys and other account info
+/* This page allows the user to send friend requests, add friends who have sent them friend requests, search
+for other users, and view/delete existing friends. See comments in `src/components` for details. */
+
 const Friends = ({ route }) => {
   const { userId } = route.params;
 
@@ -43,22 +37,5 @@ const Friends = ({ route }) => {
     </View>
   );
 };
-
-// export const GET_USER_BY_ID = gql`
-//   query getUserById($userId: String!) {
-//     getUserById(userId: $userId) {
-//       id
-//       email
-//       startKey
-//       stopKey
-//       panicKey
-//       friendIds
-//       requesterIds
-//       location
-//       locationOn
-//       name
-//     }
-//   }
-// `;
 
 export default Friends;

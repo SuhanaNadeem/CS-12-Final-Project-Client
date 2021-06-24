@@ -1,5 +1,4 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import {
   Pressable,
   Text,
@@ -7,12 +6,12 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import Login from "../components/Login";
-import { UserAuthContext } from "../context/userAuth";
 import styles from "../styles/landingStyles";
 
-const Landing = ({ navigation }) => {
-  const { context } = useContext(UserAuthContext);
+/* This page allows the user to log in to our app or navigate to the SignUp screen instead. 
+  See comments in `src/components` for details. */
 
+const Landing = ({ navigation }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}

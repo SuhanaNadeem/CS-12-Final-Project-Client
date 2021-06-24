@@ -9,62 +9,59 @@ import FriendMapMarker from "./FriendMapMarker";
 import styles from "../styles/trackStyles";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
+/* Display a map with the current location of the user and their friends, if they're friends have enabled location sharing through
+`locationOn`. Toggle this property through this component. */
+
 const Map = ({ user }) => {
   const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
 
   const [values, setValues] = useState({
     userId: user && user.id,
-    location: "", // Before location is refreshed,
+    location: "", // Before location is refreshed, it should be empty
   });
 
-  const [setUserLocation, loadingSetUserLocation] = useMutation(
-    SET_USER_LOCATION,
-    {
-      update() {
-        console.log("setUserLocation called");
+  const [setUserLocation] = useMutation(SET_USER_LOCATION, {
+    // update() {
+    //   console.log("setUserLocation called");
+    // },
+    onError(err) {
+      console.log(err);
+    },
+    // Make sure the friends update, since they contain location attribute needed
+    refetchQueries: [
+      {
+        query: GET_FRIENDS,
+        variables: { userId: user && user.id },
       },
-      onError(err) {
-        console.log("Unsuccessful");
-        console.log(err);
-      },
-      refetchQueries: [
-        {
-          query: GET_FRIENDS,
-          variables: { userId: user && user.id },
-        },
-      ],
-      variables: values,
-      client: userClient,
-    }
-  );
+    ],
+    variables: values,
+    client: userClient,
+  });
 
-  const [toggleLocationOn, loadingToggleLocationOn] = useMutation(
-    TOGGLE_LOCATION_ON,
-    {
-      update() {
-        console.log("toggleLocationOn called");
+  const [toggleLocationOn] = useMutation(TOGGLE_LOCATION_ON, {
+    // update() {
+    //   console.log("toggleLocationOn called");
+    // },
+    onError(err) {
+      console.log(err);
+    },
+    // Refetch user with updated location attribute
+    refetchQueries: [
+      {
+        query: GET_USER_BY_ID,
+        variables: { userId: user && user.id },
       },
-      onError(err) {
-        console.log("Unsuccessful");
-        console.log(err);
-      },
-      refetchQueries: [
-        {
-          query: GET_USER_BY_ID,
-          variables: { userId: user && user.id },
-        },
-      ],
-      variables: { userId: user && user.id },
-      client: userClient,
-    }
-  );
+    ],
+    variables: { userId: user && user.id },
+    client: userClient,
+  });
 
   const { data: { getFriends: friends } = {} } = useQuery(GET_FRIENDS, {
     variables: { userId: user && user.id },
     client: userClient,
   });
 
+  // This useEffect periodically updates the user's location, by getting it from Expo and calling `setUserLocation`
   useEffect(() => {
     if (location) {
       var stringedLocation = JSON.stringify(location);
@@ -72,7 +69,6 @@ const Map = ({ user }) => {
       setUserLocation();
     }
     const interval = setInterval(async () => {
-      console.log("interval function entered");
       updateLocation();
     }, 60000);
 
@@ -89,7 +85,7 @@ const Map = ({ user }) => {
     if (user && user.locationOn) {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
+        console.log("Permission to access location was denied");
         return;
       }
 
@@ -109,13 +105,6 @@ const Map = ({ user }) => {
     }
   }
 
-  // let text = "Waiting..";
-  // if (errorMsg) {
-  //   text = errorMsg;
-  // } else if (location) {
-  //   text = JSON.stringify(location);
-  // }
-
   return user ? (
     <View style={{ paddingHorizontal: 25 }}>
       <Text style={styles.titleText}>Locations</Text>
@@ -123,6 +112,7 @@ const Map = ({ user }) => {
         Here are the locations of your friends who've enabled location sharing.
       </Text>
       <MapView style={styles.map}>
+        {/* Show the user's last location */}
         {location && (
           <MapView.Marker
             pinColor={"rgb(127, 0, 255)"}
@@ -131,6 +121,7 @@ const Map = ({ user }) => {
             description={"You are here."}
           />
         )}
+        {/* Show the user's friends' locations, if enabled */}
         {friends &&
           friends.map((friend, index) =>
             friend.locationOn && friend.location && friend.location != "" ? (
@@ -155,7 +146,7 @@ const Map = ({ user }) => {
         </View>
       </Pressable>
 
-      <Pressable onPress={updateLocation} style={styles.centered}>
+      <Pressable onPress={updateLocation} style={styles.centeredEnd}>
         <Text style={styles.submitText}>Refresh Location</Text>
         <View>
           <Icon
