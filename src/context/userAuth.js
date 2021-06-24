@@ -1,6 +1,10 @@
 import jwtDecode from "jwt-decode";
-import React, { createContext, useEffect, useReducer } from "react";
+import React, { createContext, useReducer } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+/* This file uses AsyncStorage to define a user's "context", which allows them to perform all 
+user actions through mutations and queries. This context is handled on login/logout. */
+
 const initialState = {
   user: null,
 };
@@ -46,41 +50,7 @@ function userAuthReducer(state, action) {
 })();
 
 function UserAuthProvider(props) {
-  // const _retrieveData = async () => {
-  // const token = await AsyncStorage.getItem("jwtToken");
-  // console.log("hi there");
-  // if (token) {
-  //   console.log(decodedToken);
-  //   const decodedToken = jwtDecode(token);
-  //   if (decodedToken.exp * 1000 < Date.now()) {
-  //     await AsyncStorage.AsyncStorage.removeItem("jwtToken");
-  //   } else {
-  //     initialState.user = decodedToken;
-  //   }
-  // }
-  // };
-  // await _retrieveData();
-  // await handleToken();
-
   const [state, dispatch] = useReducer(userAuthReducer, initialState);
-
-  // useEffect(() => {
-  //   const initState = async () => {
-  //     try {
-  //       const token = await AsyncStorage.getItem("jwtToken");
-  //       const decodedToken = jwtDecode(token);
-  //       if (decodedToken.exp * 1000 < Date.now()) {
-  //         await removeToken("jwtToken");
-  //       } else {
-  //         initialState.user = decodedToken;
-  //       }
-
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-  //   initState();
-  // }, [state, dispatch]);
 
   async function loginUser(userData) {
     try {

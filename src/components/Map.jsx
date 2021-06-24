@@ -118,7 +118,7 @@ const Map = ({ user }) => {
             pinColor={"rgb(127, 0, 255)"}
             coordinate={location.coords}
             title={"Current location"}
-            description={"You are here."}
+            description={"You are here"}
           />
         )}
         {/* Show the user's friends' locations, if enabled */}

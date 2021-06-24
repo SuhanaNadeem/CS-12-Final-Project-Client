@@ -27,8 +27,8 @@ const Account = ({ route, navigation }) => {
         <View style={{ paddingHorizontal: 25 }}>
           <Text style={styles.titleText}>Hi, {user.name}</Text>
           <Text style={styles.baseText}>
-            Here, you can manage your emergency message contact and phone, voice
-            keys, and more.
+            Here, you can manage your emergency message contact and message,
+            voice keys, and more.
           </Text>
         </View>
         <Logout navigation={navigation} />
