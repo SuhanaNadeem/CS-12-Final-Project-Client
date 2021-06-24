@@ -6,7 +6,12 @@ import { View, TextInput, Button, Text } from "react-native";
 import PotentialFriends from "./PotentialFriends";
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import { DrawerLayoutAndroidBase } from "react-native";
 // import { GET_USER_MATCHES } from "./PotentialFriend";
+
+// The Search component is displayed in the Friends screen of the app and is used to search through the database
+// of users to add friends. This component uses the getUserMatches query to find users in the database matching
+// the search terms, and displays them to the user who will have the option to add them.
 
 const Search = ({ user }) => {
   const [name, setName] = useState("");
@@ -41,11 +46,9 @@ const Search = ({ user }) => {
         <Icon
           onPress={() => {
             console.log("Enters properly");
-            //   console.log(values.name);
             getUserMatches({
               variables: { name: name },
             });
-            console.log("Exits properly");
           }}
           name="search"
           size={25}

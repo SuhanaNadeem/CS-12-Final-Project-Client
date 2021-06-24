@@ -6,11 +6,14 @@ import { Button, Text, View, TextInput } from "react-native";
 
 import styles from "../styles/accountStyles";
 
-// token is a string, passed as FlaggedToken.token
+// Token component is responsible for displaying a valid token to the user, and is intended to be used
+// in the FlaggedTokens.jsx component when enumerating all police and thief tokens in a list
 
 const Token = ({ token }) => {
+  // Ternary operator - Only attempt to display token if a valid one is passed
   return token ? (
     <View>
+      {/* Display token with a bullet list character */}
       <Text style={styles.listText}>{`\u2022 ${token}`}</Text>
     </View>
   ) : (

@@ -6,6 +6,10 @@ import PlayShareRemove from "./PlayShareRemove";
 import styles from "../styles/recordStyles";
 import { GET_EVENT_RECORDINGS_BY_USER } from "./PlayShareRemove";
 
+// A component responsible for listing all eventRecording objects that are associated with the current user,
+// and creating PlayShareRemove components for the user to interact with each recording. Utilizes the getEventRecordingsByUser
+// query in order to grab all eventRecordings associated with the passed user.
+
 const RecordingPlayback = ({ user }) => {
   const { data: { getEventRecordingsByUser: eventRecordings } = {} } = useQuery(
     GET_EVENT_RECORDINGS_BY_USER,
