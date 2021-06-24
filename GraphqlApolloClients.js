@@ -5,10 +5,10 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { createUploadLink } from "apollo-upload-client";
 import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BACKENDURI, WSURI } from "@env";
+import { IP_ADDRESS } from "@env";
 
-const backendURI = BACKENDURI;
-const wsURI = WSURI;
+const backendURI = "http://" + IP_ADDRESS + ":5000/";
+const wsURI = "ws://" + IP_ADDRESS + ":5000/subscriptions";
 
 const httpLink = createUploadLink({
   uri: backendURI,
