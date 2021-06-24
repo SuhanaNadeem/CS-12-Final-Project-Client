@@ -1,31 +1,31 @@
-# Street Guard
-
-### Dependencies
-
-> Node v. 7.17.0
-
-> Expo v. 4.5.2
+# Street Guard Client
 
 ### Usage
 
-`git clone` this repository in your desired directory. Inside a terminal within this directory, run `cd CS-12-Final-Project-Client`. Then, run `npm install`, followed by `expo start`. This will start the Expo client app. To run the server, see _CS-12-Final-Project-Server_.
+Once you have `CS-12-Final-Project-Client` and `CS-12-Final-Project-Server` stored in a root directory and your environment fully configured, do the following:
+
+- Open a terminal within `CS-12-Final-Project-Client` and run `npm install`. This will install all the project's node dependencies, and only needs to be done once.
+- Run `expo login` and enter your Expo app credentials.
+- Run `expo start`. This will start the Expo client app, opening _Metro Bundler_.
+- Scan the QR code there from your camera app (for IOS) or Expo app (for Android).
+- Run the server by referring to _CS-12-Final-Project-Server_.
 
 ### Description
 
-For many people, in recent times especially, simply walking the streets of their hometown for everyday activities comes with major risk. Even reaching into a pocket or bag for a phone becomes dangerous in many situations. These include police and thief encounters where an unjust scenario is transpiring. This is where Street Guard comes in. Street Guard is a voice-activated emergency-alert app with a specialty -- not only does it trigger emergency text messages, it also starts a recording whenever a police officer or thief is detected, based on a growing database of flagged phrases. User-selected voice keys for recording activation and deactivation and an in-app map tracking the user's and their friends' locations, are just a few of the ways Street Guard applies the power of technology to social justice issues. This app is a proof-of-concept, and not meant to be deployed in emergency situtations as of yet.
+For many people, in recent times especially, simply walking the streets of their hometown for everyday activities comes with major risk. Even reaching into a pocket or bag for a phone becomes dangerous in many situations. These include police and thief encounters where an unjust scenario is transpiring. This is where Street Guard comes in. Street Guard is a voice-activated emergency-alert app with a specialty -- not only does it trigger emergency text messages, it also starts a recording whenever a police officer or thief is detected, based on a growing database of flagged phrases. User-selected voice keys for recording activation and deactivation, and an in-app map tracking the user's and their friends' locations are just a few of the ways Street Guard applies the power of technology to social justice issues. This app is a proof-of-concept, and not meant to be deployed in emergency situtations as of yet.
 
 ### Feature List
 
-- Listens to device microphone in the background to detect police and thieves
-- Automatically records audio if user is in danger
-- Replay previous recordings of encounters within the app
+- Listen to device microphone in the background to detect police, thieves, and voice (start, stop, panic) keys
+- Automatically record and store audio if user is in danger
+- Play previous recordings of encounters within the app
 - Share audio recordings over text
 - Send voice-triggered text messages in critical situations
-- Add and remove friends
+- Add, request, search, and remove friends within the app
 - View and share location with friends on a map (toggleable)
-- Create unique activation phrases
+- Create unique voice activation (start, stop, panic) keys
 - View a listing of all police and thief activation phrases
-- Push notifications
+- Send push notifications asking for audio and location permission, and notifying background/event recording start/stop
 
 ### How it Works
 
@@ -38,6 +38,7 @@ For many people, in recent times especially, simply walking the streets of their
 - Google Cloud Speech-to-Text
 
 ### Stack
+
 - MongoDB
 - Apollo GraphQL
 - React Native
