@@ -36,11 +36,12 @@ For many people, in recent times especially, simply walking the streets of their
 - Expo MapView SDK
 - Expo AV SDK
 - Google Cloud Speech-to-Text
-- **Stack**
-  - MongoDB
-  - GraphQL and Apollo
-  - React Native
-  - Expo
+
+### Stack
+- MongoDB
+- Apollo GraphQL
+- React Native
+- Expo
 
 ### Notes
 
