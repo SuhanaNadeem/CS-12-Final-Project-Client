@@ -8,6 +8,7 @@ import { useRoute } from "@react-navigation/core";
 import Token from "./Token";
 import { ScrollView } from "react-native";
 import styles from "../styles/accountStyles";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 const FlaggedTokens = ({ user }) => {
   const { data: { getPoliceTokens: policeTokens } = {} } = useQuery(
@@ -60,49 +61,68 @@ const FlaggedTokens = ({ user }) => {
   }, [pOpen]);
 
   return limitedPoliceTokens && limitedThiefTokens && user ? (
-    <View>
-      <Text style={styles.titleText}>Manage Flagged Tokens</Text>
+    <View style={{ paddingHorizontal: 25 }}>
+      <Text style={styles.titleText}>View Flagged Tokens</Text>
       <Text style={styles.baseText}>
-        When these word or phrases are detected through interim recordings,
-        event recordings will begin.
+        When these phrases or your voice keys are detected through background
+        recordings, event recordings will be triggered.
       </Text>
 
       {/* Map each of policeTokens to another component, Token, passing in token=token, type="police", and styles. Make sure to import Token.jsx */}
-      <Text style={styles.subTitleText}>Police tokens:</Text>
+      <Text style={styles.subTitleText}>Police Tokens</Text>
       {limitedPoliceTokens && // Replace this with limitedPoliceTokens
         limitedPoliceTokens.map((policeToken, index) => (
-          <Token
-            key={index}
-            style={styles}
-            token={policeToken}
-            type={"Police"}
-          />
+          <Token key={index} token={policeToken} />
         ))}
       {policeTokens && limitedPoliceTokens.length < policeTokens.length && (
-        <Button
-          onPress={() => {
-            setPOpen(!pOpen);
+        <View
+          style={{
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+            marginBottom: 25,
           }}
-          title="View more"
-        ></Button>
+        >
+          <Icon
+            onPress={() => {
+              setPOpen(!pOpen);
+            }}
+            size={35}
+            color="#2f4f4f"
+            name="expand-alt"
+          />
+        </View>
       )}
       {/*  Map each of thiefTokens to another component, Token, passing in token=token, type="thief", and styles. Make sure to import Token.jsx */}
-      <Text style={styles.subTitleText}>Thief tokens:</Text>
+      <Text style={styles.subTitleText}>Thief Tokens</Text>
       {limitedThiefTokens &&
         limitedThiefTokens.map((thiefToken, index) => (
-          <Token key={index} style={styles} token={thiefToken} type={"Thief"} />
+          <Token key={index} token={thiefToken} />
         ))}
       {thiefTokens && limitedThiefTokens.length < thiefTokens.length && (
-        <Button
-          onPress={() => {
-            setTOpen(!tOpen);
+        <View
+          style={{
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+            marginBottom: 25,
           }}
-          title="View more"
-        ></Button>
+        >
+          <Icon
+            onPress={() => {
+              setTOpen(!tOpen);
+            }}
+            size={35}
+            color="#2f4f4f"
+            name="expand-alt"
+          />
+        </View>
       )}
     </View>
   ) : (
-    <View>
+    <View style={styles.loadingContainer}>
       <Text>Loading...</Text>
     </View>
   );

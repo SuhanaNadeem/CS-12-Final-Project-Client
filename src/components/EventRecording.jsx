@@ -42,6 +42,7 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
         user.location == ""
           ? user && user.panicMessage
           : user &&
+            JSON.parse(user.location) &&
             user.panicMessage +
               ` Sent from ${JSON.parse(user.location).coords.latitude}, ${
                 JSON.parse(user.location).coords.longitude
@@ -298,6 +299,7 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
             ]}
             onPress={async () => {
               if (expoPushToken) {
+                console.log("ENTERS THIS");
                 await sendPushNotification({
                   expoPushToken,
                   data: { someData: "goeshere" },
@@ -333,7 +335,9 @@ const EventRecording = ({ user, detectedStatus, setDetectedStatus }) => {
       </View>
     </View>
   ) : (
-    <Text>Loading...</Text>
+    <View style={styles.loadingContainer}>
+      <Text>Loading...</Text>
+    </View>
   );
 };
 

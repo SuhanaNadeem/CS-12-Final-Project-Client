@@ -4,6 +4,7 @@ import { Button, View, Text } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import Requester from "./Requester";
 import styles from "../styles/friendsStyles";
+import { GET_FRIEND_REQUESTS } from "./Requester";
 
 const Requesters = ({ user }) => {
   const { data: { getFriendRequests: requesters } = {} } = useQuery(
@@ -32,18 +33,5 @@ const Requesters = ({ user }) => {
     <Text></Text>
   );
 };
-
-export const GET_FRIEND_REQUESTS = gql`
-  query getFriendRequests($userId: String!) {
-    getFriendRequests(userId: $userId) {
-      id
-      email
-      startKey
-      stopKey
-      name
-      panicKey
-    }
-  }
-`;
 
 export default Requesters;

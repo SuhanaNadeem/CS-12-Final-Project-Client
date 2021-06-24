@@ -37,7 +37,7 @@ const Friends = ({ route }) => {
       </ScrollView>
     </KeyboardAvoidingView>
   ) : (
-    <View>
+    <View style={styles.loadingContainer}>
       <Text>Loading...</Text>
     </View>
   );

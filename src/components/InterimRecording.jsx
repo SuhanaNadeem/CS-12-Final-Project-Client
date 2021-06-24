@@ -181,20 +181,12 @@ const InterimRecording = ({
       start ? 50 : 10000
     );
 
-    // if (!enabled.allowed && !enabled.inProgress && detectedStatus === "stop") {
     if (detectedStatus === "start" || !enabled) {
-      // if (recording) {
       stopRecording();
-      // }
       setStart(true);
-      // setRecording(undefined);
     }
 
     return () => clearInterval(interval);
-    // TODO For me - fix this: to configure permissions as of now, you might need to uncomment the following line and
-    // comment everything else in this useEffect, grant permissions through the phone, and then change it back to this original
-    // commenting state
-    // startRecording();
   }, [enabled, start, detectedStatus]);
 
   return (

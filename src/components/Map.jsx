@@ -1,13 +1,15 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useState, useEffect } from "react";
-import { Button, View, Text } from "react-native";
+import { Button, View, Text, Pressable } from "react-native";
 import { Audio } from "expo-av";
 import MapView from "react-native-maps";
 import * as Location from "expo-location";
 import { userClient } from "../../GraphqlApolloClients";
 // import FriendMapMarker from "./FriendMapMarker";
+import styles from "../styles/trackStyles";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Map = ({ user, styles }) => {
+const Map = ({ user }) => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -114,13 +116,12 @@ const Map = ({ user, styles }) => {
     text = JSON.stringify(location);
   }
 
-  return user && styles ? (
-    <View>
+  return user ? (
+    <View style={{ paddingHorizontal: 25 }}>
       <Text style={styles.titleText}>Locations</Text>
       <Text style={styles.baseText}>
         Here are the locations of your friends who've enabled location sharing.
       </Text>
-      <Text>{text}</Text>
       <MapView style={styles.map}>
         {location && (
           <MapView.Marker
@@ -145,13 +146,32 @@ const Map = ({ user, styles }) => {
             )
           )}
       </MapView>
-      <Button
-        onPress={toggleLocation}
-        title={
-          user.locationOn ? "Stop sharing location" : "Start sharing location"
-        }
-      />
-      <Button onPress={updateLocation} title={"Refresh my location"} />
+
+      <Pressable onPress={toggleLocation} style={styles.centered}>
+        <Text style={styles.submitText}>
+          {user.locationOn ? "Stop Sharing Location" : "Share Location"}
+        </Text>
+        <View>
+          <Icon
+            name={user.locationOn ? "location-on" : "location-off"}
+            size={30}
+            color="#2f4f4f"
+            style={{ paddingTop: 8, paddingLeft: 10 }}
+          />
+        </View>
+      </Pressable>
+
+      <Pressable onPress={updateLocation} style={styles.centered}>
+        <Text style={styles.submitText}>Refresh Location</Text>
+        <View>
+          <Icon
+            name="refresh"
+            size={30}
+            color="#2f4f4f"
+            style={{ paddingTop: 8, paddingLeft: 10 }}
+          />
+        </View>
+      </Pressable>
     </View>
   ) : (
     <View></View>

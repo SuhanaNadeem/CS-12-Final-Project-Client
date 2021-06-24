@@ -5,7 +5,14 @@ export default StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "column",
   },
-
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 16,
+    color: "#2f4f4f",
+  },
   titleText: {
     fontSize: 20,
     color: "#2f4f4f",

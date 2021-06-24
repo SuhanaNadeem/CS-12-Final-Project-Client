@@ -10,8 +10,8 @@ const AddedFriend = ({ friend, user }) => {
     userId: user && user.id,
     friendId: friend && friend.id,
   });
-  const [removeFriend, loadingRemoveFriend] = useMutation(REMOVE_FRIEND, {
-    update(_, { data: { removeFriend: removeFriendData } }) {
+  const [removeFriend] = useMutation(REMOVE_FRIEND, {
+    update() {
       console.log("Submitted removeFriend");
     },
     onError(err) {

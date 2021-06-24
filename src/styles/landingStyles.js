@@ -9,6 +9,7 @@ export default StyleSheet.create({
     alignContent: "center",
     backgroundColor: "#2f4f4f",
   },
+
   formContainer: {
     paddingHorizontal: 40,
   },
@@ -48,6 +49,16 @@ export default StyleSheet.create({
     paddingTop: 2,
     justifyContent: "center",
     marginVertical: 10,
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: 16,
+    color: "#2f4f4f",
   },
   end: {
     flexDirection: "column",

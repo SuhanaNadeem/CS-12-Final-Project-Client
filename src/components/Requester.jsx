@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Button, View, Text, Pressable } from "react-native";
 import { userClient } from "../../GraphqlApolloClients";
 import { GET_FRIENDS } from "./AddedFriend";
-import { GET_FRIEND_REQUESTS } from "./Requesters";
 import styles from "../styles/friendsStyles";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -78,4 +77,16 @@ export const GET_USER_BY_ID = gql`
   }
 `;
 
+export const GET_FRIEND_REQUESTS = gql`
+  query getFriendRequests($userId: String!) {
+    getFriendRequests(userId: $userId) {
+      id
+      email
+      startKey
+      stopKey
+      name
+      panicKey
+    }
+  }
+`;
 export default Requester;
