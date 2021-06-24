@@ -28,6 +28,7 @@ For many people, in recent times especially, simply walking the streets of their
 - Send push notifications asking for audio and location permission, and notifying background/event recording start/stop
 
 ### How it Works
+When logged into the app, the user will be presented with the option to allow background recordings. When enabled, Street Guard will record chunks of audio which will be match against a database of keywords and phrases used by police officers and thieves, triggering the recording to be saved when a match is found. These phrases are not restricted purely to the app's database however; users themselves are able to set their own start, stop, and panic key phrases that they themselves can use to trigger events in our app, like saving recordings and sending SMS messages with location data. Users can friend others in the app as well in order to monitor their friends and be able to view their location if they choose to have the feature enabled.
 
 ### API List
 
